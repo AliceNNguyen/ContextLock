@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.alicenguyen.contextlock">
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- GPS permission -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-feature android:name="android.hardware.location.gps" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission. ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+
+    <!--
+    <uses-feature android:name="android.hardware.fingerprint"
+        android:required="true"/>
+    -->
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/ic_fingerprint"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name="com.example.alicenguyen.contextlock.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.alicenguyen.contextlock.ExperienceSamplingActivity"
+            android:label="@string/feedback_survey"
+            android:theme="@style/LightTheme"></activity>
+
+        <!--
+        <service
+            android:name="com.example.alicenguyen.contextlock.DetectedActivitiesIntentService"
+            android:exported="false" />
+        <service android:name="com.example.alicenguyen.contextlock.BackgroundDetectedActivitiesService" />
+        <service android:name="com.example.alicenguyen.contextlock.LocationService" />-->
+
+        <service android:name="com.example.alicenguyen.contextlock.LocationJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service
+            android:name=".UserActivityJobIntentService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <!--<service android:name=".UserActivityJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>-->
+        <receiver android:name=".ActivityBroadcastReceiver" />
+        <receiver android:name=".LockScreenReceiver">
+            <!--<intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+            </intent-filter>-->
+        </receiver>
+
+
+        <!--
+        <receiver android:name=".MainActivity$ScreenReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+                <action android:name="android.intent.action.SCREEN_OFF"/>
+                <action android:name="android.intent.action.SCREEN_ON"/>
+            </intent-filter>
+        </receiver>
+        -->
+        <activity android:name="com.example.alicenguyen.contextlock.ExperienceSamplingActivity2"
+            android:theme="@style/LightTheme"
+            >
+        </activity>
+    </application>
+
+</manifest>

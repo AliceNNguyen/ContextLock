@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="@android:color/white"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/settings"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/teal"
+        android:text="@string/settings" />
+
+    <Button
+        android:id="@+id/setPin"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_border"
+        android:padding="8dp"
+        android:textSize="10sp"
+        android:textColor="@color/dark_grey"
+        android:text="@string/set_pin" />
+
+    <EditText
+        android:id="@+id/setID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:textColor="@color/dark_grey"
+        android:hint="@string/set_id"
+        android:textCursorDrawable="@drawable/color_cursor"
+        android:backgroundTint="@color/shiny_blue"
+        android:inputType="numberSigned" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancel_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_color_gradient"
+            android:textColor="@android:color/white"
+            android:layout_margin="5dp"
+            android:text="Cancel" />
+
+        <Button
+            android:id="@+id/open_survey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_color_gradient"
+            android:textColor="@android:color/white"
+            android:layout_margin="5dp"
+            android:padding="5dp"
+            android:text="@string/give_feedback" />
+
+        <Button
+            android:id="@+id/ok_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_color_gradient"
+            android:textColor="@android:color/white"
+            android:layout_margin="5dp"
+            android:text="OK" />
+
+    </LinearLayout>
+
+</LinearLayout>

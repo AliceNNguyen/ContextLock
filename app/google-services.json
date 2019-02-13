@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "230133060779",
+    "firebase_url": "https://contextlock-39552.firebaseio.com",
+    "project_id": "contextlock-39552",
+    "storage_bucket": "contextlock-39552.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:230133060779:android:e5296ddb98100706",
+        "android_client_info": {
+          "package_name": "com.example.alicenguyen.contextlock"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "230133060779-654a7f28j304a6l4dpgeas4r5df010i5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.alicenguyen.contextlock",
+            "certificate_hash": "04dae5e3073d17e652f2929f07022ab9889e24fb"
+          }
+        },
+        {
+          "client_id": "230133060779-g53ggb6mchjfib5gvfs644toghmdl1jh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkXd-Sh-OwMTQ5tx9UU-7j6MFZf2aQD48"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "230133060779-g53ggb6mchjfib5gvfs644toghmdl1jh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

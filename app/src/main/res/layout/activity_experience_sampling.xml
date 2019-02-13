@@ -1,0 +1,690 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ExperienceSamplingActivity">
+
+    <Button
+        android:id="@+id/not_now_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:padding="8dp"
+        android:layout_margin="5dp"
+        android:textSize="@dimen/send_text_size"
+        android:background="@drawable/button_radius"
+        android:textColor="@android:color/white"
+        android:layout_alignParentEnd="true"
+        android:text="@string/not_now"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="15dp"
+        android:background="@drawable/bg">
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/round_border"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+            <TextView
+                android:id="@+id/prediction_precision"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/onside_border"
+                android:padding="@dimen/header_padding"
+                android:textSize="@dimen/header_text_size"
+                android:text="@string/prediction_precision"
+                android:textColor="@color/dark_grey" />
+
+
+            <SeekBar
+                android:id="@+id/seekBarPrediction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:max="4"
+                android:thumbTint="@color/transparent"
+                android:minHeight="3dp"
+                android:maxHeight="3dp"
+                android:progressDrawable="@drawable/seekbar_style"
+                android:progress="0" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/rating_container_margin_bottom"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/prediction_strongly_disagree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/radio_button_text_margin_left"
+                    android:textSize="@dimen/rating_label"
+                    android:textColor="@color/dark_grey"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:textStyle="bold"
+                    android:text="@string/strongly_disagree" />
+
+                <TextView
+                    android:id="@+id/prediction_disagree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/radio_button_text_margin_left"
+                    android:textSize="@dimen/rating_label"
+                    android:textStyle="bold"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:text="@string/disagree" />
+
+                <TextView
+                    android:id="@+id/prediction_neural"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/radio_button_text_margin_left"
+                    android:textSize="@dimen/rating_label"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:textStyle="bold"
+                    android:text="@string/neutral" />
+
+                <TextView
+                    android:id="@+id/prediction_agree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/radio_button_text_margin_left"
+                    android:textSize="@dimen/rating_label"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:textStyle="bold"
+                    android:text="@string/agree" />
+
+                <TextView
+                    android:id="@+id/prediction_strongly_agree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/radio_button_text_margin_left"
+                    android:textSize="@dimen/rating_label"
+                    android:textStyle="bold"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:text="@string/strongly_agree" />
+            </LinearLayout>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-20dp"
+                android:hint="Falls Prognose falsch, welcher Grund?"
+                android:backgroundTint="@color/dark_grey"
+                android:textColor="@color/dark_grey"
+                android:textSize="@dimen/radio_button_textsize" />
+
+            <!--
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <RadioButton
+                    android:id="@+id/radio_prediction_strong_agree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onPredictionRadioButtonClicked"
+                    android:text="@string/strongly_agree"
+
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/radio_prediction_agree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onPredictionRadioButtonClicked"
+                    android:text="@string/agree"
+
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/radio_prediction_neutral"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onPredictionRadioButtonClicked"
+                    android:text="@string/neutral"
+
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/radio_prediction_disagree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onPredictionRadioButtonClicked"
+                    android:text="@string/disagree"
+
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/radio_prediction_strong_disagree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:onClick="onPredictionRadioButtonClicked"
+                    android:text="@string/strongly_disagree"
+
+                    android:textColor="@color/dark_grey" />
+            </RadioGroup>
+            -->
+
+            <TextView
+                android:id="@+id/annoyance_level"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/onside_border"
+                android:padding="@dimen/header_padding"
+                android:textSize="@dimen/header_text_size"
+                android:text="@string/annoyance"
+                android:textColor="@color/dark_grey" />
+
+            <SeekBar
+                android:id="@+id/seekBarAnnoyance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="4"
+                android:layout_marginTop="5dp"
+                android:thumbTint="@color/transparent"
+                android:minHeight="3dp"
+                android:maxHeight="3dp"
+                android:progressDrawable="@drawable/seekbar_style"
+                android:progress="0"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/rating_container_margin_bottom"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/annoyance_strongly_disagree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:textSize="@dimen/rating_label"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:textColor="@color/dark_grey"
+                    android:text="@string/strongly_disagree" />
+
+                <TextView
+                    android:id="@+id/annoyance_disagree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:textSize="@dimen/rating_label"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:textColor="@color/dark_grey"
+                    android:text="@string/disagree" />
+
+                <TextView
+                    android:id="@+id/annoyance_neutral"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:textSize="@dimen/rating_label"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:textColor="@color/dark_grey"
+                    android:text="@string/neutral" />
+
+                <TextView
+                    android:id="@+id/annoyance_agree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:textSize="@dimen/rating_label"
+                    android:textColor="@color/dark_grey"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:text="@string/agree" />
+
+                <TextView
+                    android:id="@+id/annoyance_strongly_agree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:textSize="@dimen/rating_label"
+                    android:textColor="@color/dark_grey"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:text="@string/strongly_agree" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/reasonableSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/onside_border"
+                android:padding="@dimen/header_padding"
+                android:textSize="@dimen/header_text_size"
+                android:text="@string/reasonable_switch"
+                android:textColor="@color/dark_grey" />
+
+
+            <SeekBar
+                android:id="@+id/seekBarReasonable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="4"
+                android:layout_marginTop="5dp"
+                android:thumbTint="@color/transparent"
+                android:minHeight="3dp"
+                android:maxHeight="3dp"
+                android:progressDrawable="@drawable/seekbar_style"
+                android:progress="0"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/rating_container_margin_bottom"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/reasonable_strongly_disagree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:layout_marginLeft="12dp"
+                    android:textSize="@dimen/rating_label"
+                    android:textColor="@color/dark_grey"
+                    android:text="@string/strongly_disagree" />
+
+                <TextView
+                    android:id="@+id/reasonable_disagree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:layout_marginLeft="12dp"
+                    android:textSize="@dimen/rating_label"
+                    android:textColor="@color/dark_grey"
+                    android:text="@string/disagree" />
+
+                <TextView
+                    android:id="@+id/reasonable_neutral"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:layout_marginLeft="12dp"
+                    android:textSize="@dimen/rating_label"
+                    android:textColor="@color/dark_grey"
+                    android:text="@string/neutral" />
+
+                <TextView
+                    android:id="@+id/reasonable_agree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:layout_marginLeft="12dp"
+                    android:textSize="@dimen/rating_label"
+                    android:textColor="@color/dark_grey"
+                    android:text="@string/agree" />
+
+                <TextView
+                    android:id="@+id/reasonable_strongly_agree"
+                    android:layout_width="@dimen/radio_button_text_width"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@dimen/radio_button_text_weight"
+                    android:layout_marginLeft="12dp"
+                    android:textSize="@dimen/rating_label"
+                    android:textColor="@color/dark_grey"
+                    android:text="@string/strongly_agree" />
+            </LinearLayout>
+
+
+            <!--
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <RadioButton
+                    android:id="@+id/radio_annoyance_strong_agree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onPredictionRadioButtonClicked"
+                    android:text="@string/strongly_agree"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/radio_annoyance_agree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onPredictionRadioButtonClicked"
+                    android:text="@string/agree"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/radio_annoyance_neutral"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onPredictionRadioButtonClicked"
+                    android:text="@string/neutral"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/radio_annoyance_disagree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onPredictionRadioButtonClicked"
+                    android:text="@string/disagree"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/radio_annoyance_strong_disagree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onPredictionRadioButtonClicked"
+                    android:text="@string/strongly_disagree"
+                    android:textColor="@color/dark_grey" />
+            </RadioGroup>
+            -->
+
+           <!-- <TextView
+                android:id="@+id/user_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:textSize="@dimen/header_text_size"
+                android:background="@drawable/onside_border"
+                android:padding="@dimen/header_padding"
+                android:text="@string/user_location_string"
+                android:textColor="@color/dark_grey" />
+
+            <RadioGroup
+                android:id="@+id/radio_location_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:paddingBottom="0dp">
+
+                <RadioButton
+                    android:id="@+id/in_vehicle_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/public_transportation"
+                    android:textColor="@color/dark_grey"
+                    android:onClick="onLocationRadioButtonClicked"
+                    />
+
+                <RadioButton
+                    android:id="@+id/at_work_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/at_work"
+                    android:textColor="@color/dark_grey"
+                    android:onClick="onLocationRadioButtonClicked"
+                    />
+
+                <RadioButton
+                    android:id="@+id/at_university_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/at_uni"
+                    android:textColor="@color/dark_grey"
+                    android:onClick="onLocationRadioButtonClicked"
+                    />
+
+                <RadioButton
+                    android:id="@+id/at_home_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/at_home"
+                    android:textColor="@color/dark_grey"
+                    android:onClick="onLocationRadioButtonClicked"
+                    />
+
+                <RadioButton
+                    android:id="@+id/workout_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/workout"
+                    android:textColor="@color/dark_grey"
+                    android:onClick="onLocationRadioButtonClicked"
+                    />
+
+                <RadioButton
+                    android:id="@+id/outdoor_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/outdoor"
+                    android:textColor="@color/dark_grey" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/something_else__radio_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/something_else"
+                        android:layout_marginRight="5dp"
+                        android:textSize="@dimen/radio_button_textsize"
+                        android:textColor="@color/dark_grey"
+                        android:onClick="onLocationRadioButtonClicked"
+                        />
+                    <EditText
+                        android:id="@+id/location_freetext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/dark_grey"
+                        android:backgroundTint="@color/dark_grey"
+                        android:textSize="@dimen/radio_button_textsize"
+                        android:hint="@string/some_examples"/>
+
+                </LinearLayout>
+            </RadioGroup>-->
+
+           <!-- <TextView
+                android:id="@+id/failure_reason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:textSize="@dimen/header_text_size"
+                android:background="@drawable/onside_border"
+                android:padding="@dimen/header_padding"
+                android:text="Deshalb könnte mein Fingerabdruck nicht funktioniert haben:"
+                android:textColor="@color/dark_grey" />
+
+            <CheckBox
+                android:id="@+id/checkBoxwWetFingers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/radio_button_textsize"
+                android:textColor="@color/dark_grey"
+                android:text="nasse Finger" />
+
+            <CheckBox
+                android:id="@+id/checkBoxDirtyFingers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/radio_button_textsize"
+                android:textColor="@color/dark_grey"
+                android:text="dreckige Finger" />
+
+            <CheckBox
+                android:id="@+id/checkBoxCooking"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/radio_button_textsize"
+                android:textColor="@color/dark_grey"
+                android:text="Ich koch gerade" />
+
+            <CheckBox
+                android:id="@+id/checkBoxRain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/radio_button_textsize"
+                android:textColor="@color/dark_grey"
+                android:text="Es regnet" />
+
+            <CheckBox
+                android:id="@+id/checkBoxSnow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/radio_button_textsize"
+                android:textColor="@color/dark_grey"
+                android:text="Es schneit" />-->
+
+            <!--
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:paddingBottom="0dp">
+
+                <RadioButton
+                    android:id="@+id/in_vehicle_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/public_transportation"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/at_work_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/at_work"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/at_university_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/at_uni"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/at_home_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/at_home"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/workout_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/workout"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/outdoor_radio_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/outdoor"
+                    android:textColor="@color/dark_grey" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/something_else__radio_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/something_else"
+                        android:layout_marginRight="5dp"
+                        android:textSize="@dimen/radio_button_textsize"
+                        android:textColor="@color/dark_grey" />
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/dark_grey"
+                        android:textSize="@dimen/radio_button_textsize"
+                        android:hint="@string/some_examples"/>
+
+                </LinearLayout>
+            </RadioGroup>-->
+
+            <Button
+                android:id="@+id/next_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:padding="8dp"
+                android:layout_margin="5dp"
+                android:textSize="@dimen/send_text_size"
+                android:background="@drawable/button_radius"
+                android:textColor="@android:color/white"
+                android:layout_gravity="right"
+                android:layout_alignParentEnd="true"
+                android:text="Weiter"/>
+
+
+            <!--<LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_gravity="right"
+                android:orientation="vertical">
+
+
+
+
+                <ImageView
+                    android:id="@+id/send_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:src="@mipmap/ic_send" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:textAlignment="center"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="@dimen/send_text_size"
+                    android:text="@string/send"/>
+
+            </LinearLayout>-->
+
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>
