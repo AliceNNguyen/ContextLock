@@ -53,7 +53,7 @@
     <dimen name="header_text_size">12sp</dimen>
 
     //ratings
-    <dimen name="rating_label">8dp</dimen>
+    <dimen name="rating_label">8sp</dimen>
     <dimen name="rating_container_margin_bottom">20dp</dimen>
 
     //radio button
@@ -68,13 +68,13 @@
     //radio button text
     <dimen name="radio_button_text_width">0dp</dimen>
     <dimen name="radio_button_text_weight">0.167</dimen>
-    <dimen name="radio_button_text_margin_left">8dp</dimen>
+    <dimen name="radio_button_text_margin_left">10dp</dimen>
 
     //main activity buttons
     <dimen name="button_text_size">10sp</dimen>
     <dimen name="button_weight">0.3</dimen>
     <dimen name="button_margin">5dp</dimen>
 
-    <dimen name="edit_text_size">15dp</dimen>
+    <dimen name="edit_text_size">15sp</dimen>
 
 </resources>

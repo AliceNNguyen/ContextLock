@@ -25,8 +25,6 @@
         android:padding="15dp"
         android:background="@drawable/bg">
 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,6 +32,47 @@
             android:background="@drawable/round_border"
             android:orientation="vertical"
             android:padding="15dp">
+
+            <TextView
+                android:id="@+id/lockswitch_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:textSize="@dimen/header_text_size"
+                android:background="@drawable/onside_border"
+                android:padding="@dimen/header_padding"
+                android:text="@string/lockswitch_text"
+                android:textColor="@color/dark_grey" />
+
+            <RadioGroup
+                android:id="@+id/lockswitch_button_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:paddingBottom="0dp">
+
+                <RadioButton
+                    android:id="@+id/lockswitch_true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/true_text"
+                    android:layout_marginRight="@dimen/radio_button_text_margin_left"
+                    android:textColor="@color/dark_grey"
+                    android:onClick="onSwitchButtonClicked"
+                    />
+
+                <RadioButton
+                    android:id="@+id/lockswitch_false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/false_text"
+                    android:textColor="@color/dark_grey"
+                    android:onClick="onSwitchButtonClicked"
+                    />
+            </RadioGroup>
 
             <TextView
                 android:id="@+id/prediction_precision"
@@ -119,10 +158,12 @@
             </LinearLayout>
 
             <EditText
+                android:id="@+id/reasonEdittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-20dp"
-                android:hint="Falls Prognose falsch, welcher Grund?"
+                android:layout_marginTop="-10dp"
+                android:inputType="text"
+                android:hint="@string/reason_hint_input"
                 android:backgroundTint="@color/dark_grey"
                 android:textColor="@color/dark_grey"
                 android:textSize="@dimen/radio_button_textsize" />
@@ -221,6 +262,7 @@
                     android:textSize="@dimen/rating_label"
                     android:layout_weight="@dimen/radio_button_text_weight"
                     android:textColor="@color/dark_grey"
+                    android:textStyle="bold"
                     android:text="@string/strongly_disagree" />
 
                 <TextView
@@ -231,6 +273,7 @@
                     android:textSize="@dimen/rating_label"
                     android:layout_weight="@dimen/radio_button_text_weight"
                     android:textColor="@color/dark_grey"
+                    android:textStyle="bold"
                     android:text="@string/disagree" />
 
                 <TextView
@@ -239,6 +282,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="12dp"
                     android:textSize="@dimen/rating_label"
+                    android:textStyle="bold"
                     android:layout_weight="@dimen/radio_button_text_weight"
                     android:textColor="@color/dark_grey"
                     android:text="@string/neutral" />
@@ -251,6 +295,7 @@
                     android:textSize="@dimen/rating_label"
                     android:textColor="@color/dark_grey"
                     android:layout_weight="@dimen/radio_button_text_weight"
+                    android:textStyle="bold"
                     android:text="@string/agree" />
 
                 <TextView
@@ -261,6 +306,7 @@
                     android:textSize="@dimen/rating_label"
                     android:textColor="@color/dark_grey"
                     android:layout_weight="@dimen/radio_button_text_weight"
+                    android:textStyle="bold"
                     android:text="@string/strongly_agree" />
             </LinearLayout>
 
@@ -303,6 +349,7 @@
                     android:layout_weight="@dimen/radio_button_text_weight"
                     android:layout_marginLeft="12dp"
                     android:textSize="@dimen/rating_label"
+                    android:textStyle="bold"
                     android:textColor="@color/dark_grey"
                     android:text="@string/strongly_disagree" />
 
@@ -313,6 +360,7 @@
                     android:layout_weight="@dimen/radio_button_text_weight"
                     android:layout_marginLeft="12dp"
                     android:textSize="@dimen/rating_label"
+                    android:textStyle="bold"
                     android:textColor="@color/dark_grey"
                     android:text="@string/disagree" />
 
@@ -323,6 +371,7 @@
                     android:layout_weight="@dimen/radio_button_text_weight"
                     android:layout_marginLeft="12dp"
                     android:textSize="@dimen/rating_label"
+                    android:textStyle="bold"
                     android:textColor="@color/dark_grey"
                     android:text="@string/neutral" />
 
@@ -333,6 +382,7 @@
                     android:layout_weight="@dimen/radio_button_text_weight"
                     android:layout_marginLeft="12dp"
                     android:textSize="@dimen/rating_label"
+                    android:textStyle="bold"
                     android:textColor="@color/dark_grey"
                     android:text="@string/agree" />
 
@@ -343,6 +393,7 @@
                     android:layout_weight="@dimen/radio_button_text_weight"
                     android:layout_marginLeft="12dp"
                     android:textSize="@dimen/rating_label"
+                    android:textStyle="bold"
                     android:textColor="@color/dark_grey"
                     android:text="@string/strongly_agree" />
             </LinearLayout>
@@ -651,7 +702,7 @@
                 android:textColor="@android:color/white"
                 android:layout_gravity="right"
                 android:layout_alignParentEnd="true"
-                android:text="Weiter"/>
+                android:text="@string/next_string"/>
 
 
             <!--<LinearLayout

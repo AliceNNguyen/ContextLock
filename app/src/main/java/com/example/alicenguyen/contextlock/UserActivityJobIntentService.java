@@ -24,8 +24,12 @@ import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class UserActivityJobIntentService extends JobIntentService {
     private static final String TAG = "UserActivityJobIntent";
@@ -34,6 +38,10 @@ public class UserActivityJobIntentService extends JobIntentService {
     private ActivityRecognitionClient mActivityRecognitionClient;
     private String userActivity = "unknown";
     private boolean isLocked = false;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private int opensurveycounter;
+    private FirebaseAnalytics mFirebaseAnalytics;
+
 
     static void enqueueWork(Context context, Intent activity) {
         enqueueWork(context, UserActivityJobIntentService.class, JOB_ID, activity);
@@ -46,8 +54,23 @@ public class UserActivityJobIntentService extends JobIntentService {
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         createNotificationChannel();
+        Date date = Calendar.getInstance().getTime();
+        String currentDate = simpleDateFormat.format(date);
+        //SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.DATE_KEY, currentDate);
+        String storedDate = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.DATE_KEY);
+
+        if(currentDate.equals(storedDate)) {
+            String counter = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY);
+            opensurveycounter = Integer.parseInt(counter);
+        }else {
+            getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.COUNTER_KEY).apply();
+            String counter = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY);
+            opensurveycounter = Integer.parseInt(counter);
+            SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.DATE_KEY, currentDate);
+        }
         mActivityRecognitionClient = new ActivityRecognitionClient(this);
         if (ActivityRecognitionResult.hasResult(intent)) {
             ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
@@ -86,7 +109,7 @@ public class UserActivityJobIntentService extends JobIntentService {
         }
     }
 
-    private void sendNotification(String contextDesscription, int icon) {
+    private void sendNotification(String contextDescription, int icon) {
         Log.e("notfication", "send");
 
         int notificationId = 1;
@@ -97,10 +120,10 @@ public class UserActivityJobIntentService extends JobIntentService {
                 .setSmallIcon(R.drawable.ic_fingerprint)
                 .setLargeIcon(bitmap)
                 .setContentTitle(getString(R.string.notification_title))
-                .setContentText(contextDesscription +  " " + getString(R.string.notification_description))
+                .setContentText(contextDescription +  " " + getString(R.string.notification_description))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(contextDesscription + " " +  getString(R.string.notification_description)))
+                        .bigText(contextDescription + " " +  getString(R.string.notification_description)))
                 //.setStyle(new NotificationCompat.BigPictureStyle()
                 //.bigPicture(bitmap).setSummaryText("message"))
                 // Set the intent that will fire when the user taps the notification
@@ -110,6 +133,10 @@ public class UserActivityJobIntentService extends JobIntentService {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         // notificationId is a unique int for each notification that you must define
         notificationManager.notify(notificationId, mBuilder.build());
+
+        Bundle params = new Bundle();
+        params.putString("user_activity", contextDescription );
+        mFirebaseAnalytics.logEvent("user_activity_notification", params);
     }
 
     private void handleUserActivity(int type, int confidence) {
@@ -172,21 +199,29 @@ public class UserActivityJobIntentService extends JobIntentService {
         }
     }
 
+    private void openExperienceSampling() {
+        opensurveycounter++;
+        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
+        Intent intent = new Intent(this, ExperienceSamplingActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
     private void checkContextForNotification() {
         Log.e(TAG, userActivity);
         checkIfScreenLocked();
         if(isLocked) {
-            if (userActivity.equals("running")) {
+            if (userActivity.equals(getString(R.string.activity_running))) {
                 sendNotification(getString(R.string.running), R.mipmap.running_ic);
-            } else if (userActivity.equals("in_vehicle")) {
+                openExperienceSampling();
+            } else if (userActivity.equals(getString(R.string.activity_in_vehicle))) {
                 sendNotification(getString(R.string.in_vehicle), R.mipmap.publictransport_ic);
+                openExperienceSampling();
             } else {
                 Log.e(TAG, "no conditions met");
                 //Toast.makeText(this, "Alles gut!", Toast.LENGTH_LONG).show();
             }
-            Intent intent = new Intent(this, ExperienceSamplingActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+
         }
     }
 

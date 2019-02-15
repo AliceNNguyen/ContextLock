@@ -24,10 +24,9 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
     private ImageView sendButton;
     private EditText locationEditText;
     private String locationValue;
-    private String locationFreeText = "";
     private Date currenttime;
     private DatabaseReference mDatabaseReference;
-    private String userid;
+    private String userid, switchValue, fingerErrorValue, locationFreeText, reasonFreeText;
     private int predictionValue, annoyanceValue, reasonableValue;
 
 
@@ -47,6 +46,10 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
             predictionValue = b.getInt("predicationValue");
             reasonableValue = b.getInt("reasonableValue");
             annoyanceValue = b.getInt("annoyanceValue");
+            switchValue = b.getString("switchValue");
+            reasonFreeText = b.getString("reasonFreeText");
+
+
             Log.e("extra", String.valueOf(predictionValue));
             Log.e("extra", String.valueOf(reasonableValue));
             Log.e("extra", String.valueOf(annoyanceValue));
@@ -77,18 +80,21 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                currenttime = Calendar.getInstance().getTime();
+            currenttime = Calendar.getInstance().getTime();
 
-                //TODO set locationValue to database
-                mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("prediction-rate").setValue(predictionValue);
-                mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("annoyance-rate").setValue(annoyanceValue);
-                mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("reasonable-rate").setValue(reasonableValue);
+            //TODO set locationValue to database
+            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("lockscreen-switch-value").setValue(switchValue);
+            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("prediction-rate").setValue(predictionValue);
+            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("annoyance-rate").setValue(annoyanceValue);
+            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("reasonable-rate").setValue(reasonableValue);
 
-                mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("user-current-location").setValue(locationValue);
-                mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("location-free-text").setValue(locationFreeText);
+            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("fingererror-value").setValue(fingerErrorValue);
+            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("user-current-location").setValue(locationValue);
+            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("location-free-text").setValue(locationEditText.getText().toString());
+            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("reason-free-text").setValue(reasonFreeText);
 
-                Toast.makeText(ExperienceSamplingActivity2.this, "gesendet", Toast.LENGTH_SHORT).show();
-                finishAffinity();
+            Toast.makeText(ExperienceSamplingActivity2.this, "gesendet", Toast.LENGTH_SHORT).show();
+            finishAffinity();
 
             }
         });
@@ -138,4 +144,26 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
                 break;
         }
     }
+
+    public void onFingerErrorRadioButtonClicked(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+
+        RadioButton trueRadioButton = findViewById(R.id.fingerprint_error_true);
+        RadioButton falseRadioButton = findViewById(R.id.fingerprint_error_false);
+
+
+        // Check which radio button was clicked
+        switch (view.getId()) {
+            case R.id.fingerprint_error_true:
+                if (checked)
+                    fingerErrorValue = trueRadioButton.getText().toString();
+
+                break;
+            case R.id.fingerprint_error_false:
+                if (checked)
+                    fingerErrorValue = falseRadioButton.getText().toString();
+                break;
+        }
+    }
 }
+

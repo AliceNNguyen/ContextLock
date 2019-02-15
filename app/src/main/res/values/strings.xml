@@ -14,7 +14,7 @@
     <string name="set_id">Gebe deine erhaltene ID ein</string>
     <string name="settings">Settings</string>
     <string name="title_activity_experience_sampling">ExperienceSamplingActivity</string>
-    <string name="feedback_survey">Feedback Fragebogen</string>
+    <string name="feedback_survey">Feedback zum ContextLockScreen</string>
 
     <string name="prediction_precision">Die Prognosen haben gestimmt</string>
     <string name="strongly_agree">stimme zu</string>
@@ -22,6 +22,12 @@
     <string name="neutral">weder noch</string>
     <string name="disagree">stimme eher nicht zu</string>
     <string name="strongly_disagree">stimme nicht zu</string>
+
+    <string name="fingerprint_error_text">Ich hatte Probleme mit der Fingerabdruck-Erkennung</string>
+    <string name="true_text">Richtig</string>
+    <string name="false_text">Falsch</string>
+
+    <string name="lockswitch_text">Ich habe mein PIN genutzt</string>
 
 
     <string name="give_feedback">Feedback geben</string>
@@ -61,5 +67,8 @@
     <string name="stop_tracking">Tracking stoppen</string>
     <string name="start_tracking">Tracking starten</string>
     <string name="enter_id">ID bestätigen</string>
+    <string name="reason_hint_input">Falls Prognose falsch, welcher Grund sonst?</string>
+    <string name="next_string">Weiter</string>
+
 
 </resources>

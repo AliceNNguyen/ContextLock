@@ -53,7 +53,6 @@
             android:layout_margin="5dp"
             android:textSize="@dimen/button_text_size"
             android:layout_weight="@dimen/button_weight"
-            android:onClick="startJobScheduler"
             style="?android:attr/buttonBarButtonStyle"
             android:text="@string/start_tracking" />
 
@@ -65,7 +64,6 @@
             android:textColor="@color/white"
             android:layout_margin="5dp"
             android:padding="5dp"
-            android:onClick="stopJobScheduler"
             android:textSize="@dimen/button_text_size"
             android:layout_weight="@dimen/button_weight"
             style="?android:attr/buttonBarButtonStyle"

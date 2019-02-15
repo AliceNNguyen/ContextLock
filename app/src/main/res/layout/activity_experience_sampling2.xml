@@ -474,6 +474,48 @@
                     </LinearLayout>
                 </RadioGroup>
 
+                <TextView
+                    android:id="@+id/fingerprint_error_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:textSize="@dimen/header_text_size"
+                    android:background="@drawable/onside_border"
+                    android:padding="@dimen/header_padding"
+                    android:text="@string/fingerprint_error_text"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioGroup
+                    android:id="@+id/fingerprint_error_button_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:paddingBottom="0dp">
+
+                <RadioButton
+                    android:id="@+id/fingerprint_error_true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/true_text"
+                    android:textColor="@color/dark_grey"
+                    android:layout_marginRight="@dimen/radio_button_text_margin_left"
+                    android:onClick="onFingerErrorRadioButtonClicked"
+                    />
+
+                <RadioButton
+                    android:id="@+id/fingerprint_error_false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/radio_button_textsize"
+                    android:text="@string/false_text"
+                    android:textColor="@color/dark_grey"
+                    android:onClick="onFingerErrorRadioButtonClicked"
+                    />
+                </RadioGroup>
+
+
                 <!--<TextView
                     android:id="@+id/failure_reason"
                     android:layout_width="match_parent"

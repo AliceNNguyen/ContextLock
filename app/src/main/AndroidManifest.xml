@@ -38,7 +38,13 @@
         <activity
             android:name="com.example.alicenguyen.contextlock.ExperienceSamplingActivity"
             android:label="@string/feedback_survey"
+            android:exported="true"
             android:theme="@style/LightTheme"></activity>
+        <activity android:name="com.example.alicenguyen.contextlock.ExperienceSamplingActivity2"
+            android:theme="@style/LightTheme"
+            android:label="@string/feedback_survey"
+            >
+        </activity>
 
         <!--
         <service
@@ -73,10 +79,7 @@
             </intent-filter>
         </receiver>
         -->
-        <activity android:name="com.example.alicenguyen.contextlock.ExperienceSamplingActivity2"
-            android:theme="@style/LightTheme"
-            >
-        </activity>
+
     </application>
 
 </manifest>

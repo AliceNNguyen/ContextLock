@@ -119,10 +119,12 @@ public class MainActivity extends AppCompatActivity {
     boolean isNetworkEnabled = false;
 
     private boolean userpermission = false;
+    private boolean jobstarted = false;
 
 
     private ActivityRecognitionClient mActivityRecognitionClient;
     private PendingIntent mPendingIntent;
+
     //BroadcastReceiver broadcastReceiver;
 
 
@@ -148,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
         //mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setUserId();
+        initTrackingButtons();
     }
 
     /*private void registerScreenReceiver() {
@@ -204,10 +207,16 @@ public class MainActivity extends AppCompatActivity {
                     1);
             return;
         } else {
+            // Permission has already been granted
             Log.e("permission", "GPS permission granted");
             userpermission = true;
+            if(userIdInput.getText().toString().matches("")){
+                Toast.makeText(this, "Bitte ID eingeben und bestätigen", Toast.LENGTH_LONG).show();
+            }else {
+                startBackgroundServices();
+
+            }
             //getServices();
-            // Permission has already been granted
         }
     }
 
@@ -218,15 +227,13 @@ public class MainActivity extends AppCompatActivity {
             case 1: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //getServices();
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
+                    // permission was granted
+                    startBackgroundServices();
                 } else {
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(MainActivity.this, "Permission denied to access your GPS data", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Bitte GPS erlauben, um App nutzen zu können", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -680,7 +687,7 @@ public class MainActivity extends AppCompatActivity {
         return prefs.getString(COOLDOWN_KEY, "false");
     }
 
-    private void writeSurveyOpenCountertoSharedPreferences(int opencounter) {
+    public void writeSurveyOpenCountertoSharedPreferences(int opencounter) {
         SharedPreferences prefs = this.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         prefs.edit().putString(COUNTER_KEY, String.valueOf(cooldown));
     }
@@ -771,17 +778,24 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }*/
 
+    private void initTrackingButtons(){
+        startTrackingButton = findViewById(R.id.start_tracking_button);
+        stopTrackingButton = findViewById(R.id.stop_tracking_button);
+        startJobScheduler();
+        stopJobScheduler();
 
-    public void startJobScheduler(View view) {
-        view.setBackgroundColor(getResources().getColor(R.color.button_active_color));
-        checkAppPermissions();
-        ComponentName componentName = new ComponentName(this, LocationJobService.class);
+    }
+
+    public void startBackgroundServices(){
+        startTrackingButton.setBackgroundColor(getResources().getColor(R.color.button_active_color));
+        stopTrackingButton.setBackgroundResource(R.drawable.button_color_gradient);
+        Toast.makeText(getApplicationContext(), "Tracking gestartet", Toast.LENGTH_SHORT).show();
+        ComponentName componentName = new ComponentName(MainActivity.this, LocationJobService.class);
         JobInfo info = new JobInfo.Builder(123, componentName)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setPersisted(true)
                 .setPeriodic(Constants.JOB_SERVICE_INTERVAL)
                 .build();
-
 
 
         JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
@@ -791,16 +805,43 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "Job scheduling failed");
         }
-
         receiveUserActivity();
+
     }
 
-    public void stopJobScheduler(View view) {
-        view.setBackgroundColor(getResources().getColor(R.color.button_active_color));
-        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-        scheduler.cancel(123);
-        scheduler.cancel(1234);
-        Log.e(TAG, "Job cancelled");
+
+    private void startJobScheduler() {
+        startTrackingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                checkAppPermissions();
+
+            }
+        });
+
+
+
+    }
+
+
+
+    public void stopJobScheduler() {
+        stopTrackingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                stopTrackingButton.setBackgroundColor(getResources().getColor(R.color.button_active_color));
+                startTrackingButton.setBackgroundResource(R.drawable.button_color_gradient);
+
+                JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+                scheduler.cancel(123);
+                scheduler.cancel(1234);
+                Log.e(TAG, "Job cancelled");
+                Toast.makeText(getApplicationContext(), "Tracking gestoppt", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     @Override

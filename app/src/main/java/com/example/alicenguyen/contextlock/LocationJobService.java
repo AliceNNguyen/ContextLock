@@ -13,6 +13,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -47,13 +48,17 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 //import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executor;
@@ -61,6 +66,8 @@ import java.util.concurrent.Executor;
 public class LocationJobService extends JobService {
     private static final String TAG = "LocationJobService";
     private boolean jobCancelled = false;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -83,12 +90,19 @@ public class LocationJobService extends JobService {
     private int  relative_humidity = 0;
     private double ambient_temperature = 0;
     private String mainWeather = "";
+    private String city = "";
     private Number temperature = 0;
     private int humidity = 0;
     //private String userActivity = "";
     private String provider, latitude, longitude;
     private LockScreenReceiver lockScreenReceiver = new LockScreenReceiver();
     private boolean isLocked = false;
+    private int opensurveycounter;
+    private SharedPreferencesStorage sharedPreferencesStorage;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private String currentDate;
+
+
 
 
     public LocationJobService() {
@@ -98,7 +112,27 @@ public class LocationJobService extends JobService {
     public boolean onStartJob(JobParameters params) {
         Log.e(TAG, "job started");
         createNotificationChannel();
+        Date date = Calendar.getInstance().getTime();
+        String currentDate = simpleDateFormat.format(date);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        //SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.DATE_KEY, currentDate);
+        String storedDate = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.DATE_KEY);
+
+        if(currentDate.equals(storedDate)) {
+            String counter = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY);
+            opensurveycounter = Integer.parseInt(counter);
+        }else {
+            getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.COUNTER_KEY).apply();
+            String counter = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY);
+            opensurveycounter = Integer.parseInt(counter);
+            SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.DATE_KEY, currentDate);
+        }
         doBackgroundWork(params);
+
+        Log.e(TAG, "counter " + opensurveycounter);
+        Log.e(TAG, currentDate);
+        Log.e(TAG, storedDate);
 
         return true;
     }
@@ -114,7 +148,6 @@ public class LocationJobService extends JobService {
             return;
         }
 
-
         getUserLocation();
         //getUserActivity();
         Log.d(TAG, "Job finished");
@@ -129,28 +162,41 @@ public class LocationJobService extends JobService {
         }).start();*/
     }
 
+    private void openExperienceSampling() {
+        opensurveycounter++;
+        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
+        Intent intent = new Intent(this, ExperienceSamplingActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
 
 
     private void checkContextForNotification() {
         Log.d("weather description", mainWeather);
         Log.d("gps enabled", String.valueOf(isGPSEnabled));
         checkIfScreenLocked();
+        Log.e(TAG, "check counter" + opensurveycounter);
 
-        if(isLocked) {
+        if(isLocked && opensurveycounter < 6) {
             Log.e(TAG, String.valueOf(isLocked));
-            if(mainWeather.equals("Rain") && provider.equals("gps")) {
+            if(mainWeather.contains("Rain") && provider.equals("gps")) {
                 sendNotification(getString(R.string.rain), R.mipmap.raindrop_ic);
-            }else if(mainWeather.equals("Snow") && provider.equals("gps")) {
+                openExperienceSampling();
+            }else if(mainWeather.contains("Snow") && provider.equals("gps")) {
                 sendNotification(getString(R.string.snow), R.mipmap.snow_ic);
+                openExperienceSampling();
             }else if(mainWeather.contains("Drizzle") && provider.equals("gps")){
                 sendNotification(getString(R.string.rain), R.mipmap.raindrop_ic);
+                openExperienceSampling();
             }else {
                 Log.e(TAG, "Alles gut");
+                Bundle params = new Bundle();
+                params.putString("user_weather", "no notification conditions" );
+                mFirebaseAnalytics.logEvent("user_activity_notification", params);
                 //Toast.makeText(this, "Alles gut!", Toast.LENGTH_LONG).show();
             }
-            Intent intent = new Intent(this, ExperienceSamplingActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+
+
         }
 
 
@@ -188,6 +234,9 @@ public class LocationJobService extends JobService {
                             humidity = (int)response.getJSONObject("main").get("humidity");
                             temperature = (Number)response.getJSONObject("main").get("temp");
                             temperature = temperature.doubleValue();
+                            /*city = response.getJSONObject("name").toString();
+                            Log.d(TAG, "city");
+                            Log.d(TAG, city);*/
                             //TODO
                             checkContextForNotification();
                             //setContextIcon(mainWeather, temperature.doubleValue(), humidity, 0, ambient_temperature, userActivity);
@@ -261,125 +310,6 @@ public class LocationJobService extends JobService {
             }
     }
 
-    /*private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean isSuccess = false;
-            Log.e(TAG, "receiver");
-            Log.e(TAG, intent.getAction());
-            if(intent.getAction().equals(Constants.BROADCAST_DETECTED_ACTIVITY)) {
-                int type = intent.getIntExtra("type", -1);
-                int confidence = intent.getIntExtra("confidence", 0);
-                Log.e(TAG, "detected activity " + String.valueOf(type));
-                handleUserActivity(type, confidence);
-
-            }
-            /*if(intent.hasExtra(IS_SUCCESS)) {
-                isSuccess = intent.getBooleanExtra(IS_SUCCESS, false);
-            }*/
-            //LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
-            //jobFinished(mParams, !isSuccess);
-    /*    }
-    };*/
-
-    /*private void handleUserActivity(int type, int confidence) {
-        userActivity = getString(R.string.activity_unknown);
-        //int icon = R.drawable.ic_still;
-        switch (type) {
-            case DetectedActivity.IN_VEHICLE: {
-                userActivity = getString(R.string.activity_in_vehicle);
-                //icon = R.drawable.ic_driving;
-                break;
-            }
-            case DetectedActivity.ON_BICYCLE: {
-                userActivity = getString(R.string.activity_on_bicycle);
-                //icon = R.drawable.ic_on_bicycle;
-                break;
-            }
-            case DetectedActivity.ON_FOOT: {
-                userActivity = getString(R.string.activity_on_foot);
-                //icon = R.drawable.ic_walking;
-                break;
-            }
-            case DetectedActivity.RUNNING: {
-                userActivity = getString(R.string.activity_running);
-                //icon = R.drawable.ic_running;
-                break;
-            }
-            case DetectedActivity.STILL: {
-                userActivity = getString(R.string.activity_still);
-                break;
-            }
-            case DetectedActivity.TILTING: {
-                userActivity = getString(R.string.activity_tilting);
-                //icon = R.drawable.ic_tilting;
-                break;
-            }
-            case DetectedActivity.WALKING: {
-                userActivity = getString(R.string.activity_walking);
-                //icon = R.drawable.ic_walking;
-                break;
-            }
-            case DetectedActivity.UNKNOWN: {
-                userActivity = getString(R.string.activity_unknown);
-                break;
-            }
-        }
-
-        Log.d(TAG, "User activity: " + userActivity + ", Confidence: " + confidence);
-        Bundle bundle = new Bundle();
-        bundle.putString("user_activity", String.valueOf(userActivity));
-        //mFirebaseAnalytics.logEvent("user_activity", bundle);
-
-        if (confidence > Constants.CONFIDENCE) {
-            //txtActivity.setText(label);
-            //txtConfidence.setText("Confidence: " + confidence);
-            //imgActivity.setImageResource(icon);
-
-            Toast.makeText(this, userActivity, Toast.LENGTH_LONG).show();
-            checkContextForNotification();
-            //setContextIcon(mainWeather, temperature.doubleValue(), humidity, relative_humidity, ambient_temperature, userActivity);
-        }
-    }*/
-
-
-    private void getUserActivity() {
-        //mActivityRecognitionClient = new ActivityRecognitionClient(this);
-        //mIntentService = new Intent(this, DetectedActivitiesIntentService.class);
-        /*LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-                new IntentFilter(Constants.BROADCAST_DETECTED_ACTIVITY));*/
-
-        /*broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Log.e(TAG, "on receive");
-                Log.e(TAG, intent.getAction());
-                if (intent.getAction().equals(Constants.BROADCAST_DETECTED_ACTIVITY)) {
-                    int type = intent.getIntExtra("type", -1);
-                    int confidence = intent.getIntExtra("confidence", 0);
-                    Log.e(TAG, String.valueOf(type));
-
-                    //handleUserActivity(type, confidence);
-                }
-            }
-        };
-        startTracking();*/
-        /*IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constants.BROADCAST_DETECTED_ACTIVITY);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, intentFilter);
-
-        Intent intent = new Intent(this, BackgroundDetectedActivitiesService.class);
-        startService(intent);*/
-        //startService(new Intent(this, DetectedActivitiesIntentService.class));
-    }
-
-    /*private void startTracking() {
-        Log.e("start tracking", "start");
-        Intent intent1 = new Intent(this, BackgroundDetectedActivitiesService.class);
-        startService(intent1);
-    }*/
-
-
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -398,7 +328,7 @@ public class LocationJobService extends JobService {
         }
     }
 
-    private void sendNotification(String contextDesscription, int icon) {
+    private void sendNotification(String contextDescription, int icon) {
         Log.e("notfication", "send");
 
         int notificationId = 1;
@@ -409,10 +339,10 @@ public class LocationJobService extends JobService {
                 .setSmallIcon(R.drawable.ic_fingerprint)
                 .setLargeIcon(bitmap)
                 .setContentTitle(getString(R.string.notification_title))
-                .setContentText(contextDesscription +  " " + getString(R.string.notification_description))
+                .setContentText(contextDescription +  " " + getString(R.string.notification_description))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(contextDesscription + " " +  getString(R.string.notification_description)))
+                        .bigText(contextDescription + " " +  getString(R.string.notification_description)))
                 //.setStyle(new NotificationCompat.BigPictureStyle()
                 //.bigPicture(bitmap).setSummaryText("message"))
                 // Set the intent that will fire when the user taps the notification
@@ -422,6 +352,14 @@ public class LocationJobService extends JobService {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         // notificationId is a unique int for each notification that you must define
         notificationManager.notify(notificationId, mBuilder.build());
+
+        Bundle params = new Bundle();
+        params.putString("weather", contextDescription );
+        mFirebaseAnalytics.logEvent("user_location_notification", params);
+    }
+
+    private void setAlarmManagerForNotification() {
+
     }
 
 

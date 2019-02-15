@@ -10,12 +10,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.google.firebase.database.DatabaseReference;
 //import com.google.firebase.database.FirebaseDatabase;
+
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -32,13 +35,14 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
 
     private TextView predictionStronglyAgree, predictionAgree, predictionNeutral, predictionDisagree, predictionStronglyDisagree;
     private TextView annoyanceStronglyAgree, annoyanceAgree, annoyanceNeutral, annoyanceDisagree, annoyanceStronglyDisagree;
-    private TextView reasonableStronglyAgree,reasonableAgree, reasonableNeutral, reasonableDisagree, reasonableStronglyDisagree;
+    private TextView reasonableStronglyAgree, reasonableAgree, reasonableNeutral, reasonableDisagree, reasonableStronglyDisagree;
 
-    private EditText locationEditText;
+    private EditText locationEditText, reasonEditext;
 
     private int annoyanceValue, predictionValue, reasonableValue;
     private String locationValue;
-    private String locationFreeText = "";
+    private String reasonFreeText = "";
+    private FirebaseAnalytics mFirebaseAnalytics;
 
 
     /*private FirebaseDatabase mDatabase;
@@ -46,6 +50,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
     private DatabaseReference annoyanceRef;
     private DatabaseReference mDatabaseReference;*/
     private String userid;
+    private String switchValue;
 
 
     private Date currenttime;
@@ -55,6 +60,8 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_experience_sampling);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
 
         //mDatabase = FirebaseDatabase.getInstance();
         //mDatabaseReference = FirebaseDatabase.getInstance().getReference();
@@ -73,12 +80,14 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         setPredictionSeekbarListener();
         setAnnoyanceSeekbarListener();
         setReasonableSeekbarListener();
+        //getEditText();
 
         initNextButton();
 
         //getLocationEditText();
         //initSendButton();
     }
+
 
     private void initNextButton() {
         Button nextButton = findViewById(R.id.next_button);
@@ -89,8 +98,10 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
                 extras.putInt("predictionValue", predictionValue);
                 extras.putInt("annoyanceValue", annoyanceValue);
                 extras.putInt("reasonableValue", reasonableValue);
+                extras.putString("switchValue", switchValue);
+                extras.putString("reasonFreeText", reasonEditext.getText().toString());
                 //startActivity(new Intent(ExperienceSamplingActivity.this, ExperienceSamplingActivity2.class));
-                Intent i =new Intent(ExperienceSamplingActivity.this, ExperienceSamplingActivity2.class);
+                Intent i = new Intent(ExperienceSamplingActivity.this, ExperienceSamplingActivity2.class);
                 i.putExtras(extras);
                 startActivity(i);
             }
@@ -122,13 +133,13 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         locationFreeText = locationEditText.getText().toString();
     }*/
 
-    private void setReasonableSeekbarListener(){
+    private void setReasonableSeekbarListener() {
         reasonableSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 reasonableValue = progress;
                 //Toast.makeText(ExperienceSamplingActivity.this, String.valueOf(progress), Toast.LENGTH_SHORT).show();
-                switch (progress){
+                switch (progress) {
                     case (0):
                         reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
                         reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
@@ -164,13 +175,6 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
                         reasonableAgree.setTextColor(getResources().getColor(R.color.teal));
                         reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
                         break;
-                    case (5):
-                        reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableAgree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.teal));
-                        break;
                     default:
                         //This code is executed when value of variable 'day'
                         //doesn't match with any of case above
@@ -186,7 +190,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                seekBar.getThumb().setColorFilter(getResources().getColor(R.color.teal),  PorterDuff.Mode.SRC);
+                seekBar.getThumb().setColorFilter(getResources().getColor(R.color.teal), PorterDuff.Mode.SRC);
             }
 
             @Override
@@ -197,12 +201,12 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
 
     }
 
-    private void setAnnoyanceSeekbarListener(){
+    private void setAnnoyanceSeekbarListener() {
         annoyanceSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 annoyanceValue = progress;
-                switch (progress){
+                switch (progress) {
                     case (0):
                         annoyanceStronglyDisagree.setTextColor(getResources().getColor(R.color.teal));
                         annoyanceDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
@@ -252,7 +256,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                seekBar.getThumb().setColorFilter(getResources().getColor(R.color.teal),  PorterDuff.Mode.SRC);
+                seekBar.getThumb().setColorFilter(getResources().getColor(R.color.teal), PorterDuff.Mode.SRC);
 
             }
 
@@ -263,13 +267,13 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         });
     }
 
-    private void setPredictionSeekbarListener(){
+    private void setPredictionSeekbarListener() {
         predictionSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 predictionValue = progress;
                 //Toast.makeText(ExperienceSamplingActivity.this, String.valueOf(progress), Toast.LENGTH_SHORT).show();
-                switch (progress){
+                switch (progress) {
                     case (0):
                         predictionStronglyDisagree.setTextColor(getResources().getColor(R.color.teal));
                         predictionDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
@@ -321,7 +325,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                seekBar.getThumb().setColorFilter(getResources().getColor(R.color.teal),  PorterDuff.Mode.SRC);
+                seekBar.getThumb().setColorFilter(getResources().getColor(R.color.teal), PorterDuff.Mode.SRC);
 
             }
 
@@ -336,7 +340,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
     public void onPredictionRadioButtonClicked(View view) {
     }
 
-    private void initViewElements(){
+    private void initViewElements() {
         predictionSeekbar = findViewById(R.id.seekBarPrediction);
         reasonableSeekbar = findViewById(R.id.seekBarReasonable);
         annoyanceSeekbar = findViewById(R.id.seekBarAnnoyance);
@@ -360,18 +364,43 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         reasonableStronglyAgree = findViewById(R.id.reasonable_strongly_agree);
 
         //sendButton = findViewById(R.id.send_button);
-        locationEditText = findViewById(R.id.location_freetext);
+        reasonEditext = findViewById(R.id.reasonEdittext);
     }
 
-    private void initNotNowButton(){
+    private void initNotNowButton() {
         notNowButton = findViewById(R.id.not_now_button);
         notNowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Bundle params = new Bundle();
+                params.putString("not_now_click", "true");
+                mFirebaseAnalytics.logEvent("not_now_click", params);
                 finishAffinity();
             }
         });
+
+
     }
 
 
+    public void onSwitchButtonClicked(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+
+        RadioButton trueRadioButton = findViewById(R.id.lockswitch_true);
+        RadioButton falseRadioButton = findViewById(R.id.lockswitch_false);
+
+
+        // Check which radio button was clicked
+        switch (view.getId()) {
+            case R.id.lockswitch_true:
+                if (checked)
+                    switchValue = trueRadioButton.getText().toString();
+
+                break;
+            case R.id.lockswitch_false:
+                if (checked)
+                    switchValue = falseRadioButton.getText().toString();
+                break;
+        }
+    }
 }
