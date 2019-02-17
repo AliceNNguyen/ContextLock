@@ -232,11 +232,11 @@ public class UserActivityJobIntentService extends JobIntentService {
             } else if (userActivity.equals(getString(R.string.activity_in_vehicle))) {
                 sendNotification(getString(R.string.in_vehicle), R.mipmap.publictransport_ic);
                 openExperienceSampling();
-            }else if(userActivity.equals(getString(R.string.activity_still))) {
+           /* }else if(userActivity.equals(getString(R.string.activity_still))) {
                 Log.e(TAG, "context still");
 
                 sendNotification(getString(R.string.in_vehicle), R.mipmap.publictransport_ic);
-                openExperienceSampling();
+                openExperienceSampling();*/
 
             } else {
                 Log.e(TAG, "no conditions met");
