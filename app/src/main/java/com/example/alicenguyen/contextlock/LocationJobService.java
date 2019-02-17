@@ -59,6 +59,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executor;
@@ -101,6 +102,7 @@ public class LocationJobService extends JobService {
     private SharedPreferencesStorage sharedPreferencesStorage;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private String currentDate;
+    private String cooldown;
 
 
 
@@ -118,6 +120,9 @@ public class LocationJobService extends JobService {
 
         //SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.DATE_KEY, currentDate);
         String storedDate = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.DATE_KEY);
+
+        Log.e(TAG, currentDate);
+        Log.e(TAG, storedDate);
 
         if(currentDate.equals(storedDate)) {
             String counter = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY);
@@ -162,12 +167,37 @@ public class LocationJobService extends JobService {
         }).start();*/
     }
 
+
+
+    //TODO: open actvity 5 times a day RESET Counter each new day
+
+
+
     private void openExperienceSampling() {
-        opensurveycounter++;
-        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
-        Intent intent = new Intent(this, ExperienceSamplingActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        //opensurveycounter++;
+
+        Random generator = new Random();
+        int randomInt = generator.nextInt(2-0) + 0;
+        Log.d("random", String.valueOf(randomInt));
+
+        cooldown = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY);
+
+        Log.e("cooldown", String.valueOf(cooldown));
+        //survey_open_counter = Integer.parseInt(getSurveyOpenCounterfromSharedPreferences());
+        if(randomInt == 1) {
+            if(!cooldown.equals("true")) {
+                opensurveycounter++;
+                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
+                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "true");
+
+                Intent intent = new Intent(this, ExperienceSamplingActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        }
+        if(randomInt == 0 && cooldown.equals("true")) {
+            SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
+        }
     }
 
 
@@ -177,7 +207,7 @@ public class LocationJobService extends JobService {
         checkIfScreenLocked();
         Log.e(TAG, "check counter" + opensurveycounter);
 
-        if(isLocked && opensurveycounter < 6) {
+        if(isLocked && opensurveycounter < Constants.SURVEY_OPEN_NUMBER) {
             Log.e(TAG, String.valueOf(isLocked));
             if(mainWeather.contains("Rain") && provider.equals("gps")) {
                 sendNotification(getString(R.string.rain), R.mipmap.raindrop_ic);
@@ -185,8 +215,11 @@ public class LocationJobService extends JobService {
             }else if(mainWeather.contains("Snow") && provider.equals("gps")) {
                 sendNotification(getString(R.string.snow), R.mipmap.snow_ic);
                 openExperienceSampling();
-            }else if(mainWeather.contains("Drizzle") && provider.equals("gps")){
+            }else if(mainWeather.contains("Drizzle") && provider.equals("gps")) {
                 sendNotification(getString(R.string.rain), R.mipmap.raindrop_ic);
+                openExperienceSampling();
+            }else if(humidity > 85 && provider.equals("gps")){
+                sendNotification(getString(R.string.humdidity), R.mipmap.humidity_ic);
                 openExperienceSampling();
             }else {
                 Log.e(TAG, "Alles gut");
@@ -204,7 +237,7 @@ public class LocationJobService extends JobService {
 
     private void checkIfScreenLocked() {
         KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        if( myKM.inKeyguardRestrictedInputMode()) {
+        if( myKM.isKeyguardLocked()) {
             isLocked = true;
             Log.e(TAG, "device is locked");
             //it is locked
@@ -268,8 +301,8 @@ public class LocationJobService extends JobService {
                 getWeatherData();
                 Log.e("gps provider gps", location.getProvider());
                 Log.e(TAG, longitude + " " + latitude);
-                Toast.makeText(getApplicationContext(),
-                        "Successfully requested location updates " + latitude + " " + longitude, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),
+                //        "Successfully requested location updates " + latitude + " " + longitude, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -357,11 +390,4 @@ public class LocationJobService extends JobService {
         params.putString("weather", contextDescription );
         mFirebaseAnalytics.logEvent("user_location_notification", params);
     }
-
-    private void setAlarmManagerForNotification() {
-
-    }
-
-
-
 }

@@ -1,14 +1,26 @@
 package com.example.alicenguyen.contextlock;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.android.gms.location.ActivityRecognitionClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 public class ActivityBroadcastReceiver extends BroadcastReceiver {
+    private static final String TAG = "BroadcastReceiver";
     public static final String EXTRA_SERVICE_CLASS = "extra_service_class";
     public static final String EXTRA_JOB_ID = "job_id";
+    private ActivityRecognitionClient mActivityRecognitionClient;
+    private PendingIntent mPendingIntent;
 
     /**
      * @param intent an Intent meant for a {@link android.support.v4.app.JobIntentService}
@@ -37,6 +49,7 @@ public class ActivityBroadcastReceiver extends BroadcastReceiver {
 
             // change intent's class to its intended service's class
             String service_class_name = intent.getStringExtra(EXTRA_SERVICE_CLASS);
+            Log.e("broadcastreceiver", service_class_name);
 
             if (service_class_name == null)
                 throw new Exception("No service class found in extras");
@@ -55,14 +68,60 @@ public class ActivityBroadcastReceiver extends BroadcastReceiver {
 
             int job_id = intent.getIntExtra(EXTRA_JOB_ID, 0);
 
+            Intent i =new Intent(context, ActivityBroadcastReceiver.class);
+            mPendingIntent= PendingIntent.getBroadcast(context, 0, i, 0);
+            mActivityRecognitionClient = new ActivityRecognitionClient(context);
+            requestActivityUpdatesHandler();
 
             // start the service
+            //if(intent.getAction().equals
             JobIntentService.enqueueWork(context, service_class, job_id, intent);
+            Log.e("broadcastreceiver", "enqueue work");
 
 
         } catch (Exception e) {
             System.err.println("Error starting service from receiver: " + e.getMessage());
         }
+    }
+
+    public void requestActivityUpdatesHandler() {
+        Task<Void> task = mActivityRecognitionClient.requestActivityUpdates(
+                Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
+                mPendingIntent);
+
+        task.addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                Log.e(TAG, "sucess update activities");
+
+            }
+        });
+
+        task.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "failed update activities");
+            }
+        });
+    }
+
+    public void removeActivityUpdatesHandler() {
+        Task<Void> task = mActivityRecognitionClient.removeActivityUpdates(
+                mPendingIntent);
+        task.addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                Log.e(TAG, "successful update activity");
+            }
+        });
+
+        task.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Failed to remove activity updates!");
+
+            }
+        });
     }
 
 }

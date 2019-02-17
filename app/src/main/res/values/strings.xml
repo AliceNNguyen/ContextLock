@@ -40,7 +40,7 @@
     <string name="activity_still">still</string>
     <string name="activity_tilting">tilting</string>
     <string name="activity_walking">walking</string>
-    <string name="user_location_string">Ich bin gerade...</string>
+    <string name="user_location_string">Ich bin gerade ...</string>
     <string name="reasonable_switch">Der Wechsel zu PIN empfand ich als sinnvoll</string>
     <string name="public_transportation">in öffentlichem Transportmittel (z.B. Bus, Zug, U-Bahn, S-Bahn)</string>
     <string name="at_work">in der Arbeit</string>
@@ -60,9 +60,10 @@
     <string name="rain">Es regnet!</string>
     <string name="snow">Es schneit!</string>
     <string name="wet">Es ist nass!</string>
+    <string name="humdidity">Es ist feucht!</string>
     <string name="running">Sport erkannt!</string>
     <string name="in_vehicle">Fahren erkannt!</string>
-    <string name="notification_title">Benutze PIN!</string>
+    <string name="notification_title">Benutze PIN/Pattern!</string>
     <string name="notification_description">Dein Fingerabdruck wird möglicherweise nicht erkannt.</string>
     <string name="stop_tracking">Tracking stoppen</string>
     <string name="start_tracking">Tracking starten</string>

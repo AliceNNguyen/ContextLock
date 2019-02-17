@@ -30,10 +30,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 public class UserActivityJobIntentService extends JobIntentService {
     private static final String TAG = "UserActivityJobIntent";
-    private static int JOB_ID = 12345;
+    private static int JOB_ID = 1234;
 
     private ActivityRecognitionClient mActivityRecognitionClient;
     private String userActivity = "unknown";
@@ -41,6 +42,7 @@ public class UserActivityJobIntentService extends JobIntentService {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private int opensurveycounter;
     private FirebaseAnalytics mFirebaseAnalytics;
+    private String cooldown;
 
 
     static void enqueueWork(Context context, Intent activity) {
@@ -54,6 +56,7 @@ public class UserActivityJobIntentService extends JobIntentService {
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
+        Log.e(TAG, "onhandlework");
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         createNotificationChannel();
@@ -124,10 +127,6 @@ public class UserActivityJobIntentService extends JobIntentService {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(contextDescription + " " +  getString(R.string.notification_description)))
-                //.setStyle(new NotificationCompat.BigPictureStyle()
-                //.bigPicture(bitmap).setSummaryText("message"))
-                // Set the intent that will fire when the user taps the notification
-                //.setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
@@ -184,42 +183,67 @@ public class UserActivityJobIntentService extends JobIntentService {
         }
 
         Log.d(TAG, "User activity: " + userActivity + ", Confidence: " + confidence);
-        //Bundle bundle = new Bundle();
-        //bundle.putString("user_activity", String.valueOf(userActivity));
-        //mFirebaseAnalytics.logEvent("user_activity", bundle);
+        Bundle bundle = new Bundle();
+        bundle.putString("user_activity", userActivity);
+        bundle.putInt("confidence", confidence);
+        mFirebaseAnalytics.logEvent("user_activity_general", bundle);
 
         if (confidence > Constants.CONFIDENCE) {
-            //txtActivity.setText(label);
-            //txtConfidence.setText("Confidence: " + confidence);
-            //imgActivity.setImageResource(icon);
-
-            //Toast.makeText(this, userActivity, Toast.LENGTH_LONG).show();
             checkContextForNotification();
-            //setContextIcon(mainWeather, temperature.doubleValue(), humidity, relative_humidity, ambient_temperature, userActivity);
         }
     }
 
+
     private void openExperienceSampling() {
-        opensurveycounter++;
-        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
-        Intent intent = new Intent(this, ExperienceSamplingActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        //opensurveycounter++;
+
+        Random generator = new Random();
+        int randomInt = generator.nextInt(2-0) + 0;
+        Log.d("random", String.valueOf(randomInt));
+
+        cooldown = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY);
+
+        Log.e("cooldown", String.valueOf(cooldown));
+        //survey_open_counter = Integer.parseInt(getSurveyOpenCounterfromSharedPreferences());
+        if(randomInt == 1) {
+            if(!cooldown.equals("true")) {
+                opensurveycounter++;
+                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
+                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "true");
+
+                Intent intent = new Intent(this, ExperienceSamplingActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        }
+        if(randomInt == 0 && cooldown.equals("true")) {
+            SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
+        }
     }
+
 
     private void checkContextForNotification() {
         Log.e(TAG, userActivity);
         checkIfScreenLocked();
-        if(isLocked) {
+        if(isLocked && opensurveycounter < Constants.SURVEY_OPEN_NUMBER) {
             if (userActivity.equals(getString(R.string.activity_running))) {
                 sendNotification(getString(R.string.running), R.mipmap.running_ic);
                 openExperienceSampling();
             } else if (userActivity.equals(getString(R.string.activity_in_vehicle))) {
                 sendNotification(getString(R.string.in_vehicle), R.mipmap.publictransport_ic);
                 openExperienceSampling();
+            }else if(userActivity.equals(getString(R.string.activity_still))) {
+                Log.e(TAG, "context still");
+
+                sendNotification(getString(R.string.in_vehicle), R.mipmap.publictransport_ic);
+                openExperienceSampling();
+
             } else {
                 Log.e(TAG, "no conditions met");
-                //Toast.makeText(this, "Alles gut!", Toast.LENGTH_LONG).show();
+                Bundle bundle = new Bundle();
+                bundle.putString("user_activity", String.valueOf("no activity conditions met"));
+                mFirebaseAnalytics.logEvent("user_activity", bundle);
+
             }
 
         }
@@ -227,7 +251,7 @@ public class UserActivityJobIntentService extends JobIntentService {
 
     private void checkIfScreenLocked() {
         KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        if( myKM.inKeyguardRestrictedInputMode()) {
+        if( myKM.isKeyguardLocked()) {
             isLocked = true;
             Log.e(TAG, "device is locked");
             //it is locked

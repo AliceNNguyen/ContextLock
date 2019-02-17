@@ -61,12 +61,6 @@
         <!--<service android:name=".UserActivityJobService"
             android:permission="android.permission.BIND_JOB_SERVICE"/>-->
         <receiver android:name=".ActivityBroadcastReceiver" />
-        <receiver android:name=".LockScreenReceiver">
-            <!--<intent-filter>
-                <action android:name="android.intent.action.USER_PRESENT" />
-                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
-            </intent-filter>-->
-        </receiver>
 
 
         <!--

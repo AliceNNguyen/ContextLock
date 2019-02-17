@@ -124,6 +124,12 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityRecognitionClient mActivityRecognitionClient;
     private PendingIntent mPendingIntent;
+    private ActivityBroadcastReceiver mActivityBroadcastReceiver;
+    private IntentFilter intentFilter;
+    boolean isRegistered = false;
+
+    private LocalBroadcastManager localBroadcastManager;
+    private SharedPreferences sharedPreferences;
 
     //BroadcastReceiver broadcastReceiver;
 
@@ -136,30 +142,36 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //registerScreenReceiver();
-
-        //getSensors();
-        //getUserLocation();
-        //createNotificationChannel();
-        //getUserActivity();
-        //getLocationService();
-        //getServices();
-        //getLocation();
-
 
 
         //mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         setUserId();
         initTrackingButtons();
-    }
+        /*mActivityBroadcastReceiver = new ActivityBroadcastReceiver();
+        intentFilter = new IntentFilter();*/
 
-    /*private void registerScreenReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
-        //intentFilter.addAction("android.intent.action.NEW_OUTGOING_CALL");
-        intentFilter.addAction("android.intent.action.USER_PRESENT");
-        intentFilter.addAction("android.intent.action.ACTION_SHUTDOWN");
-        this.registerReceiver(broadcastReceiver, intentFilter);
-    }*/
+        /*try {
+            mActivityBroadcastReceiver = new ActivityBroadcastReceiver();
+            intentFilter = new IntentFilter();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+        mActivityBroadcastReceiver = new ActivityBroadcastReceiver();
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(Constants.BROADCAST_DETECTED_ACTIVITY);
+        registerReceiver(mActivityBroadcastReceiver, intentFilter);
+       /* if(!isRegistered){
+            registerReceiver(mActivityBroadcastReceiver, intentFilter);
+            isRegistered = true;
+        }*/
+        /*if (mActivityBroadcastReceiver == null) {
+            mActivityBroadcastReceiver = new ActivityBroadcastReceiver();
+            intentFilter = new IntentFilter();
+            //intentFilter.addAction(Constants.BROADCAST_DETECTED_ACTIVITY);
+            registerReceiver(mActivityBroadcastReceiver, intentFilter);
+            //Log.e(TAG, "onResume");
+        }*/
+    }
 
 
 
@@ -210,7 +222,8 @@ public class MainActivity extends AppCompatActivity {
             // Permission has already been granted
             Log.e("permission", "GPS permission granted");
             userpermission = true;
-            if(userIdInput.getText().toString().matches("")){
+            final String id = getIDfromSharedPreferences();
+            if(id.equals("")){
                 Toast.makeText(this, "Bitte ID eingeben und bestätigen", Toast.LENGTH_LONG).show();
             }else {
                 startBackgroundServices();
@@ -228,7 +241,14 @@ public class MainActivity extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted
-                    startBackgroundServices();
+                    final String id = getIDfromSharedPreferences();
+                    if(id.equals("")){
+                        Toast.makeText(this, "Bitte ID eingeben und bestätigen", Toast.LENGTH_LONG).show();
+                    }else {
+                        startBackgroundServices();
+
+                    }
+                    //startBackgroundServices();
                 } else {
 
                     // permission denied, boo! Disable the
@@ -244,14 +264,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //TODO
-    /*private void handleUserLocation(String longitude, String latitude) {
-        if(!longitude.equals("") && !latitude.equals("")) {
-            Log.d("server", "weather");
-            getWeatherData(longitude, latitude);
-        }
-
-    }*/
 
     //getLocationService()
     /*private void getServices(){
@@ -318,65 +330,7 @@ public class MainActivity extends AppCompatActivity {
         startTracking();
     }*/
 
-    /*private void handleUserActivity(int type, int confidence) {
-        userActivity = getString(R.string.activity_unknown);
-        //int icon = R.drawable.ic_still;
-        switch (type) {
-            case DetectedActivity.IN_VEHICLE: {
-                userActivity = getString(R.string.activity_in_vehicle);
-                //icon = R.drawable.ic_driving;
-                break;
-            }
-            case DetectedActivity.ON_BICYCLE: {
-                userActivity = getString(R.string.activity_on_bicycle);
-                //icon = R.drawable.ic_on_bicycle;
-                break;
-            }
-            case DetectedActivity.ON_FOOT: {
-                userActivity = getString(R.string.activity_on_foot);
-                //icon = R.drawable.ic_walking;
-                break;
-            }
-            case DetectedActivity.RUNNING: {
-                userActivity = getString(R.string.activity_running);
-                //icon = R.drawable.ic_running;
-                break;
-            }
-            case DetectedActivity.STILL: {
-                userActivity = getString(R.string.activity_still);
-                break;
-            }
-            case DetectedActivity.TILTING: {
-                userActivity = getString(R.string.activity_tilting);
-                //icon = R.drawable.ic_tilting;
-                break;
-            }
-            case DetectedActivity.WALKING: {
-                userActivity = getString(R.string.activity_walking);
-                //icon = R.drawable.ic_walking;
-                break;
-            }
-            case DetectedActivity.UNKNOWN: {
-                userActivity = getString(R.string.activity_unknown);
-                break;
-            }
-        }
 
-        Log.d(TAG, "User activity: " + userActivity + ", Confidence: " + confidence);
-        Bundle bundle = new Bundle();
-        bundle.putString("user_activity", String.valueOf(userActivity));
-        mFirebaseAnalytics.logEvent("user_activity", bundle);
-
-        if (confidence > Constants.CONFIDENCE) {
-            //txtActivity.setText(label);
-            //txtConfidence.setText("Confidence: " + confidence);
-            //imgActivity.setImageResource(icon);
-
-            Toast.makeText(this, userActivity, Toast.LENGTH_LONG).show();
-            checkContextForNotification();
-            //setContextIcon(mainWeather, temperature.doubleValue(), humidity, relative_humidity, ambient_temperature, userActivity);
-        }
-    }*/
 
     /*@Override
     protected void onResume() {
@@ -413,185 +367,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent1 = new Intent(MainActivity.this, BackgroundDetectedActivitiesService.class);
         startService(intent1);
     }*/
-
-    /*private void getUserLocation() {
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                String lon = "" + location.getLongitude();
-                String lat = "" + location.getLatitude();
-
-
-                Log.d("gps provider gps", location.getProvider());
-                getWeatherData(lon, lat);
-
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        // getting GPS status
-        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        // getting network status
-        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        Log.d("network enabled", String.valueOf(isNetworkEnabled));
-        Log.d("gps enabled", String.valueOf(isGPSEnabled));
-
-        //check for permission
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1);
-
-            // ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            // public void onRequestPermissionsResult(int requestCode, String[] permissions int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
-            Toast.makeText(this, "Not Enough Permission", Toast.LENGTH_SHORT).show();
-            return;
-        }else{ //if permission enabled
-            if(isNetworkEnabled) {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, locationListener);
-            }
-            if(isGPSEnabled)  {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, locationListener);
-            }
-        }
-    }*/
-
-    /*private void getWeatherData(String longitude, String latitude) {
-        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-        String url = WEATHER_URL + latitude + "&lon=" + longitude + "&appid=" + OPEN_WEATHER_API_KEY;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("response json", response.toString());
-                        try {
-                            //Log.d("json humidity", response.getJSONObject("weather").toString());
-                            JSONArray mainWeatherArray = response.getJSONArray("weather");
-                            //JSONObject mainWeather = mainWeatherArray.getJSONObject(0);
-                            //String main = mainWeather.getString("main");
-                            Log.d("main weather main", mainWeatherArray.getJSONObject(0).get("main").toString());
-                            mainWeather = mainWeatherArray.getJSONObject(0).get("main").toString();
-                            humidity = (int)response.getJSONObject("main").get("humidity");
-                            temperature = (Number)response.getJSONObject("main").get("temp");
-                            temperature = temperature.doubleValue();
-                            checkContextForNotification();
-                            //setContextIcon(mainWeather, temperature.doubleValue(), humidity, 0, ambient_temperature, userActivity);
-                        } catch (JSONException e) {
-                            Log.d("json exception","json exception log");
-                        }
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-                        //Toast toast = Toast.makeText(MainActivity.this, "no response", Toast.LENGTH_LONG);
-                        //toast.show();
-                    }
-                });
-        queue.add(jsonObjectRequest);
-    }*/
-
-    /*private void checkContextForNotification() {
-        Log.d("weather description", mainWeather);
-        Log.d("gps enabled", String.valueOf(isGPSEnabled));
-        Log.e("user activity", userActivity);
-
-        if(mainWeather.equals("Rain") && provider.equals("gps")) {
-            Toast.makeText(MainActivity.this, "Regen", Toast.LENGTH_LONG).show();
-            sendNotification(getString(R.string.rain), R.mipmap.raindrop_ic);
-        }else if(mainWeather.equals("Snow") && provider.equals("gps")) {
-            Toast.makeText(MainActivity.this, "Schnee", Toast.LENGTH_LONG).show();
-            sendNotification(getString(R.string.snow), R.mipmap.snow_ic);
-        }else if(mainWeather.contains("Drizzle") && provider.equals("gps")){
-            sendNotification(getString(R.string.rain), R.mipmap.raindrop_ic);
-        } else if(userActivity.equals("still")) {
-            Toast.makeText(MainActivity.this, "still", Toast.LENGTH_LONG).show();
-            sendNotification(getString(R.string.running), R.mipmap.running_ic);
-        }else if(userActivity.equals("in_vehicle")){
-            sendNotification(getString(R.string.in_vehicle), R.mipmap.publictransport_ic);
-
-        }else {
-            Toast.makeText(MainActivity.this, "Alles gut!", Toast.LENGTH_LONG).show();
-        }
-    }*/
-
-
-    /*private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }*/
-
-    /*private void sendNotification(String contextDesscription, int icon) {
-        Log.e("notfication", "send");
-
-        int notificationId = 1;
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),
-                icon);
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_fingerprint)
-                .setLargeIcon(bitmap)
-                .setContentTitle(getString(R.string.notification_title))
-                .setContentText(contextDesscription +  " " + getString(R.string.notification_description))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                .bigText(contextDesscription + " " +  getString(R.string.notification_description)))
-                //.setStyle(new NotificationCompat.BigPictureStyle()
-                //.bigPicture(bitmap).setSummaryText("message"))
-                // Set the intent that will fire when the user taps the notification
-                //.setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(notificationId, mBuilder.build());
-    }*/
-
-
-    //Latitude: 37.4220
-    //Longitude: -122.0840
-
-    //Amsterdam
-    //Latitude: 52.3792
-    //Longitude: 4.8994
 
 
     private final SensorEventListener mSensorEventListener
@@ -657,7 +432,6 @@ public class MainActivity extends AppCompatActivity {
             mSensorManager.registerListener(mSensorEventListener, light,
                     SensorManager.SENSOR_DELAY_UI);
         } else {
-            //getLocation();
             Toast.makeText(MainActivity.this, "no light sensor", Toast.LENGTH_SHORT).show();
         }
         if (mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null) {
@@ -670,32 +444,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    private String getPinFromSharedPreferences() {
-        SharedPreferences prefs = this.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        return prefs.getString(KEY_PIN, "");
-    }
-
-
-    private void writeCooldowntoSharedPreferences(boolean cooldown) {
-        SharedPreferences prefs = this.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        prefs.edit().putString(COOLDOWN_KEY, String.valueOf(cooldown));
-    }
-
-    public String getCooldownfromSharedPreferences(){
-        SharedPreferences prefs = this.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        return prefs.getString(COOLDOWN_KEY, "false");
-    }
-
-    public void writeSurveyOpenCountertoSharedPreferences(int opencounter) {
-        SharedPreferences prefs = this.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        prefs.edit().putString(COUNTER_KEY, String.valueOf(cooldown));
-    }
-
-    public String getSurveyOpenCounterfromSharedPreferences(){
-        SharedPreferences prefs = this.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        return prefs.getString(COUNTER_KEY, "0");
-    }
 
     private void getUserActivity() {
         mActivityRecognitionClient = new ActivityRecognitionClient(this);
@@ -711,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
         task.addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void result) {
-                Log.e("broadcast updates", "sucess update activities");
+                Log.e(TAG, "sucess update activities");
 
             }
         });
@@ -719,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
         task.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.e("broadcas updates", "failed update activities");
+                Log.e(TAG, "failed update activities");
             }
         });
     }
@@ -747,15 +495,68 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /*@Override
+    protected void onStart() {
+        super.onStart();
+        Log.e(TAG, "onStart");
+        //Log.e(TAG, localBroadcastManager.toString());
+
+        if(mActivityBroadcastReceiver == null) {
+            Log.e(TAG, "receiver registered");
+            mActivityBroadcastReceiver = new ActivityBroadcastReceiver();
+            intentFilter = new IntentFilter();
+            registerReceiver(mActivityBroadcastReceiver, intentFilter);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.e(TAG, "onStop");
+        if (mActivityBroadcastReceiver != null) {
+            Log.e(TAG, "receiver unregistered");
+            unregisterReceiver(mActivityBroadcastReceiver);
+            mActivityBroadcastReceiver = null;
+        }
+    }*/
+
+
+
+    /*@Override
+    protected void onResume() {
+        super.onResume();
+        Log.e(TAG, "onResume");
+       try{
+            registerReceiver(mActivityBroadcastReceiver,intentFilter);
+            //sharedPreferences.registerOnSharedPreferenceChangeListener((SharedPreferences.OnSharedPreferenceChangeListener) this);
+        }catch (Exception e){
+            // already registered
+        }
+
+    }*/
+
+   /*@Override
+    protected void onPause() {
+        super.onPause();
+        Log.e(TAG, "onPause");
+        try {
+            unregisterReceiver(mActivityBroadcastReceiver);
+            //sharedPreferences.unregisterOnSharedPreferenceChangeListener((SharedPreferences.OnSharedPreferenceChangeListener) this);
+        }catch (Exception e) {
+
+        }
+    }*/
+
     //receive activities from broadcast
     public void receiveUserActivity() {
         Intent serviceIntent = new Intent(this,UserActivityJobIntentService.class);
         //Context.sendBroadcast(ActivityBroadcastReceiver.getIntent(this, serviceIntent, 12345));
         mPendingIntent = PendingIntent.getBroadcast(getApplicationContext(),
-                1,
-                ActivityBroadcastReceiver.getIntent(this, serviceIntent, 12345),
+                0,
+                mActivityBroadcastReceiver.getIntent(this, serviceIntent, 1234),
                 PendingIntent.FLAG_UPDATE_CURRENT);
         getUserActivity();
+        //UserActivityJobIntentService.enqueueWork(this, serviceIntent);
     }
 
 
@@ -790,6 +591,8 @@ public class MainActivity extends AppCompatActivity {
         startTrackingButton.setBackgroundColor(getResources().getColor(R.color.button_active_color));
         stopTrackingButton.setBackgroundResource(R.drawable.button_color_gradient);
         Toast.makeText(getApplicationContext(), "Tracking gestartet", Toast.LENGTH_SHORT).show();
+        receiveUserActivity();
+        //setReceiver();
         ComponentName componentName = new ComponentName(MainActivity.this, LocationJobService.class);
         JobInfo info = new JobInfo.Builder(123, componentName)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
@@ -805,9 +608,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "Job scheduling failed");
         }
-        receiveUserActivity();
 
     }
+
+
 
 
     private void startJobScheduler() {
@@ -838,6 +642,7 @@ public class MainActivity extends AppCompatActivity {
                 scheduler.cancel(123);
                 scheduler.cancel(1234);
                 Log.e(TAG, "Job cancelled");
+                removeActivityUpdatesHandler();
                 Toast.makeText(getApplicationContext(), "Tracking gestoppt", Toast.LENGTH_SHORT).show();
             }
         });
@@ -847,6 +652,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        removeActivityUpdatesHandler();
+       if(isRegistered){
+           unregisterReceiver(mActivityBroadcastReceiver);
+       }
+
+
+        try {
+           unregisterReceiver(mActivityBroadcastReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        /*try{
+
+        }catch (Exception e) {
+
+        }*/
+
     }
 }
