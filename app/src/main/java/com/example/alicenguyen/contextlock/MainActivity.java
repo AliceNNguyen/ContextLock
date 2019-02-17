@@ -640,9 +640,9 @@ public class MainActivity extends AppCompatActivity {
 
                 JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
                 scheduler.cancel(123);
-                scheduler.cancel(1234);
+                //scheduler.cancel(1234);
                 Log.e(TAG, "Job cancelled");
-                removeActivityUpdatesHandler();
+                //removeActivityUpdatesHandler();
                 Toast.makeText(getApplicationContext(), "Tracking gestoppt", Toast.LENGTH_SHORT).show();
             }
         });
