@@ -218,7 +218,7 @@ public class LocationJobService extends JobService {
             }else if(mainWeather.contains("Drizzle") && provider.equals("gps")) {
                 sendNotification(getString(R.string.rain), R.mipmap.raindrop_ic);
                 openExperienceSampling();
-            }else if(humidity > 85 && provider.equals("gps")){
+            }else if(humidity > 75 && temperature.intValue() > 27){
                 sendNotification(getString(R.string.humdidity), R.mipmap.humidity_ic);
                 openExperienceSampling();
             }else {
