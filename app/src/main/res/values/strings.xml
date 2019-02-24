@@ -27,7 +27,7 @@
     <string name="true_text">Richtig</string>
     <string name="false_text">Falsch</string>
 
-    <string name="lockswitch_text">Ich habe mein PIN genutzt</string>
+    <string name="lockswitch_text">Ich habe mein PIN/Pattern genutzt</string>
 
 
     <string name="give_feedback">Feedback geben</string>
@@ -41,7 +41,7 @@
     <string name="activity_tilting">tilting</string>
     <string name="activity_walking">walking</string>
     <string name="user_location_string">Ich bin gerade ...</string>
-    <string name="reasonable_switch">Der Wechsel zu PIN empfand ich als sinnvoll</string>
+    <string name="reasonable_switch">Den Wechsel zu PIN empfand ich als sinnvoll</string>
     <string name="public_transportation">in öffentlichem Transportmittel (z.B. Bus, Zug, U-Bahn, S-Bahn)</string>
     <string name="at_work">in der Arbeit</string>
     <string name="at_uni">in der Uni</string>
@@ -54,22 +54,35 @@
     <string name="not_now">Jetzt nicht</string>
     <string name="background_image_description">background image</string>
     <string name="channel_name">context_channel</string>
-    <string name="channel_description">It\'s raining! User PIN</string>
+    <string name="channel_description">It\'s raining! Use PIN</string>
 
     <!--Notification Text -->
-    <string name="rain">Es regnet!</string>
-    <string name="snow">Es schneit!</string>
-    <string name="wet">Es ist nass!</string>
-    <string name="humdidity">Es ist feucht!</string>
-    <string name="running">Sport erkannt!</string>
-    <string name="in_vehicle">Fahren erkannt!</string>
-    <string name="notification_title">Benutze PIN/Pattern!</string>
-    <string name="notification_description">Dein Fingerabdruck wird möglicherweise nicht erkannt.</string>
-    <string name="stop_tracking">Tracking stoppen</string>
-    <string name="start_tracking">Tracking starten</string>
-    <string name="enter_id">ID bestätigen</string>
-    <string name="reason_hint_input">Falls Prognose falsch, welcher Grund sonst?</string>
-    <string name="next_string">Weiter</string>
+    <string name="rain">It\'s raining!</string>
+    <string name="snow">It\'s snowing!</string>
+    <string name="wet">It\'s wet!</string>
+    <string name="humdidity">It\'s muggy!</string>
+    <string name="running">Sport detected!</string>
+    <string name="in_vehicle">Driving detected!</string>
+    <string name="notification_title">Use PIN/pattern!</string>
+    <string name="notification_description">Your fingerprint might not working.</string>
+    <string name="stop_tracking">stop tracking</string>
+    <string name="start_tracking">start tracking</string>
+    <string name="enter_id">confirm ID</string>
+    <string name="reason_hint_input">If notification is wrong, which reason instead?</string>
+    <string name="next_string">Next</string>
+
+    <string name="permission">With the usage of the application, I agree that the following user data are collected
+    </string>
+
+    <string name="permission_gps">&#8226; GPS location</string>
+    <string name="permission_weather"> &#8226; weather data</string>
+    <string name="permission_activity"> &#8226; activities (walking, running, driving)</string>
+
+    <string name="anonymity">The collected data are recorded anonymised and cannot be assigned to my person. Therefor inspection or
+    deletion of those data are not possible</string>
+
+    <string name="agree_permission">I agree to terms</string>
+    <string name="agree_permission_request">Please agree the terms to use the App.</string>
 
 
 </resources>

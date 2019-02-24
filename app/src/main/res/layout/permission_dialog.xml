@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/permission_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="consent form"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:textSize="20sp"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/teal"
+        />
+
+    <TextView
+        android:id="@+id/permission_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/permission"
+        android:textSize="17sp"
+        android:layout_marginBottom="@dimen/button_margin"
+        android:textColor="@color/dark_grey"
+    />
+
+    <TextView
+        android:id="@+id/permission_gps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_gps"
+        android:textSize="17sp"
+        android:textColor="@color/dark_grey"
+        />
+
+    <TextView
+        android:id="@+id/permission_weather"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_weather"
+        android:textSize="17sp"
+        android:textColor="@color/dark_grey"
+        />
+
+    <TextView
+        android:id="@+id/permission_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_activity"
+        android:textSize="17sp"
+        android:textColor="@color/dark_grey"
+        />
+
+    <TextView
+        android:id="@+id/permission_agree"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:textColor="@color/dark_grey"
+        android:layout_marginTop="10dp"
+        android:text="@string/anonymity"/>
+
+    <CheckBox
+        android:id="@+id/checkbox_permission_agree"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark_grey"
+        android:buttonTint="@color/teal"
+        android:layout_marginTop="20dp"
+        android:text="@string/agree_permission"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancel_permission_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/teal"
+            android:textColor="@color/white"
+            android:layout_margin="5dp"
+            android:text="Cancel" />
+
+
+        <Button
+            android:id="@+id/agree_permission_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/teal"
+            android:textColor="@color/white"
+            android:layout_margin="5dp"
+            android:text="Agree" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

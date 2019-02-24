@@ -1,6 +1,8 @@
 package com.example.alicenguyen.contextlock;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,6 +12,7 @@ import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -24,7 +27,10 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 
+import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
@@ -36,6 +42,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,12 +65,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 //import com.google.firebase.analytics.FirebaseAnalytics;
 
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -72,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREFERENCES = "com.example.alicenguyen.contextlock";
     private static final String KEY_PIN = "pin";
-    private static final String KEY_ID = "user_id";
+    //private static final String KEY_ID = "user_id";
 
     private static final int MAX_ATTEMPS = 3;
     private static final int SURVEY_OPEN_NUMBER = 5;
@@ -120,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean userpermission = false;
     private boolean jobstarted = false;
+    //private boolean permissionAgreed = false;
 
 
     private ActivityRecognitionClient mActivityRecognitionClient;
@@ -130,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
     private LocalBroadcastManager localBroadcastManager;
     private SharedPreferences sharedPreferences;
+    private SharedPreferences prefs;
 
     //BroadcastReceiver broadcastReceiver;
 
@@ -142,47 +148,75 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
-
-        //mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        notificationSettingsRequest();
+        showPermissionDialog();
         setUserId();
+        startAlarm();
         initTrackingButtons();
-        /*mActivityBroadcastReceiver = new ActivityBroadcastReceiver();
-        intentFilter = new IntentFilter();*/
 
-        /*try {
-            mActivityBroadcastReceiver = new ActivityBroadcastReceiver();
-            intentFilter = new IntentFilter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         mActivityBroadcastReceiver = new ActivityBroadcastReceiver();
         intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.BROADCAST_DETECTED_ACTIVITY);
         registerReceiver(mActivityBroadcastReceiver, intentFilter);
-       /* if(!isRegistered){
-            registerReceiver(mActivityBroadcastReceiver, intentFilter);
-            isRegistered = true;
-        }*/
-        /*if (mActivityBroadcastReceiver == null) {
-            mActivityBroadcastReceiver = new ActivityBroadcastReceiver();
-            intentFilter = new IntentFilter();
-            //intentFilter.addAction(Constants.BROADCAST_DETECTED_ACTIVITY);
-            registerReceiver(mActivityBroadcastReceiver, intentFilter);
-            //Log.e(TAG, "onResume");
-        }*/
     }
+
+    private void setStartVersion() {
+        int id = Integer.parseInt(getIDfromSharedPreferences());
+        if ((id % 2) == 0) {
+            //setNonConditionAlarm();
+            // number is even
+        }
+
+        else {
+            // number is odd
+            //setConditionAlarm();
+        }
+    }
+
+    private void setNonConditionAlarm() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+        Random random = new Random();
+
+        /*Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, random.nextInt(14-8) + 8);
+        c.set(Calendar.MINUTE, random.nextInt(60));
+        c.set(Calendar.SECOND, random.nextInt(999999999 + 1));*/
+
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, 12);
+        c.set(Calendar.MINUTE, 25);
+        c.set(Calendar.SECOND, 0);
+
+
+        Log.e(TAG, c.toString());
+
+        //alarm will fire the next day if alarm time is before current time
+        /*if (c.before(Calendar.getInstance())) {
+            c.add(Calendar.DATE, 1);
+        }*/
+
+
+        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY / 3, pendingIntent);
+
+    }
+
+
+
 
 
 
     private void writeIDtoSharedPreferences(String id) {
         SharedPreferences prefs = this.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        prefs.edit().putString(KEY_ID, id).apply();
+        prefs.edit().putString(Constants.KEY_ID, id).apply();
     }
 
     public String getIDfromSharedPreferences(){
         SharedPreferences prefs = this.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
-        return prefs.getString(KEY_ID, "");
+        return prefs.getString(Constants.KEY_ID, "");
     }
 
     private void setUserId() {
@@ -226,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
             if(id.equals("")){
                 Toast.makeText(this, "Bitte ID eingeben und bestätigen", Toast.LENGTH_LONG).show();
             }else {
+                //checkGPS();
                 startBackgroundServices();
 
             }
@@ -245,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
                     if(id.equals("")){
                         Toast.makeText(this, "Bitte ID eingeben und bestätigen", Toast.LENGTH_LONG).show();
                     }else {
+                        //checkGPS();
                         startBackgroundServices();
 
                     }
@@ -442,6 +478,165 @@ public class MainActivity extends AppCompatActivity {
             //getLocation();
             Toast.makeText(MainActivity.this, "no light sensor", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void checkGPS() {
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Log.e(TAG, "checkGPS");
+
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            Log.e(TAG, "GPS enabled");
+            //Toast.makeText(this, "GPS is Enabled in your devide", Toast.LENGTH_SHORT).show();
+        }else{
+            Log.e(TAG, "no GPS");
+            buildAlertMessageNoGps();
+        }
+    }
+
+    private void showPermissionDialog() {
+        boolean permissionAgreed= prefs.getBoolean(Constants.PERMISSION_AGREE, false);
+
+        AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        View mDialogView = getLayoutInflater().inflate(R.layout.permission_dialog, null);
+
+        TextView permissionTitle = (TextView) mDialogView.findViewById(R.id.permission_title);
+        final CheckBox permissionCheckbox = (CheckBox) mDialogView.findViewById(R.id.checkbox_permission_agree);
+        Button mAgreeButton = (Button) mDialogView.findViewById(R.id.agree_permission_button);
+        Button mCancelButton= (Button) mDialogView.findViewById(R.id.cancel_permission_button);
+
+        mDialogBuilder.setView(mDialogView);
+        final AlertDialog dialog = mDialogBuilder.create();
+        //set opacity of dialog
+        //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.white)));
+
+        if(!permissionAgreed) {
+            dialog.show();
+        }
+
+
+        mCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!permissionCheckbox.isChecked()) {
+                    Toast.makeText(getApplicationContext(),getString(R.string.agree_permission_request), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        mAgreeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(permissionCheckbox.isChecked()) {
+                    //permissionAgreed = true;
+                    SharedPreferences.Editor edit = prefs.edit();
+                    edit.putBoolean(Constants.PERMISSION_AGREE, Boolean.TRUE);
+                    edit.commit();
+                    dialog.cancel();
+                }else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.agree_permission_request), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void notificationSettingsRequest() {
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        boolean previouslyStarted = prefs.getBoolean(Constants.FIRST_OPEN, false);
+        if(!previouslyStarted) {
+            SharedPreferences.Editor edit = prefs.edit();
+            edit.putBoolean(Constants.FIRST_OPEN, Boolean.TRUE);
+            edit.commit();
+
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Notifications on your lock screen needs to be enabled for using the App.")
+                    .setCancelable(false)
+                    .setPositiveButton("ّyes", new DialogInterface.OnClickListener() {
+                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            Intent settingsIntent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    .putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                            //.putExtra(Settings.EXTRA_CHANNEL_ID, MY_CHANNEL_ID);
+                            startActivity(settingsIntent);
+                            //startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        }
+                    })
+                    .setNegativeButton("no", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            dialog.cancel();
+                        }
+                    });
+            final AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(" Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("ّyes", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("no", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+
+
+
+    private void turnGPSOff() {
+        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+        if (provider.contains("gps")) { //if gps is enabled
+            final Intent poke = new Intent();
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+            poke.setData(Uri.parse("3"));
+            sendBroadcast(poke);
+        }
+    }
+
+
+
+
+    private void startAlarm() {
+        Log.e(TAG, "startAlarm");
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+        Random random = new Random();
+
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MINUTE, 30);
+        /*c.set(Calendar.HOUR_OF_DAY, random.nextInt(14-8) + 8);
+        c.set(Calendar.MINUTE, random.nextInt(60));
+        c.set(Calendar.SECOND, random.nextInt(999999999 + 1));*/
+
+        /*Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, 12);
+        c.set(Calendar.MINUTE, 25);
+        c.set(Calendar.SECOND, 0);*/
+
+
+        Log.e(TAG, c.toString());
+
+        //alarm will fire the next day if alarm time is before current time
+        /*if (c.before(Calendar.getInstance())) {
+            c.add(Calendar.DATE, 1);
+        }*/
+
+        //alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY / 3, pendingIntent);
     }
 
 

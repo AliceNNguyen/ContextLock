@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#00574B</color>-->
     <color name="colorPrimary">@color/layout_background</color>
     <color name="colorPrimaryDark">@color/layout_background</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">@color/teal</color>
     <color name="white">#FFFFFF</color>
     <color name="text_numberpressed">#fff</color>
     <color name="text_title">#dcddde</color>

@@ -103,6 +103,7 @@ public class LocationJobService extends JobService {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private String currentDate;
     private String cooldown;
+    private String userid;
 
 
 
@@ -116,7 +117,13 @@ public class LocationJobService extends JobService {
         createNotificationChannel();
         Date date = Calendar.getInstance().getTime();
         String currentDate = simpleDateFormat.format(date);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE);
+        userid = pref.getString(Constants.KEY_ID, "no id");
+        Log.e(TAG, "userid: " + userid);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mFirebaseAnalytics.setUserId(userid);
+
+
 
         //SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.DATE_KEY, currentDate);
         String storedDate = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.DATE_KEY);
@@ -169,13 +176,9 @@ public class LocationJobService extends JobService {
 
 
 
-    //TODO: open actvity 5 times a day RESET Counter each new day
-
 
 
     private void openExperienceSampling() {
-        //opensurveycounter++;
-
         Random generator = new Random();
         int randomInt = generator.nextInt(2-0) + 0;
         Log.d("random", String.valueOf(randomInt));
@@ -198,12 +201,17 @@ public class LocationJobService extends JobService {
         if(randomInt == 0 && cooldown.equals("true")) {
             SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
         }
+        Bundle params = new Bundle();
+        params.putInt("survey_open", randomInt );
+        mFirebaseAnalytics.logEvent("survey_open_weather_event", params);
     }
 
 
     private void checkContextForNotification() {
         Log.d("weather description", mainWeather);
         Log.d("gps enabled", String.valueOf(isGPSEnabled));
+        Log.d(TAG, "city");
+        Log.d(TAG, city);
         checkIfScreenLocked();
         Log.e(TAG, "check counter" + opensurveycounter);
 
@@ -224,15 +232,10 @@ public class LocationJobService extends JobService {
             }else {
                 Log.e(TAG, "Alles gut");
                 Bundle params = new Bundle();
-                params.putString("user_weather", "no notification conditions" );
-                mFirebaseAnalytics.logEvent("user_activity_notification", params);
-                //Toast.makeText(this, "Alles gut!", Toast.LENGTH_LONG).show();
+                params.putString("user_weather", "no weather conditions met");
+                mFirebaseAnalytics.logEvent("user_weather_detection_event", params);
             }
-
-
         }
-
-
     }
 
     private void checkIfScreenLocked() {
@@ -267,10 +270,7 @@ public class LocationJobService extends JobService {
                             humidity = (int)response.getJSONObject("main").get("humidity");
                             temperature = (Number)response.getJSONObject("main").get("temp");
                             temperature = temperature.doubleValue();
-                            /*city = response.getJSONObject("name").toString();
-                            Log.d(TAG, "city");
-                            Log.d(TAG, city);*/
-                            //TODO
+                            city = response.getJSONObject("name").toString();
                             checkContextForNotification();
                             //setContextIcon(mainWeather, temperature.doubleValue(), humidity, 0, ambient_temperature, userActivity);
                         } catch (JSONException e) {
@@ -388,6 +388,6 @@ public class LocationJobService extends JobService {
 
         Bundle params = new Bundle();
         params.putString("weather", contextDescription );
-        mFirebaseAnalytics.logEvent("user_location_notification", params);
+        mFirebaseAnalytics.logEvent("user_location_notification_event", params);
     }
 }

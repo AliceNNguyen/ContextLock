@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -43,6 +44,7 @@ public class UserActivityJobIntentService extends JobIntentService {
     private int opensurveycounter;
     private FirebaseAnalytics mFirebaseAnalytics;
     private String cooldown;
+    private String userid;
 
 
     static void enqueueWork(Context context, Intent activity) {
@@ -57,6 +59,10 @@ public class UserActivityJobIntentService extends JobIntentService {
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
         Log.e(TAG, "onhandlework");
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE);
+        userid = pref.getString(Constants.KEY_ID, "no id");
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mFirebaseAnalytics.setUserId(userid);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         createNotificationChannel();
@@ -135,7 +141,7 @@ public class UserActivityJobIntentService extends JobIntentService {
 
         Bundle params = new Bundle();
         params.putString("user_activity", contextDescription );
-        mFirebaseAnalytics.logEvent("user_activity_notification", params);
+        mFirebaseAnalytics.logEvent("user_activity_notification_event", params);
     }
 
     private void handleUserActivity(int type, int confidence) {
@@ -219,6 +225,9 @@ public class UserActivityJobIntentService extends JobIntentService {
         if(randomInt == 0 && cooldown.equals("true")) {
             SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
         }
+        Bundle params = new Bundle();
+        params.putInt("survey_open", randomInt );
+        mFirebaseAnalytics.logEvent("survey_open_useractivity_event", params);
     }
 
 
@@ -242,8 +251,7 @@ public class UserActivityJobIntentService extends JobIntentService {
                 Log.e(TAG, "no conditions met");
                 Bundle bundle = new Bundle();
                 bundle.putString("user_activity", String.valueOf("no activity conditions met"));
-                mFirebaseAnalytics.logEvent("user_activity", bundle);
-
+                mFirebaseAnalytics.logEvent("user_activity_detection_event", bundle);
             }
 
         }
