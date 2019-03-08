@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".InitialSurvey4">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:background="@color/light_grey"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
+            android:text="4 of 4"
+            android:textAlignment="center"
+            android:textColor="@color/dark_grey"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="10dp"
+            android:background="@color/teal"
+            android:padding="15dp"
+            android:text="@string/previous"
+            android:textAlignment="center"
+            android:textColor="@color/init_survey_btn_text_color"
+            android:textSize="16sp"
+            android:onClick="openPrevious"/>
+
+        <TextView
+            android:id="@+id/send_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="10dp"
+            android:background="@color/teal_shiny"
+            android:padding="15dp"
+            android:text="send"
+            android:textAlignment="center"
+            android:textColor="@color/init_survey_btn_text_color"
+            android:textSize="16sp"
+            android:onClick="sendResults"/>
+
+        <LinearLayout
+            android:id="@+id/container4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="50dp"
+            android:orientation="vertical"
+            android:background="@color/white"
+            android:padding="0dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/question_text_color"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/question_text_size"
+                    android:padding="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:text="How do you handle fingerprint errors?"/>
+                <TextView
+                    android:id="@+id/handle_ignore"
+                    android:layout_marginTop="@dimen/init_survey_btn_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ignoring it"
+                    android:textStyle="bold"
+                    android:textColor="@color/init_survey_btn_text_color"
+                    android:textSize="@dimen/init_survey_btn_text_size"
+                    android:background="@drawable/survey_btn_border"
+                    android:paddingRight="@dimen/init_survey_btn_padding"
+                    android:paddingTop="@dimen/init_survey_btn_padding"
+                    android:paddingBottom="@dimen/init_survey_btn_padding"
+                    android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                    android:onClick="onButtonClicked"/>
+                <TextView
+                    android:id="@+id/handle_switch_first_attempt"
+                    android:layout_marginTop="@dimen/init_survey_btn_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="switch to my PIN/pattern after first attempt failed"
+                    android:textStyle="bold"
+                    android:textColor="@color/init_survey_btn_text_color"
+                    android:textSize="@dimen/init_survey_btn_text_size"
+                    android:background="@drawable/survey_btn_border"
+                    android:paddingRight="@dimen/init_survey_btn_padding"
+                    android:paddingTop="@dimen/init_survey_btn_padding"
+                    android:paddingBottom="@dimen/init_survey_btn_padding"
+                    android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                    android:onClick="onButtonClicked"/>
+                <TextView
+                    android:id="@+id/handle_switch_multiple_attempts"
+                    android:layout_marginTop="@dimen/init_survey_btn_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="switch to my PIN/pattern after multiple attempts failed"
+                    android:textStyle="bold"
+                    android:textColor="@color/init_survey_btn_text_color"
+                    android:textSize="@dimen/init_survey_btn_text_size"
+                    android:background="@drawable/survey_btn_border"
+                    android:paddingRight="@dimen/init_survey_btn_padding"
+                    android:paddingTop="@dimen/init_survey_btn_padding"
+                    android:paddingBottom="@dimen/init_survey_btn_padding"
+                    android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                    android:onClick="onButtonClicked"/>
+                <TextView
+                    android:id="@+id/handle_later"
+                    android:layout_marginTop="@dimen/init_survey_btn_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="I try it later again"
+                    android:textStyle="bold"
+                    android:textColor="@color/init_survey_btn_text_color"
+                    android:textSize="@dimen/init_survey_btn_text_size"
+                    android:background="@drawable/survey_btn_border"
+                    android:paddingRight="@dimen/init_survey_btn_padding"
+                    android:paddingTop="@dimen/init_survey_btn_padding"
+                    android:paddingBottom="@dimen/init_survey_btn_padding"
+                    android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                    android:onClick="onButtonClicked"/>
+                <TextView
+                    android:id="@+id/handle_not_sure"
+                    android:layout_marginTop="@dimen/init_survey_btn_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="I'm not sure"
+                    android:textStyle="bold"
+                    android:textColor="@color/init_survey_btn_text_color"
+                    android:textSize="@dimen/init_survey_btn_text_size"
+                    android:background="@drawable/survey_btn_border"
+                    android:paddingRight="@dimen/init_survey_btn_padding"
+                    android:paddingTop="@dimen/init_survey_btn_padding"
+                    android:paddingBottom="@dimen/init_survey_btn_padding"
+                    android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                    android:onClick="onButtonClicked"/>
+                <EditText
+                    android:id="@+id/errorHandlingEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/dark_grey"
+                    android:text="other comments"/>
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

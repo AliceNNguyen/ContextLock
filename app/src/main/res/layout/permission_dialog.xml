@@ -57,6 +57,15 @@
         />
 
     <TextView
+        android:id="@+id/permission_demographics"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_demographics"
+        android:textSize="17sp"
+        android:textColor="@color/dark_grey"
+        />
+
+    <TextView
         android:id="@+id/permission_agree"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

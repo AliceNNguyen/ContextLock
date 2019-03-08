@@ -31,9 +31,8 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
     private DatabaseReference mDatabaseReference;
     private SeekBar reasonableSeekbar;
     private TextView reasonableStronglyAgree, reasonableAgree, reasonableNeutral, reasonableDisagree, reasonableStronglyDisagree;
-    private String userid, switchValue, fingerErrorValue, locationFreeText, reasonFreeText;
+    private String userid, version, switchValue, fingerErrorValue, locationFreeText, reasonFreeText, reasonFreeTextVersionA;
     private int predictionValue, annoyanceValue, reasonableValue;
-
 
 
     @Override
@@ -54,14 +53,10 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
             annoyanceValue = b.getInt("annoyanceValue");
             switchValue = b.getString("switchValue");
             reasonFreeText = b.getString("reasonFreeText");
-
-
-            Log.e("extra", String.valueOf(predictionValue));
-            Log.e("extra", String.valueOf(reasonableValue));
-            Log.e("extra", String.valueOf(annoyanceValue));
-            //Textv.setText(j);
+            reasonFreeTextVersionA = b.getString("reasonFreeTextVersionA");
         }
 
+        version = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY);
         SharedPreferences pref = getApplicationContext().getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         userid = pref.getString("user_id", "no id");
         Log.e("ExperienceSampling", userid);
@@ -97,18 +92,21 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
             currenttime = Calendar.getInstance().getTime();
 
             //TODO set locationValue to database
-            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("lockscreen-switch-value").setValue(switchValue);
-            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("prediction-rate").setValue(predictionValue);
-            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("annoyance-rate").setValue(annoyanceValue);
-            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("reasonable-rate").setValue(reasonableValue);
 
-            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("fingererror-value").setValue(fingerErrorValue);
-            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("user-current-location").setValue(locationValue);
-            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("location-free-text").setValue(locationEditText.getText().toString());
-            mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("reason-free-text").setValue(reasonFreeText);
+            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("lockscreen-switch-value").setValue(switchValue);
+            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("prediction-rate").setValue(predictionValue);
+            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("annoyance-rate").setValue(annoyanceValue);
+            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reasonable-rate").setValue(reasonableValue);
+
+            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("fingererror-value").setValue(fingerErrorValue);
+            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("user-current-location").setValue(locationValue);
+            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("location-free-text").setValue(locationEditText.getText().toString());
+            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reason-free-text-B").setValue(reasonFreeText);
+            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reason-free-text-A").setValue(reasonFreeTextVersionA);
 
             Toast.makeText(ExperienceSamplingActivity2.this, "gesendet", Toast.LENGTH_SHORT).show();
-            finish();
+            NotificationHelper.cancelNotification(ExperienceSamplingActivity2.this, Constants.NOTIFICATION_ID);
+            finishAffinity();
 
             }
         });

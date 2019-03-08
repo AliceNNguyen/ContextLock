@@ -14,24 +14,25 @@
     <string name="set_id">Gebe deine erhaltene ID ein</string>
     <string name="settings">Settings</string>
     <string name="title_activity_experience_sampling">ExperienceSamplingActivity</string>
-    <string name="feedback_survey">Feedback zum ContextLockScreen</string>
+    <string name="feedback_survey">Feedback on ContextLockScreen</string>
 
-    <string name="prediction_precision">Die Prognosen haben gestimmt</string>
-    <string name="strongly_agree">stimme zu</string>
-    <string name="agree">stimme eher zu</string>
-    <string name="neutral">weder noch</string>
-    <string name="disagree">stimme eher nicht zu</string>
-    <string name="strongly_disagree">stimme nicht zu</string>
+    <string name="prediction_precision">The prediction is true</string>
+    <string name="strongly_agree">strongly agree</string>
+    <string name="agree">agree</string>
+    <string name="neutral">neutral</string>
+    <string name="disagree">disagree</string>
+    <string name="strongly_disagree">strongly disagree</string>
 
-    <string name="fingerprint_error_text">Ich hatte Probleme mit der Fingerabdruck-Erkennung</string>
-    <string name="true_text">Richtig</string>
-    <string name="false_text">Falsch</string>
+    <string name="fingerprint_error_text">I had problems with my fingerprint authentication</string>
+    <string name="true_text">true</string>
+    <string name="false_text">false</string>
+    <string name="do_not_remember">I don\'t remember</string>
 
-    <string name="lockswitch_text">Ich habe mein PIN/Pattern genutzt</string>
+    <string name="lockswitch_text">I switched to my PIN/pattern</string>
 
 
     <string name="give_feedback">Feedback geben</string>
-    <string name="annoyance">Ich war in der Situation genervt</string>
+    <string name="annoyance">I was annoyed in this situation</string>
     <string name="activity_unknown">activity unknown</string>
     <string name="activity_in_vehicle">in vehicle</string>
     <string name="activity_on_bicycle">on biycle</string>
@@ -40,18 +41,18 @@
     <string name="activity_still">still</string>
     <string name="activity_tilting">tilting</string>
     <string name="activity_walking">walking</string>
-    <string name="user_location_string">Ich bin gerade ...</string>
-    <string name="reasonable_switch">Den Wechsel zu PIN empfand ich als sinnvoll</string>
-    <string name="public_transportation">in öffentlichem Transportmittel (z.B. Bus, Zug, U-Bahn, S-Bahn)</string>
-    <string name="at_work">in der Arbeit</string>
-    <string name="at_uni">in der Uni</string>
-    <string name="at_home">zu Hause</string>
-    <string name="workout">beim Sport</string>
-    <string name="outdoor">draußen</string>
-    <string name="something_else">anderes</string>
-    <string name="some_examples">z.B. in einer Bar, ...</string>
+    <string name="user_location_string">I am ...</string>
+    <string name="reasonable_switch">I think the switch to PIN/pattern was reasonable</string>
+    <string name="public_transportation">in public transportation (z.B. bus, train, metro,...)</string>
+    <string name="at_work">at work</string>
+    <string name="at_uni">in university</string>
+    <string name="at_home">at home</string>
+    <string name="workout">doing sports</string>
+    <string name="outdoor">outdoor</string>
+    <string name="something_else">other</string>
+    <string name="some_examples">e.g. in a bar, ...</string>
     <string name="send">send</string>
-    <string name="not_now">Jetzt nicht</string>
+    <string name="not_now">not now</string>
     <string name="background_image_description">background image</string>
     <string name="channel_name">context_channel</string>
     <string name="channel_description">It\'s raining! Use PIN</string>
@@ -67,9 +68,17 @@
     <string name="notification_description">Your fingerprint might not working.</string>
     <string name="stop_tracking">stop tracking</string>
     <string name="start_tracking">start tracking</string>
-    <string name="enter_id">confirm ID</string>
+    <string name="enter_id">submit ID</string>
     <string name="reason_hint_input">If notification is wrong, which reason instead?</string>
     <string name="next_string">Next</string>
+    <string name="fingererror_reason">The fingerprint might not work, because of...</string>
+    <string name="rain_reason">rain</string>
+    <string name="snow_reason">snow</string>
+    <string name="humidity_reason">humidity</string>
+    <string name="dirty_finger_reason">dirty fingers</string>
+    <string name="heat_reason">heat</string>
+    <string name="cooking_reason">cooking</string>
+    <string name="wet_reason">wet fingers</string>
 
     <string name="permission">With the usage of the application, I agree that the following user data are collected
     </string>
@@ -77,12 +86,31 @@
     <string name="permission_gps">&#8226; GPS location</string>
     <string name="permission_weather"> &#8226; weather data</string>
     <string name="permission_activity"> &#8226; activities (walking, running, driving)</string>
+    <string name="permission_demographics"> &#8226; demographics</string>
 
     <string name="anonymity">The collected data are recorded anonymised and cannot be assigned to my person. Therefor inspection or
     deletion of those data are not possible</string>
 
     <string name="agree_permission">I agree to terms</string>
     <string name="agree_permission_request">Please agree the terms to use the App.</string>
+    <string name="dont_know">I don\'t know</string>
 
+    <!--default notifcation messages-->
+    <string name="default_humidity">Humidity recognized.</string>
+    <string name="default_movement">Movement recognized.</string>
+    <string name="default_message">Your fingerprint might not working</string>
+
+    <string name="no_condition_message">no condition met</string>
+    <string name="previous">back</string>
+    
+    <string name="profession_student">Student</string>
+    <string name="profession_postgraduate">Ph.D.student</string>
+    <string name="profession_employee">Employee</string>
+    <string name="profession_self_employed">Self-Employed</string>
+    <string name="profession_other">Other</string>
+    <string name="female">female</string>
+    <string name="male">male</string>
+
+    <string name="text_alignment_survey_btn">center</string>
 
 </resources>

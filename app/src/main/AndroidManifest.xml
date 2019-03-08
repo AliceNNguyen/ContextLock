@@ -22,13 +22,14 @@
         android:required="true"/>
     -->
     <application
+        android:name=".FirebaseHandler"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_fingerprint"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.alicenguyen.contextlock.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,45 +37,47 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.alicenguyen.contextlock.ExperienceSamplingActivity"
-            android:label="@string/feedback_survey"
+            android:name=".ExperienceSamplingActivity"
             android:exported="true"
-            android:theme="@style/LightTheme"></activity>
-        <activity android:name="com.example.alicenguyen.contextlock.ExperienceSamplingActivity2"
-            android:theme="@style/LightTheme"
             android:label="@string/feedback_survey"
-            >
-        </activity>
+            android:theme="@style/LightTheme" />
+        <activity
+            android:name=".ExperienceSamplingActivity2"
+            android:label="@string/feedback_survey"
+            android:theme="@style/LightTheme" />
 
-        <!--
         <service
-            android:name="com.example.alicenguyen.contextlock.DetectedActivitiesIntentService"
-            android:exported="false" />
-        <service android:name="com.example.alicenguyen.contextlock.BackgroundDetectedActivitiesService" />
-        <service android:name="com.example.alicenguyen.contextlock.LocationService" />-->
-
-        <service android:name="com.example.alicenguyen.contextlock.LocationJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+            android:name=".LocationJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".UserActivityJobIntentService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <!--<service android:name=".UserActivityJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>-->
         <receiver android:name=".ActivityBroadcastReceiver" />
-        <receiver android:name=".AlarmReceiver" />
-
-
-        <!--
-        <receiver android:name=".MainActivity$ScreenReceiver">
+        <receiver android:name=".RandomAlarmReceiver" >
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.USER_PRESENT" />
-                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
-                <action android:name="android.intent.action.SCREEN_OFF"/>
-                <action android:name="android.intent.action.SCREEN_ON"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-        -->
+        <receiver android:name=".AlarmReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".ExportDBHelper" />
+        <receiver android:name=".LockScreenReceiver" />
 
+
+        <activity android:name=".FinalSurvey" />
+        <activity
+            android:name=".InitialSurvey"
+            android:exported="true" />
+        <activity android:name=".InitialSurvey2" />
+        <activity android:name=".InitialSurvey3" />
+        <activity android:name=".InitialSurvey4"></activity>
     </application>
 
 </manifest>

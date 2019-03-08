@@ -77,4 +77,12 @@
 
     <dimen name="edit_text_size">15sp</dimen>
 
+    //initial survey
+    <dimen name="question_text_size">18sp</dimen>
+    <dimen name="init_survey_btn_margin">0dp</dimen>
+    <dimen name="init_survey_btn_padding">15dp</dimen>
+    <dimen name="checkmark_size">20dp</dimen>
+    <dimen name="init_survey_header_padding">20dp</dimen>
+    <dimen name="init_survey_header_margin_top">30dp</dimen>
+
 </resources>

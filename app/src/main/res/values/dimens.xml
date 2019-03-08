@@ -1,3 +1,5 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="init_survey_btn_padding_left">40dp</dimen>
+    <dimen name="init_survey_btn_text_size">12sp</dimen>
 </resources>

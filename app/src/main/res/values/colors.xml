@@ -14,7 +14,9 @@
     <color name="button_notpressed">#2136FFD9</color>
     <color name="dot_emptyborder">#87898C</color>
     <color name="transparent">#00000000</color>
-    <color name="teal">#008080</color>
+    <!--<color name="teal">#008080</color> original-->
+    <color name="teal">#36B9A9</color>
+    <color name="teal_shiny">#008875</color>
     <color name="teal_light">#b2d8d8</color>
     <color name="light_grey">#dbdbdb</color>
     <color name="dark_grey">#62696e</color>
@@ -22,14 +24,17 @@
     <color name="gradient_start">#D9536976</color>
     <color name="gradient_end">#E6292E49</color>
     <color name="shiny_blue">#0EA5FF</color>
-    <color name="transparent_black">#CC000000</color>
+    <color name="transparent_black">#80000000</color>
+    <color name="semitransparent_black">#80000000</color>
+    <color name="semitransparent_grey">#CC323254</color>
     <color name="button_gradient_start">#80008080</color>
     <color name="button_gradient_end">#801AEBE2</color>
     <color name="transparent_white">#E6FFFFFF</color>
     <color name="gradient_start_2">#4ECDC4</color>
     <color name="gradient_end_2">#556270</color>
-    <color name="semitransparent_black">#CC000000</color>
-    <color name="button_active_color">#0d7571</color>
+    <color name="button_active_color">#30a698</color>
+    <color name="question_text_color">@color/dark_grey</color>
+    <color name="init_survey_btn_text_color">@color/white</color>
 
 </resources>
 

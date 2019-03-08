@@ -1,5 +1,7 @@
 package com.example.alicenguyen.contextlock;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
@@ -8,24 +10,27 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-//import com.google.firebase.database.DatabaseReference;
-//import com.google.firebase.database.FirebaseDatabase;
-
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 public class ExperienceSamplingActivity extends AppCompatActivity {
 
     private static final String PREFERENCES = "com.example.alicenguyen.contextlock";
+
+    public static View seekbarContainer;
+    public static View checkBoxContainer;
 
     private Button notNowButton;
     private ImageView sendButton;
@@ -37,21 +42,19 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
     private TextView annoyanceStronglyAgree, annoyanceAgree, annoyanceNeutral, annoyanceDisagree, annoyanceStronglyDisagree;
     //private TextView reasonableStronglyAgree, reasonableAgree, reasonableNeutral, reasonableDisagree, reasonableStronglyDisagree;
 
-    private EditText locationEditText, reasonEditext;
+    private EditText reasonEditext, reasonEditextVersionA;
 
     private int annoyanceValue, predictionValue, reasonableValue;
     private String locationValue;
     private String reasonFreeText = "";
+    private String reasonFreeTextVersionA = "";
     private FirebaseAnalytics mFirebaseAnalytics;
 
-
-    /*private FirebaseDatabase mDatabase;
-    private DatabaseReference predictionRef;
-    private DatabaseReference annoyanceRef;
-    private DatabaseReference mDatabaseReference;*/
-    private String userid;
-    private String switchValue, fingerErrorValue;
-
+    private DatabaseReference mDatabaseReference;
+    private String userid, version;
+    private String switchValue, fingerErrorValue, reasonValue;
+    private Bundle extras = new Bundle();
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
     private Date currenttime;
 
@@ -61,22 +64,29 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_experience_sampling);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-
-        //mDatabase = FirebaseDatabase.getInstance();
-        //mDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        //predictionRef = mDatabase.getReference("prediction_value");
-        //annoyanceRef = mDatabase.getReference("annoyance_value");
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        currenttime = Calendar.getInstance().getTime();
 
         Log.d("survey", "survey open");
         SharedPreferences pref = getApplicationContext().getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         userid = pref.getString("user_id", "no id");
 
+
         Log.e("user id", userid);
 
         initNotNowButton();
         initViewElements();
+        version = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY);
+        Log.e("version", version);
 
+        /*handle survey version based on notification version*/
+        if(version.equals(Constants.VERSION_A)){
+            seekbarContainer.setVisibility(View.GONE);
+            checkBoxContainer.setVisibility(View.VISIBLE);
+        }else if(version.equals(Constants.VERSION_B)) {
+            seekbarContainer.setVisibility(View.VISIBLE);
+            checkBoxContainer.setVisibility(View.GONE);
+        }
         setPredictionSeekbarListener();
         setAnnoyanceSeekbarListener();
         //setReasonableSeekbarListener();
@@ -88,22 +98,27 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         //initSendButton();
     }
 
+    //TODO
+    private void getReasonEditText() {
+
+    }
 
     private void initNextButton() {
         Button nextButton = findViewById(R.id.next_button);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle extras = new Bundle();
                 extras.putInt("predictionValue", predictionValue);
                 extras.putInt("annoyanceValue", annoyanceValue);
                 //extras.putInt("reasonableValue", reasonableValue);
                 extras.putString("switchValue", switchValue);
                 extras.putString("fingerErrorValue", fingerErrorValue);
                 extras.putString("reasonFreeText", reasonEditext.getText().toString());
+                extras.putString("reasonFreeTextVersionA", reasonEditextVersionA.getText().toString());
                 //startActivity(new Intent(ExperienceSamplingActivity.this, ExperienceSamplingActivity2.class));
                 Intent i = new Intent(ExperienceSamplingActivity.this, ExperienceSamplingActivity2.class);
                 i.putExtras(extras);
+                Log.e("bundle", extras.toString());
                 startActivity(i);
             }
         });
@@ -342,6 +357,9 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
     }
 
     private void initViewElements() {
+        seekbarContainer = findViewById(R.id.predictionSeekbarContainer);
+        checkBoxContainer = findViewById(R.id.reasonCheckboxContainer);
+
         predictionSeekbar = findViewById(R.id.seekBarPrediction);
         reasonableSeekbar = findViewById(R.id.seekBarReasonable);
         annoyanceSeekbar = findViewById(R.id.seekBarAnnoyance);
@@ -361,6 +379,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
 
         //sendButton = findViewById(R.id.send_button);
         reasonEditext = findViewById(R.id.reasonEdittext);
+        reasonEditextVersionA = findViewById(R.id.reasonDefaultEdittext);
     }
 
     private void initNotNowButton() {
@@ -371,11 +390,10 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
                 Bundle params = new Bundle();
                 params.putString("not_now_click", "true");
                 mFirebaseAnalytics.logEvent("not_now_click", params);
-                finish();
+                NotificationHelper.cancelNotification(ExperienceSamplingActivity.this, Constants.NOTIFICATION_ID);
+                finishAffinity();
             }
         });
-
-
     }
 
 
@@ -384,8 +402,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
 
         RadioButton trueRadioButton = findViewById(R.id.lockswitch_true);
         RadioButton falseRadioButton = findViewById(R.id.lockswitch_false);
-
-
+        RadioButton dontRememberRadioButton = findViewById(R.id.lockswitch_dontremember);
         // Check which radio button was clicked
         switch (view.getId()) {
             case R.id.lockswitch_true:
@@ -397,6 +414,9 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
                 if (checked)
                     switchValue = falseRadioButton.getText().toString();
                 break;
+            case R.id.lockswitch_dontremember:
+                if(checked)
+                    switchValue = dontRememberRadioButton.getText().toString();
         }
     }
 
@@ -424,5 +444,56 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
                     fingerErrorValue = notSureRadioButton.getText().toString();
                 break;
         }
+    }
+
+    public void onCheckboxClicked(View view) {
+        boolean checked = ((CheckBox) view).isChecked();
+
+        switch(view.getId()) {
+            case R.id.rain_checkbox:
+                if (checked) {
+                    reasonValue = ((CheckBox) view).getText().toString();
+                    Log.e("checkbox", reasonValue);
+                }
+
+                break;
+            case R.id.snow_checkbox:
+                if (checked) {
+                    reasonValue = ((CheckBox) view).getText().toString();
+                }
+                break;
+        }
+    }
+
+    /*send intermediate data to firebase when user closes the app (interrupts survey)
+    so not all data are gone
+    */
+    @Override
+    protected void onDestroy() {
+        Log.e("ExperienceSampling", "onDestroy");
+        //String version = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY);
+        //mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("v1values").setValue(extras.toString());
+        mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("lockscreen-switch-value").setValue(switchValue);
+        mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("prediction-rate").setValue(predictionValue);
+        mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("annoyance-rate").setValue(annoyanceValue);
+        mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("fingererror-value").setValue(fingerErrorValue);
+        super.onDestroy();
+    }
+
+    /*ask the user really wants to exit the app to make it a bit harder to leave the app
+    disabling the home button is not allowed/ a good solution (we can't/shouldn't prevent the user from leaving the app)
+    */
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage("Are you sure you want to exit?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ExperienceSamplingActivity.this.finish();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 }

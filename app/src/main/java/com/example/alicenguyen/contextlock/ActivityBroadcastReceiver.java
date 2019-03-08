@@ -8,12 +8,14 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
+/**Helper class to integrate ActivityRecognitionClient since PendingIntent is needed and normal background services
+ * is deprecated since Android Oreo**/
 
 public class ActivityBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "BroadcastReceiver";
@@ -30,13 +32,11 @@ public class ActivityBroadcastReceiver extends BroadcastReceiver {
         ComponentName component = intent.getComponent();
         if (component == null)
             throw new RuntimeException("Missing intent component");
-
         Intent new_intent = new Intent(intent)
                 .putExtra(EXTRA_SERVICE_CLASS, component.getClassName())
                 .putExtra(EXTRA_JOB_ID, job_id);
 
         new_intent.setClass(context, ActivityBroadcastReceiver.class);
-
         return new_intent;
     }
 
@@ -45,8 +45,6 @@ public class ActivityBroadcastReceiver extends BroadcastReceiver {
         try {
             if (intent.getExtras() == null)
                 throw new Exception("No extras found");
-
-
             // change intent's class to its intended service's class
             String service_class_name = intent.getStringExtra(EXTRA_SERVICE_CLASS);
             Log.e("broadcastreceiver", service_class_name);
@@ -60,8 +58,6 @@ public class ActivityBroadcastReceiver extends BroadcastReceiver {
                 throw new Exception("Service class found is not a JobIntentService: " + service_class.getName());
 
             intent.setClass(context, service_class);
-
-
             // get job id
             if (!intent.getExtras().containsKey(EXTRA_JOB_ID))
                 throw new Exception("No job ID found in extras");
@@ -74,11 +70,8 @@ public class ActivityBroadcastReceiver extends BroadcastReceiver {
             requestActivityUpdatesHandler();
 
             // start the service
-            //if(intent.getAction().equals
             JobIntentService.enqueueWork(context, service_class, job_id, intent);
             Log.e("broadcastreceiver", "enqueue work");
-
-
         } catch (Exception e) {
             System.err.println("Error starting service from receiver: " + e.getMessage());
         }
@@ -93,10 +86,8 @@ public class ActivityBroadcastReceiver extends BroadcastReceiver {
             @Override
             public void onSuccess(Void result) {
                 Log.e(TAG, "sucess update activities");
-
             }
         });
-
         task.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
