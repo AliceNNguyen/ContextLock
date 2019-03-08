@@ -36,7 +36,7 @@ public class Constants {
     public static final int NOTIFICATION_SEND_MAX_NUMBER = 5;
     public static final String NOTIFICATION_SEND_KEY = "notification_send_key";
     public static final int SURVEY_OPEN_NUMBER = 6;
-    public static final int STUDY_LENGTH = 7;
+    public static final int STUDY_LENGTH = 1;
     public static final String PREFERENCES = "com.example.alicenguyen.contextlock";
     public static final String FIRST_OPEN = "first_open_key";
     public static final String FIRST_OPEN_SURVEY = "first_open_survey_key";
