@@ -19,7 +19,7 @@ public class ExportDBHelper extends BroadcastReceiver {
     private LocalDatabase db;
     private Cursor cursor;
     private Context ctx;
-    private String userid, version;
+    private String userid, version, timestamp;
 
 
     @Override
@@ -36,10 +36,10 @@ public class ExportDBHelper extends BroadcastReceiver {
             do {
                 version = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.VERSION_KEY);
                 userid = cursor.getString(cursor.getColumnIndex(LocalDatabase.COLUMN_USERID));
-                String timestamp = cursor.getString(cursor.getColumnIndex(LocalDatabase.COLUMN_TIMESTAMP));
+                timestamp = cursor.getString(cursor.getColumnIndex(LocalDatabase.COLUMN_TIMESTAMP));
                 String detectedActivity = cursor.getString(cursor.getColumnIndex(LocalDatabase.COLUMN_DETECTED_ACTIVITY));
                 String detectedWeather = cursor.getString(cursor.getColumnIndex(LocalDatabase.COLUMN_DETECTED_WEATHER));
-                String send = cursor.getString(cursor.getColumnIndex(LocalDatabase.COLUMN_SEND));
+                String send = cursor.getString(cursor.getColumnIndex(LocalDatabase.COLUMN_ISLOCKED));
 
                 exportDataToFirebase(version, userid, timestamp, detectedActivity, detectedWeather, send);
             } while (cursor.moveToNext());
@@ -55,7 +55,7 @@ public class ExportDBHelper extends BroadcastReceiver {
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("logEvents").child(version).child(userid);
             ref.child(timestamp).child("detectedActivity").setValue(detectedActivity);
             ref.child(timestamp).child("detectedWeather").setValue(detectedWeather);
-            ref.child(timestamp).child("send").setValue(send);
+            ref.child(timestamp).child("isLocked").setValue(send);
             Log.e(TAG, "exported");
             //TODO
             //db.deleteAllData();
@@ -69,7 +69,12 @@ public class ExportDBHelper extends BroadcastReceiver {
     private void exportUnlockCounter(String userid, String version) {
         String unlockCounter = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.UNLOCK_COUNTER_KEY);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("unlockEvents").child(version).child(userid);
-        ref.child("unlockCounter").setValue(unlockCounter);
+        ref.child(timestamp).child("unlockCounter").setValue(unlockCounter);
+
+        if(Integer.parseInt(unlockCounter) > 0) {
+            ctx.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.UNLOCK_COUNTER_KEY).apply();
+        }
+
     }
 
     private void resetNotificationCounter() {

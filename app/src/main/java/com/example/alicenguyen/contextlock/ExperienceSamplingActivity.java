@@ -477,6 +477,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("prediction-rate").setValue(predictionValue);
         mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("annoyance-rate").setValue(annoyanceValue);
         mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("fingererror-value").setValue(fingerErrorValue);
+        NotificationHelper.cancelNotification(this, Constants.NOTIFICATION_ID);
         super.onDestroy();
     }
 

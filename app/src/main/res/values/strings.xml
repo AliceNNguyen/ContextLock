@@ -11,7 +11,7 @@
     <string name="pinlock_fingerprint">Use Fingerprint</string>
     <string name="pinlock_pin">Fingerprint might not working. Use PIN</string>
     <string name="set_pin">Change PIN</string>
-    <string name="set_id">Gebe deine erhaltene ID ein</string>
+    <string name="set_id">Enter your received ID</string>
     <string name="settings">Settings</string>
     <string name="title_activity_experience_sampling">ExperienceSamplingActivity</string>
     <string name="feedback_survey">Feedback on ContextLockScreen</string>
@@ -96,9 +96,9 @@
     <string name="dont_know">I don\'t know</string>
 
     <!--default notifcation messages-->
-    <string name="default_humidity">Humidity recognized.</string>
-    <string name="default_movement">Movement recognized.</string>
-    <string name="default_message">Your fingerprint might not working</string>
+    <string name="default_humidity">Humidity detected.</string>
+    <string name="default_movement">Movement detected.</string>
+    <string name="default_message">Your fingerprint might not work</string>
 
     <string name="no_condition_message">no condition met</string>
     <string name="previous">back</string>

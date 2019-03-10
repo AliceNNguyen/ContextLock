@@ -1,6 +1,7 @@
 package com.example.alicenguyen.contextlock;
 
 import android.annotation.TargetApi;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -9,8 +10,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 public class NotificationHelper extends ContextWrapper {
+    private static final String TAG = "NotificationHelper";
     public static final String channelID = "channelID";
     public static final String channelName = "Channel Name";
     private NotificationManager mManager;
@@ -39,6 +42,7 @@ public class NotificationHelper extends ContextWrapper {
 
     /*public method to cancel notification*/
     public static void cancelNotification(Context context, int notifyId) {
+        Log.e(TAG, "cancel Notification");
         NotificationManager mManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mManager.cancel(notifyId);
     }
@@ -58,6 +62,7 @@ public class NotificationHelper extends ContextWrapper {
                 // Set the intent that will fire when the user taps the notification
                 //.setContentIntent(pendingIntent)
                 .setTimeoutAfter(Constants.NOTIFICATION_TIMEOUT)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setAutoCancel(true);
     }
 }

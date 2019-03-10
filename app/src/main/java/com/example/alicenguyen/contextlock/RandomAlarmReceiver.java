@@ -23,15 +23,16 @@ public class RandomAlarmReceiver extends BroadcastReceiver {
 
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR_OF_DAY, random.nextInt(12-5) + 5);
+
         /*c.set(Calendar.MINUTE, random.nextInt(60));
         c.set(Calendar.SECOND, random.nextInt(999999999 + 1));*/
 
         /*Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, 19);
-        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.HOUR_OF_DAY, 16);
+        c.set(Calendar.MINUTE, 45);
         c.set(Calendar.SECOND, 0);*/
 
-        //alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+        //alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY / 3, pendingIntent);
 
     }

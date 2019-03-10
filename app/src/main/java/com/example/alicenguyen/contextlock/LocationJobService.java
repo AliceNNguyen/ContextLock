@@ -161,7 +161,7 @@ public class LocationJobService extends JobService {
         SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.NOTIFICATION_SEND_KEY, String.valueOf(notificationSendCounter));
 
         NotificationHelper notificationHelper = new NotificationHelper(this);
-        NotificationCompat.Builder nb = notificationHelper.getChannelNotification(R.mipmap.fingerprint_ic, getString(R.string.default_message));
+        NotificationCompat.Builder nb = notificationHelper.getChannelNotification(R.mipmap.fingerprint_ic, "");
         notificationHelper.getManager().notify(Constants.NOTIFICATION_ID, nb.build());
     }
 
@@ -228,6 +228,7 @@ public class LocationJobService extends JobService {
         }else{
             Log.e(TAG, "failed to insert DB");
             //TODO send failed log to firebase
+
         }
     }
 

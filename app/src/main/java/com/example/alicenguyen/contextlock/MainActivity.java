@@ -88,11 +88,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
-        /*if (!FirebaseApp.getApps(this).isEmpty()) {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        }*/
-
         notificationSettingsRequest();
         showPermissionDialog();
         setUserId();
@@ -111,7 +106,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void registerLockScreenReceiver() {
         mLockScreenReceiver = new LockScreenReceiver();
-        registerReceiver(mLockScreenReceiver, new IntentFilter("android.intent.action.USER_PRESENT"));
+
+        final IntentFilter intentFilter = new IntentFilter();
+        /** System Defined Broadcast */
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        intentFilter.addAction(Intent.ACTION_USER_PRESENT);
+        registerReceiver(mLockScreenReceiver, intentFilter);
+        //registerReceiver(mLockScreenReceiver, new IntentFilter("android.intent.action.USER_PRESENT"));
+
     }
 
 
@@ -147,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /*open initial survey when user clicks on confirm id button the first time*/
     private void openInitialSurvey() {
         boolean previouslyStarted = prefs.getBoolean(Constants.FIRST_OPEN_SURVEY, false);
         if(!previouslyStarted) {
@@ -195,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     // permission denied
-                    Toast.makeText(MainActivity.this, "Bitte GPS erlauben, um App nutzen zu können", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Please accept GPS permission to user the App", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -342,10 +346,14 @@ public class MainActivity extends AppCompatActivity {
             final AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light_Dialog));
             builder.setMessage("Notifications on your lock screen needs to be enabled for using the App.")
                     .setCancelable(false)
-                    .setPositiveButton("ّyes", new DialogInterface.OnClickListener() {
+                    .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                         public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                             Intent settingsIntent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
                                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    //for Android 5-7
+                                    .putExtra("app_package", getPackageName())
+                                    .putExtra("app_uid", getApplicationInfo().uid)
+                                    //for Android 8 and above
                                     .putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
                             startActivity(settingsIntent);
                         }
@@ -403,13 +411,14 @@ public class MainActivity extends AppCompatActivity {
         //TODO set alarm to midnight/after midnight after testing done
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR_OF_DAY, 24 );
-        c.set(Calendar.MINUTE, 00);
+        c.set(Calendar.MINUTE, 0);
 
         // alarm will fire the next day if alarm time is before current time
-        if (c.before(Calendar.getInstance())) {
+        /*if (c.before(Calendar.getInstance())) {
             c.add(Calendar.DATE, 1);
-        }
-        alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+        }*/
+
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     private void setRandomAlarmReceiver() {
@@ -422,7 +431,7 @@ public class MainActivity extends AppCompatActivity {
         c.add(Calendar.MINUTE, 5);
 
         Log.e(TAG, c.toString());
-        alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     /*Backup alarm scheduler to send notification. It makes sure that user will receive

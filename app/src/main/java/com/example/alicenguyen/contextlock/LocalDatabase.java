@@ -15,7 +15,7 @@ public class LocalDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_TIMESTAMP = "timestamp";
     public static final String COLUMN_DETECTED_ACTIVITY= "detected_activity";
     public static final String COLUMN_DETECTED_WEATHER = "detected_weather";
-    public static final String COLUMN_SEND = "send";
+    public static final String COLUMN_ISLOCKED = "is_locked";
 
 
     LocalDatabase(Context context) {
@@ -30,7 +30,7 @@ public class LocalDatabase extends SQLiteOpenHelper {
                 COLUMN_TIMESTAMP + " TEXT, " +
                 COLUMN_DETECTED_ACTIVITY + " TEXT, " +
                 COLUMN_DETECTED_WEATHER + " TEXT, " +
-                COLUMN_SEND + " TEXT" + ")");
+                COLUMN_ISLOCKED + " TEXT" + ")");
     }
 
     @Override
@@ -41,14 +41,14 @@ public class LocalDatabase extends SQLiteOpenHelper {
     }
 
     public boolean saveToDB(String userid, String timestamp, String detectedActivity,
-                            String detectedWeather, String send) {
+                            String detectedWeather, String isLocked) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(LocalDatabase.COLUMN_USERID, userid);
         values.put(LocalDatabase.COLUMN_TIMESTAMP, timestamp);
         values.put(LocalDatabase.COLUMN_DETECTED_ACTIVITY, detectedActivity);
         values.put(LocalDatabase.COLUMN_DETECTED_WEATHER, detectedWeather);
-        values.put(LocalDatabase.COLUMN_SEND, send);
+        values.put(LocalDatabase.COLUMN_ISLOCKED, isLocked);
         //values.put(LocalDatabase.COLUMN_SURVEY_CANCELED, surveyCanceled);
         long newRowId = database.insert(LocalDatabase.TABLE_NAME, null, values);
         if(newRowId == -1) {

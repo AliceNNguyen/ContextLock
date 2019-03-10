@@ -142,7 +142,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Log.e(TAG, String.valueOf(notificationSendCounter));
         SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.NOTIFICATION_SEND_KEY, String.valueOf(notificationSendCounter));
         NotificationHelper notificationHelper = new NotificationHelper(context);
-        NotificationCompat.Builder nb = notificationHelper.getChannelNotification(R.mipmap.fingerprint_ic, context.getString(R.string.default_message));
+        NotificationCompat.Builder nb = notificationHelper.getChannelNotification(R.mipmap.fingerprint_ic, "");
         notificationHelper.getManager().notify(Constants.NOTIFICATION_ID, nb.build());
 
 
