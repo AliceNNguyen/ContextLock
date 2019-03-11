@@ -15,7 +15,7 @@ public class Constants {
     //public static final String BROADCAST_DETECTED_GOOGLE_LOCATION = "google_location_intent";
 
     public static final int JOB_SERVICE_INTERVAL = 60 * 60 * 1000;
-    public static final int NOTIFICATION_TIMEOUT = 5 * 60 * 1000;
+    public static final int NOTIFICATION_TIMEOUT = 120 * 60 * 1000; //2 hours
 
     public static final String CHANNEL_ID = "context-notification-id";
     public static final String CHANNEL_ID_DEFAULT = "notification-default-id";
@@ -26,6 +26,11 @@ public class Constants {
     public static final String COOLDOWN_KEY = "cooldown_key";
     public static final String SWITCH_VERSION_KEY = "switch_version_key";
     public static final String VERSION_KEY = "version_key";
+
+
+    public static final String NOTIFICATION_MESSAGE_KEY = "notification_message_key";
+    public static final String NOTIFICATION_ICON_KEY = "notification_icon_key";
+    public static final String NOTIFICATION_STORE_KEY = "notification_store_key";
 
     public static final String VERSION_A = "version_A";
     public static final String VERSION_B = "version_B";

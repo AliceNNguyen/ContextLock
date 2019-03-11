@@ -65,7 +65,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         checkIfScreenLocked();
 
         Log.e(TAG, "send counter: " + notificationSendCounter);
-        if(isLocked && notificationSendCounter < Constants.NOTIFICATION_SEND_MAX_NUMBER) {
+        if(notificationSendCounter < Constants.NOTIFICATION_SEND_MAX_NUMBER) {
             //sendNotification();
             int id = Integer.parseInt(userid);
             Log.e(TAG, "ABC");
@@ -85,14 +85,29 @@ public class AlarmReceiver extends BroadcastReceiver {
                     if ((id % 2) == 0) {
                         // number is even
                         Log.e(TAG, "non condition notification");
-                        setNonContextNotification();
+
+                        if(isLocked) {
+                            setNonContextNotification();
+                            openSurvey();
+                        }else {
+                            bufferNotification(" ", R.mipmap.fingerprint_ic);
+                            updateSendCounter();
+                        }
                         SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_A );
                     }
                     else {
                         // number is odd
                         Log.e(TAG, "condition notification");
                         SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_B);
-                        setContextNotification();
+                        if(isLocked){
+                            setContextNotification();
+                            openSurvey();
+
+                        }else {
+                            setNotificationMessage();
+                            bufferNotification(message, icon);
+                            updateSendCounter();
+                        }
 
                     }
                 }
@@ -101,13 +116,27 @@ public class AlarmReceiver extends BroadcastReceiver {
                     if ((id % 2) == 0) {
                         // number is even
                         SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_B );
-                        setContextNotification();
+                        if(isLocked) {
+                            setContextNotification();
+                            openSurvey();
+
+                        }else {
+                            setNotificationMessage();
+                            bufferNotification(message, icon);
+                            updateSendCounter();
+                        }
 
                     }
                     else {
                         // number is odd
                         SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_A );
-                        setNonContextNotification();
+                        if(isLocked) {
+                            setNonContextNotification();
+                            openSurvey();
+                        }else {
+                            bufferNotification(" ", R.mipmap.fingerprint_ic);
+                            updateSendCounter();
+                        }
                     }
                 }
 
@@ -116,10 +145,24 @@ public class AlarmReceiver extends BroadcastReceiver {
                 Log.e(TAG, "error parse date");
             }
             //openExperienceSampling();
-            openSurvey();
+            //openSurvey();
         }else {
             Log.e(TAG, "counter max reached");
         }
+
+    }
+
+    private void updateSendCounter() {
+        notificationSendCounter++;
+        SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.NOTIFICATION_SEND_KEY, String.valueOf(notificationSendCounter));
+    }
+
+    private void bufferNotification(String message, int icon) {
+        Log.e(TAG, "bufferNotification");
+        Log.e(TAG, String.valueOf(icon));
+        SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.NOTIFICATION_STORE_KEY, "true");
+        SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.NOTIFICATION_MESSAGE_KEY, message);
+        SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.NOTIFICATION_ICON_KEY, String.valueOf(icon));
 
     }
 
@@ -136,13 +179,15 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     }
 
+
     private void setNonContextNotification() {
         Log.e(TAG, "send");
         notificationSendCounter++;
         Log.e(TAG, String.valueOf(notificationSendCounter));
+        icon = R.mipmap.fingerprint_ic;
         SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.NOTIFICATION_SEND_KEY, String.valueOf(notificationSendCounter));
         NotificationHelper notificationHelper = new NotificationHelper(context);
-        NotificationCompat.Builder nb = notificationHelper.getChannelNotification(R.mipmap.fingerprint_ic, "");
+        NotificationCompat.Builder nb = notificationHelper.getChannelNotification(icon, "");
         notificationHelper.getManager().notify(Constants.NOTIFICATION_ID, nb.build());
 
 

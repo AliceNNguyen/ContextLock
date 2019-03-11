@@ -61,7 +61,7 @@ public class NotificationHelper extends ContextWrapper {
                         .bigText(getString(R.string.default_message)))
                 // Set the intent that will fire when the user taps the notification
                 //.setContentIntent(pendingIntent)
-                .setTimeoutAfter(Constants.NOTIFICATION_TIMEOUT)
+                //.setTimeoutAfter(Constants.NOTIFICATION_TIMEOUT)
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setAutoCancel(true);
     }

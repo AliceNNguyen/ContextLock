@@ -21,19 +21,28 @@ public class RandomAlarmReceiver extends BroadcastReceiver {
         Random random = new Random();
 
 
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, random.nextInt(12-5) + 5);
+        /*set random alarm three time each day between 5 and 23 o'clock*/
+        Calendar c1 = Calendar.getInstance();
+        c1.set(Calendar.HOUR_OF_DAY, random.nextInt(23-17) + 27);
+
+        Calendar c2 = Calendar.getInstance();
+        c2.set(Calendar.HOUR_OF_DAY, random.nextInt(17-11) + 11);
+
+        Calendar c3= Calendar.getInstance();
+        c3.set(Calendar.HOUR_OF_DAY, random.nextInt(11-5) + 5);
 
         /*c.set(Calendar.MINUTE, random.nextInt(60));
         c.set(Calendar.SECOND, random.nextInt(999999999 + 1));*/
 
         /*Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, 16);
-        c.set(Calendar.MINUTE, 45);
+        c.set(Calendar.HOUR_OF_DAY, 22);
+        c.set(Calendar.MINUTE, 17);
         c.set(Calendar.SECOND, 0);*/
 
-        //alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY / 3, pendingIntent);
+        //alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c1.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c2.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c3.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
     }
 }
