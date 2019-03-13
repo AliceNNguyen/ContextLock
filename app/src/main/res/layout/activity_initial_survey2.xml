@@ -83,7 +83,7 @@
                 android:textSize="@dimen/question_text_size" />
 
             <TextView
-                android:id="@+id/once_a_day"
+                android:id="@+id/never"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/init_survey_btn_margin"
@@ -92,14 +92,14 @@
                 android:paddingTop="@dimen/init_survey_btn_padding"
                 android:paddingRight="@dimen/init_survey_btn_padding"
                 android:paddingBottom="@dimen/init_survey_btn_padding"
-                android:text="once a day"
+                android:text="Never"
                 android:textColor="@color/init_survey_btn_text_color"
                 android:textSize="@dimen/init_survey_btn_text_size"
                 android:textStyle="bold"
                 android:onClick="onButtonClicked"/>
 
             <TextView
-                android:id="@+id/once_a_week"
+                android:id="@+id/less_a_month"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/init_survey_btn_margin"
@@ -108,7 +108,7 @@
                 android:paddingTop="@dimen/init_survey_btn_padding"
                 android:paddingRight="@dimen/init_survey_btn_padding"
                 android:paddingBottom="@dimen/init_survey_btn_padding"
-                android:text="once a week"
+                android:text="less than once a month"
                 android:textColor="@color/init_survey_btn_text_color"
                 android:textSize="@dimen/init_survey_btn_text_size"
                 android:textStyle="bold"
@@ -130,21 +130,6 @@
                 android:textStyle="bold"
                 android:onClick="onButtonClicked"/>
 
-            <TextView
-                android:id="@+id/more_a_day"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/init_survey_btn_margin"
-                android:background="@drawable/survey_btn_border"
-                android:paddingLeft="@dimen/init_survey_btn_padding_left"
-                android:paddingTop="@dimen/init_survey_btn_padding"
-                android:paddingRight="@dimen/init_survey_btn_padding"
-                android:paddingBottom="@dimen/init_survey_btn_padding"
-                android:text="more than once a day"
-                android:textColor="@color/init_survey_btn_text_color"
-                android:textSize="@dimen/init_survey_btn_text_size"
-                android:textStyle="bold"
-                android:onClick="onButtonClicked"/>
 
             <TextView
                 android:id="@+id/more_a_week"
@@ -163,7 +148,7 @@
                 android:onClick="onButtonClicked"/>
 
             <TextView
-                android:id="@+id/less_a_month"
+                android:id="@+id/once_a_week"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/init_survey_btn_margin"
@@ -172,11 +157,47 @@
                 android:paddingTop="@dimen/init_survey_btn_padding"
                 android:paddingRight="@dimen/init_survey_btn_padding"
                 android:paddingBottom="@dimen/init_survey_btn_padding"
-                android:text="less than once a month"
+                android:text="once a week"
                 android:textColor="@color/init_survey_btn_text_color"
                 android:textSize="@dimen/init_survey_btn_text_size"
                 android:textStyle="bold"
                 android:onClick="onButtonClicked"/>
+
+
+            <TextView
+                android:id="@+id/more_a_day"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/init_survey_btn_margin"
+                android:background="@drawable/survey_btn_border"
+                android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                android:paddingTop="@dimen/init_survey_btn_padding"
+                android:paddingRight="@dimen/init_survey_btn_padding"
+                android:paddingBottom="@dimen/init_survey_btn_padding"
+                android:text="more than once a day"
+                android:textColor="@color/init_survey_btn_text_color"
+                android:textSize="@dimen/init_survey_btn_text_size"
+                android:textStyle="bold"
+                android:onClick="onButtonClicked"/>
+
+
+            <TextView
+                android:id="@+id/once_a_day"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/init_survey_btn_margin"
+                android:background="@drawable/survey_btn_border"
+                android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                android:paddingTop="@dimen/init_survey_btn_padding"
+                android:paddingRight="@dimen/init_survey_btn_padding"
+                android:paddingBottom="@dimen/init_survey_btn_padding"
+                android:text="once a day"
+                android:textColor="@color/init_survey_btn_text_color"
+                android:textSize="@dimen/init_survey_btn_text_size"
+                android:textStyle="bold"
+                android:onClick="onButtonClicked"/>
+
+
         </LinearLayout>
     </LinearLayout>
 

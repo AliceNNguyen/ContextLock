@@ -382,14 +382,16 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         reasonEditextVersionA = findViewById(R.id.reasonDefaultEdittext);
     }
 
+    private void insertToFirebase() {
+        mDatabaseReference.child("logEvents").child(version).child(userid).child(currenttime.toString()).child("notNowButton").setValue("clicked");
+    }
+
     private void initNotNowButton() {
         notNowButton = findViewById(R.id.not_now_button);
         notNowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle params = new Bundle();
-                params.putString("not_now_click", "true");
-                mFirebaseAnalytics.logEvent("not_now_click", params);
+                insertToFirebase();
                 NotificationHelper.cancelNotification(ExperienceSamplingActivity.this, Constants.NOTIFICATION_ID);
                 finishAffinity();
             }

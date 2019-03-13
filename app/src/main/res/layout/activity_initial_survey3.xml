@@ -84,6 +84,89 @@
                 android:padding="20dp"
                 android:layout_marginBottom="20dp"
                 android:text="How often do you experience lockout scenarios?"/>
+
+            <TextView
+                android:id="@+id/never"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/init_survey_btn_margin"
+                android:background="@drawable/survey_btn_border"
+                android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                android:paddingTop="@dimen/init_survey_btn_padding"
+                android:paddingRight="@dimen/init_survey_btn_padding"
+                android:paddingBottom="@dimen/init_survey_btn_padding"
+                android:text="Never"
+                android:textColor="@color/init_survey_btn_text_color"
+                android:textSize="@dimen/init_survey_btn_text_size"
+                android:textStyle="bold"
+                android:onClick="onButtonClicked"/>
+
+            <TextView
+                android:id="@+id/less_a_month"
+                android:layout_marginTop="@dimen/init_survey_btn_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="less than once a month"
+                android:textStyle="bold"
+                android:textColor="@color/init_survey_btn_text_color"
+                android:textSize="@dimen/init_survey_btn_text_size"
+                android:background="@drawable/survey_btn_border"
+                android:paddingRight="@dimen/init_survey_btn_padding"
+                android:paddingTop="@dimen/init_survey_btn_padding"
+                android:paddingBottom="@dimen/init_survey_btn_padding"
+                android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                android:onClick="onButtonClicked"/>
+
+            <TextView
+                android:id="@+id/once_a_month"
+                android:layout_marginTop="@dimen/init_survey_btn_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="once a month"
+                android:textStyle="bold"
+                android:textColor="@color/init_survey_btn_text_color"
+                android:textSize="@dimen/init_survey_btn_text_size"
+                android:background="@drawable/survey_btn_border"
+                android:paddingRight="@dimen/init_survey_btn_padding"
+                android:paddingTop="@dimen/init_survey_btn_padding"
+                android:paddingBottom="@dimen/init_survey_btn_padding"
+                android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                android:onClick="onButtonClicked"/>
+
+            <TextView
+                android:id="@+id/once_a_week"
+                android:layout_marginTop="@dimen/init_survey_btn_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="once a week"
+                android:textStyle="bold"
+                android:textColor="@color/init_survey_btn_text_color"
+                android:textSize="@dimen/init_survey_btn_text_size"
+                android:background="@drawable/survey_btn_border"
+                android:paddingRight="@dimen/init_survey_btn_padding"
+                android:paddingTop="@dimen/init_survey_btn_padding"
+                android:paddingBottom="@dimen/init_survey_btn_padding"
+                android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                android:onClick="onButtonClicked"/>
+
+            <TextView
+                android:id="@+id/more_a_week"
+                android:layout_marginTop="@dimen/init_survey_btn_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="more than once a week"
+                android:textStyle="bold"
+                android:textColor="@color/init_survey_btn_text_color"
+                android:textSize="@dimen/init_survey_btn_text_size"
+                android:background="@drawable/survey_btn_border"
+                android:paddingRight="@dimen/init_survey_btn_padding"
+                android:paddingTop="@dimen/init_survey_btn_padding"
+                android:paddingBottom="@dimen/init_survey_btn_padding"
+                android:paddingLeft="@dimen/init_survey_btn_padding_left"
+                android:onClick="onButtonClicked"/>
+
+
+
             <TextView
                 android:id="@+id/once_a_day"
                 android:layout_marginTop="@dimen/init_survey_btn_margin"
@@ -100,36 +183,7 @@
                 android:paddingLeft="@dimen/init_survey_btn_padding_left"
                 android:onClick="onButtonClicked"
                 />
-            <TextView
-                android:id="@+id/once_a_week"
-                android:layout_marginTop="@dimen/init_survey_btn_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="once a week"
-                android:textStyle="bold"
-                android:textColor="@color/init_survey_btn_text_color"
-                android:textSize="@dimen/init_survey_btn_text_size"
-                android:background="@drawable/survey_btn_border"
-                android:paddingRight="@dimen/init_survey_btn_padding"
-                android:paddingTop="@dimen/init_survey_btn_padding"
-                android:paddingBottom="@dimen/init_survey_btn_padding"
-                android:paddingLeft="@dimen/init_survey_btn_padding_left"
-                android:onClick="onButtonClicked"/>
-            <TextView
-                android:id="@+id/once_a_month"
-                android:layout_marginTop="@dimen/init_survey_btn_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="once a month"
-                android:textStyle="bold"
-                android:textColor="@color/init_survey_btn_text_color"
-                android:textSize="@dimen/init_survey_btn_text_size"
-                android:background="@drawable/survey_btn_border"
-                android:paddingRight="@dimen/init_survey_btn_padding"
-                android:paddingTop="@dimen/init_survey_btn_padding"
-                android:paddingBottom="@dimen/init_survey_btn_padding"
-                android:paddingLeft="@dimen/init_survey_btn_padding_left"
-                android:onClick="onButtonClicked"/>
+
             <TextView
                 android:id="@+id/more_a_day"
                 android:layout_marginTop="@dimen/init_survey_btn_margin"
@@ -145,36 +199,8 @@
                 android:paddingBottom="@dimen/init_survey_btn_padding"
                 android:paddingLeft="@dimen/init_survey_btn_padding_left"
                 android:onClick="onButtonClicked"/>
-            <TextView
-                android:id="@+id/more_a_week"
-                android:layout_marginTop="@dimen/init_survey_btn_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="more than once a week"
-                android:textStyle="bold"
-                android:textColor="@color/init_survey_btn_text_color"
-                android:textSize="@dimen/init_survey_btn_text_size"
-                android:background="@drawable/survey_btn_border"
-                android:paddingRight="@dimen/init_survey_btn_padding"
-                android:paddingTop="@dimen/init_survey_btn_padding"
-                android:paddingBottom="@dimen/init_survey_btn_padding"
-                android:paddingLeft="@dimen/init_survey_btn_padding_left"
-                android:onClick="onButtonClicked"/>
-            <TextView
-                android:id="@+id/less_a_month"
-                android:layout_marginTop="@dimen/init_survey_btn_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="less than once a month"
-                android:textStyle="bold"
-                android:textColor="@color/init_survey_btn_text_color"
-                android:textSize="@dimen/init_survey_btn_text_size"
-                android:background="@drawable/survey_btn_border"
-                android:paddingRight="@dimen/init_survey_btn_padding"
-                android:paddingTop="@dimen/init_survey_btn_padding"
-                android:paddingBottom="@dimen/init_survey_btn_padding"
-                android:paddingLeft="@dimen/init_survey_btn_padding_left"
-                android:onClick="onButtonClicked"/>
+
+
         </LinearLayout>
     </LinearLayout>
 

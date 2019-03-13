@@ -75,7 +75,7 @@
     <dimen name="button_weight">0.3</dimen>
     <dimen name="button_margin">5dp</dimen>
 
-    <dimen name="edit_text_size">15sp</dimen>
+    <dimen name="edit_text_size">20sp</dimen>
 
     //initial survey
     <dimen name="question_text_size">18sp</dimen>

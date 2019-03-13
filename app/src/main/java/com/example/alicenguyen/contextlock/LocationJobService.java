@@ -2,27 +2,18 @@ package com.example.alicenguyen.contextlock;
 
 import android.Manifest;
 import android.app.KeyguardManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 
@@ -32,7 +23,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -83,7 +73,7 @@ public class LocationJobService extends JobService {
         Log.e(TAG, "job started");
         //createNotificationChannel();
         SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE);
-        userid = pref.getString(Constants.KEY_ID, "no id");
+        userid = pref.getString(Constants.KEY_ID, "0");
         Date date = Calendar.getInstance().getTime();
         currentDate = simpleDateFormat.format(date);
         switchVersionDate = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.SWITCH_VERSION_KEY);
@@ -92,7 +82,6 @@ public class LocationJobService extends JobService {
         Log.e(TAG, currentDate);
         Log.e(TAG, switchVersionDate);
         doBackgroundWork(params);
-        Log.e(TAG, currentDate);
         return true;
     }
 
@@ -145,9 +134,10 @@ public class LocationJobService extends JobService {
     private void setContextNotification() {
         Log.e(TAG, "send");
         //setNotificationMessage();
-        notificationSendCounter++;
+        updateSendCounter();
         Log.e(TAG, String.valueOf(notificationSendCounter));
-        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.NOTIFICATION_SEND_KEY, String.valueOf(notificationSendCounter));
+        /*notificationSendCounter++;
+        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.NOTIFICATION_SEND_KEY, String.valueOf(notificationSendCounter));*/
 
         NotificationHelper notificationHelper = new NotificationHelper(this);
         NotificationCompat.Builder nb = notificationHelper.getChannelNotification(icon, message);
@@ -156,9 +146,10 @@ public class LocationJobService extends JobService {
 
     private void setNonContextNotification() {
         Log.e(TAG, "send");
-        notificationSendCounter++;
+        updateSendCounter();
         Log.e(TAG, String.valueOf(notificationSendCounter));
-        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.NOTIFICATION_SEND_KEY, String.valueOf(notificationSendCounter));
+        /*notificationSendCounter++;
+        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.NOTIFICATION_SEND_KEY, String.valueOf(notificationSendCounter));*/
 
         NotificationHelper notificationHelper = new NotificationHelper(this);
         NotificationCompat.Builder nb = notificationHelper.getChannelNotification(R.mipmap.fingerprint_ic, "");
@@ -187,35 +178,71 @@ public class LocationJobService extends JobService {
                    // number is even
                    Log.e(TAG, "non condition notification");
                    SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_A);
-                   setNonContextNotification();
+
+                   if(isLocked){
+                       setNonContextNotification();
+                       openSurvey();
+                   }else{
+                       bufferNotification(" ", R.mipmap.fingerprint_ic);
+                       updateSendCounter();
+                   }
                }
                else {
                    // number is odd
                    Log.e(TAG, "condition notification");
                    SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_B );
-                   setContextNotification();
+
+                   if(isLocked){
+                       setContextNotification();
+                       openSurvey();
+                   }else{
+                       bufferNotification(message, icon);
+                       updateSendCounter();
+                   }
                }
            }
-           if(current.after(switchDate)) {
+           if(current.equals(switchDate) || current.after(switchDate)) {
                if ((id % 2) == 0) {
                    // number is even
                    SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_B );
-                   setContextNotification();
+                   if(isLocked) {
+                       setContextNotification();
+                       openSurvey();
+                   }else {
+                       bufferNotification(message, icon);
+                   }
                }
                else {
                    // number is odd
                    SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_A );
-                   setNonContextNotification();
+                   if(isLocked) {
+                       setNonContextNotification();
+                       openSurvey();
+                   }else {
+                       bufferNotification(" ", R.mipmap.fingerprint_ic);
+                       updateSendCounter();
+                   }
                }
            }
        } catch (ParseException e) {
            e.printStackTrace();
            Log.e(TAG, "error parse date");
        }
-       //saveToDB();
-       //openExperienceSampling();
-       openSurvey();
    }
+
+
+    private void updateSendCounter() {
+        notificationSendCounter++;
+        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.NOTIFICATION_SEND_KEY, String.valueOf(notificationSendCounter));
+    }
+
+    private void bufferNotification(String message, int icon) {
+        Log.e(TAG, "bufferNotification");
+        Log.e(TAG, String.valueOf(icon));
+        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.NOTIFICATION_STORE_KEY, "true");
+        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.NOTIFICATION_MESSAGE_KEY, message);
+        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.NOTIFICATION_ICON_KEY, String.valueOf(icon));
+    }
 
    /*write weather data to local database*/
     private void writeLogEventsToDB() {
@@ -238,8 +265,10 @@ public class LocationJobService extends JobService {
         Log.d("gps enabled", String.valueOf(isGPSEnabled));
         checkIfScreenLocked();
         Log.e(TAG, String.valueOf(isLocked));
+        Log.e(TAG, String.valueOf(notificationSendCounter));
 
-        if(isLocked && notificationSendCounter < Constants.NOTIFICATION_SEND_MAX_NUMBER) {
+
+        if(notificationSendCounter < Constants.NOTIFICATION_SEND_MAX_NUMBER) {
             Log.e(TAG, String.valueOf(isLocked));
             if(mainWeather.contains("Rain") /*&& provider.equals("gps")*/) {
                 //sendNotification(getString(R.string.rain), R.mipmap.raindrop_ic);
@@ -267,9 +296,9 @@ public class LocationJobService extends JobService {
                 message = getString(R.string.humdidity);
                 icon = R.mipmap.humidity_ic;
                 setNotificationVersion();
-            }else {
+            }/*else {
                 Log.e(TAG, "Alles gut");
-            }
+            }*/
         }
         writeLogEventsToDB();
     }

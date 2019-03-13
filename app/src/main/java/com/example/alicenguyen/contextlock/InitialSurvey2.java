@@ -16,7 +16,7 @@ import org.w3c.dom.Text;
 
 public class InitialSurvey2 extends AppCompatActivity {
     private static final String FINGER_ERROR_FREQUENCY_KEY = "error_frequency_id_key";
-    private TextView onceADay, onceAWeek, onceAMonth, multipeADay, mulipleAWeek, lessAMonth;
+    private TextView never,onceADay, onceAWeek, onceAMonth, multipeADay, mulipleAWeek, lessAMonth;
     private String value;
 
     @Override
@@ -42,6 +42,7 @@ public class InitialSurvey2 extends AppCompatActivity {
     }
 
     private void initButtons() {
+        never = findViewById(R.id.never);
         onceADay = findViewById(R.id.once_a_day);
         onceAWeek = findViewById(R.id.once_a_week);
         onceAMonth = findViewById(R.id.once_a_month);
@@ -79,7 +80,40 @@ public class InitialSurvey2 extends AppCompatActivity {
 
     public void onButtonClicked(View view) {
         switch (view.getId()) {
+            case (R.id.never):
+                never.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.checkmark, 0);
+                never.setBackground(getDrawable(R.drawable.survey_btn_border_active));
+
+                //onceADay.setBackgroundColor(ContextCompat.getColor(this, R.color.button_active_color));
+                onceADay.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                onceADay.setBackground(getDrawable(R.drawable.survey_btn_border));
+
+                //onceAWeek.setBackgroundColor(ContextCompat.getColor(this, R.color.teal));
+                onceAWeek.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                onceAWeek.setBackground(getDrawable(R.drawable.survey_btn_border));
+
+                //onceAMonth.setBackgroundColor(ContextCompat.getColor(this, R.color.teal));
+                onceAMonth.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                onceAMonth.setBackground(getDrawable(R.drawable.survey_btn_border));
+
+                //multipeADay.setBackgroundColor(ContextCompat.getColor(this, R.color.teal));
+                multipeADay.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                multipeADay.setBackground(getDrawable(R.drawable.survey_btn_border));
+
+                //mulipleAWeek.setBackgroundColor(ContextCompat.getColor(this, R.color.teal));
+                mulipleAWeek.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                mulipleAWeek.setBackground(getDrawable(R.drawable.survey_btn_border));
+
+                //lessAMonth.setBackgroundColor(ContextCompat.getColor(this, R.color.teal));
+                lessAMonth.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                lessAMonth.setBackground(getDrawable(R.drawable.survey_btn_border));
+
+                break;
+
             case (R.id.once_a_day):
+                never.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                never.setBackground(getDrawable(R.drawable.survey_btn_border));
+
                 //onceADay.setBackgroundColor(ContextCompat.getColor(this, R.color.button_active_color));
                 onceADay.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.checkmark, 0);
                 onceADay.setBackground(getDrawable(R.drawable.survey_btn_border_active));
@@ -106,6 +140,9 @@ public class InitialSurvey2 extends AppCompatActivity {
 
                 break;
             case (R.id.once_a_week):
+                never.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                never.setBackground(getDrawable(R.drawable.survey_btn_border));
+
                 //onceADay.setBackgroundColor(ContextCompat.getColor(this, R.color.teal));
                 onceADay.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                 onceADay.setBackground(getDrawable(R.drawable.survey_btn_border));
@@ -131,6 +168,9 @@ public class InitialSurvey2 extends AppCompatActivity {
                 lessAMonth.setBackground(getDrawable(R.drawable.survey_btn_border));
                 break;
             case (R.id.once_a_month):
+                never.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                never.setBackground(getDrawable(R.drawable.survey_btn_border));
+
                 //onceADay.setBackgroundColor(ContextCompat.getColor(this, R.color.teal));
                 onceADay.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                 onceADay.setBackground(getDrawable(R.drawable.survey_btn_border));
@@ -156,6 +196,9 @@ public class InitialSurvey2 extends AppCompatActivity {
                 lessAMonth.setBackground(getDrawable(R.drawable.survey_btn_border));
                 break;
             case (R.id.more_a_day):
+                never.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                never.setBackground(getDrawable(R.drawable.survey_btn_border));
+
                 //onceADay.setBackgroundColor(ContextCompat.getColor(this, R.color.teal));
                 onceADay.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                 onceADay.setBackground(getDrawable(R.drawable.survey_btn_border));
@@ -181,6 +224,9 @@ public class InitialSurvey2 extends AppCompatActivity {
                 lessAMonth.setBackground(getDrawable(R.drawable.survey_btn_border));
                 break;
             case (R.id.more_a_week):
+                never.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                never.setBackground(getDrawable(R.drawable.survey_btn_border));
+
                 //onceADay.setBackgroundColor(ContextCompat.getColor(this, R.color.teal));
                 onceADay.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                 onceADay.setBackground(getDrawable(R.drawable.survey_btn_border));
@@ -206,6 +252,9 @@ public class InitialSurvey2 extends AppCompatActivity {
                 lessAMonth.setBackground(getDrawable(R.drawable.survey_btn_border));
                 break;
             case (R.id.less_a_month):
+                never.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                never.setBackground(getDrawable(R.drawable.survey_btn_border));
+
                 //onceADay.setBackgroundColor(ContextCompat.getColor(this, R.color.teal));
                 onceADay.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                 onceADay.setBackground(getDrawable(R.drawable.survey_btn_border));

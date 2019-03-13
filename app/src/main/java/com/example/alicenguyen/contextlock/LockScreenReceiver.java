@@ -28,7 +28,6 @@ public class LockScreenReceiver extends BroadcastReceiver {
         ctx = context.getApplicationContext();
         unlockCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.UNLOCK_COUNTER_KEY));
 
-
         KeyguardManager myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         if( myKM.isKeyguardLocked()) {
             Log.e(TAG, "device is locked");
@@ -38,8 +37,22 @@ public class LockScreenReceiver extends BroadcastReceiver {
             Log.e(TAG, "device not locked");
             Log.e(TAG, String.valueOf(unlockCounter));
             //it is not locked
+            writeUnlockEventsToDB(context);
+            unlockCounter++;
             SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.UNLOCK_COUNTER_KEY, String.valueOf(unlockCounter));
             NotificationHelper.cancelNotification(context, Constants.NOTIFICATION_ID);
+        }
+    }
+    private void writeUnlockEventsToDB(Context context) {
+        LocalDatabase mDb = new LocalDatabase(context);
+        Date currenttime = Calendar.getInstance().getTime();
+        boolean isInserted = mDb.saveUnlockEventsToDB(currenttime.toString());
+        if(isInserted == true) {
+            Log.e(TAG, "insertedToDB");
+        }else{
+            Log.e(TAG, "failed to insert DB");
+            //TODO send failed log to firebase
+
         }
     }
 
@@ -50,6 +63,7 @@ public class LockScreenReceiver extends BroadcastReceiver {
     }
 
     private void resetSharedPreferences() {
+
         ctx.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.NOTIFICATION_MESSAGE_KEY).apply();
         ctx.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.NOTIFICATION_ICON_KEY).apply();
         ctx.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.NOTIFICATION_STORE_KEY).apply();

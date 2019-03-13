@@ -35,6 +35,7 @@
     <color name="button_active_color">#30a698</color>
     <color name="question_text_color">@color/dark_grey</color>
     <color name="init_survey_btn_text_color">@color/white</color>
+    <color name="contact_color">#afafaf</color>
 
 </resources>
 

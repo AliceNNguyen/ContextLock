@@ -23,7 +23,7 @@ public class RandomAlarmReceiver extends BroadcastReceiver {
 
         /*set random alarm three time each day between 5 and 23 o'clock*/
         Calendar c1 = Calendar.getInstance();
-        c1.set(Calendar.HOUR_OF_DAY, random.nextInt(23-17) + 27);
+        c1.set(Calendar.HOUR_OF_DAY, random.nextInt(23-17) + 23);
 
         Calendar c2 = Calendar.getInstance();
         c2.set(Calendar.HOUR_OF_DAY, random.nextInt(17-11) + 11);

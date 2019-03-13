@@ -1,24 +1,13 @@
 package com.example.alicenguyen.contextlock;
 
 import android.app.KeyguardManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.os.Bundle;
-import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.view.View;
-
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,14 +18,13 @@ import java.util.Random;
 public class AlarmReceiver extends BroadcastReceiver {
 
     private static final String TAG = "AlarmReceiver";
-    NotificationManager notificationManager;
     private boolean isLocked;
     private Context context;
     private String userid, message;
     private Date currenttime, current, switchDate;
     private SharedPreferencesStorage sharedPreferencesStorage;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-    private String currentDate, storedDate, switchVersionDate;
+    private String currentDate, switchVersionDate;
     private String cooldown, notificationmessage;
     private int opensurveycounter, icon;
     private int notificationSendCounter = 0;
@@ -111,7 +99,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                     }
                 }
-                if(current.after(switchDate)) {
+                if(current.equals(switchDate) || current.after(switchDate)) {
 
                     if ((id % 2) == 0) {
                         // number is even
@@ -175,8 +163,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         NotificationHelper notificationHelper = new NotificationHelper(context);
         NotificationCompat.Builder nb = notificationHelper.getChannelNotification(icon, message);
         notificationHelper.getManager().notify(Constants.NOTIFICATION_ID, nb.build());
-
-
     }
 
 
@@ -189,8 +175,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         NotificationHelper notificationHelper = new NotificationHelper(context);
         NotificationCompat.Builder nb = notificationHelper.getChannelNotification(icon, "");
         notificationHelper.getManager().notify(Constants.NOTIFICATION_ID, nb.build());
-
-
     }
 
     private void setNotificationMessage() {

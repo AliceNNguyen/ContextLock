@@ -17,6 +17,9 @@ public class LocalDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_DETECTED_WEATHER = "detected_weather";
     public static final String COLUMN_ISLOCKED = "is_locked";
 
+    public static final String TABLE_NAME_UNLOCK = "unlockevents_table";
+    public static final String COLUMN_ON_UNLOCK = "on_unlock";
+
 
     LocalDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -31,11 +34,16 @@ public class LocalDatabase extends SQLiteOpenHelper {
                 COLUMN_DETECTED_ACTIVITY + " TEXT, " +
                 COLUMN_DETECTED_WEATHER + " TEXT, " +
                 COLUMN_ISLOCKED + " TEXT" + ")");
+
+        sqLiteDatabase.execSQL("CREATE TABLE " + TABLE_NAME_UNLOCK + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_ON_UNLOCK + " TEXT" + ")");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ TABLE_NAME_UNLOCK);
         onCreate(sqLiteDatabase);
 
     }
@@ -58,9 +66,27 @@ public class LocalDatabase extends SQLiteOpenHelper {
         }
     }
 
+    public boolean saveUnlockEventsToDB(String timestamp) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(LocalDatabase.COLUMN_ON_UNLOCK, timestamp);
+        long newRowId = database.insert(LocalDatabase.TABLE_NAME_UNLOCK, null, values);
+        if(newRowId == -1) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     public Cursor getAllData() {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select * from "+ TABLE_NAME,null);
+        return res;
+    }
+
+    public Cursor getUnlockData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from "+ TABLE_NAME_UNLOCK,null);
         return res;
     }
 

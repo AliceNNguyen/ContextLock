@@ -219,7 +219,7 @@ public class UserActivityJobIntentService extends JobIntentService {
                     setContextNotification();
                 }
             }
-            if(current.after(switchDate)) {
+            if(current.equals(switchDate) || current.after(switchDate)) {
                 if ((id % 2) == 0) {
                     // number is even
                     SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_B );
@@ -241,7 +241,7 @@ public class UserActivityJobIntentService extends JobIntentService {
     /*set values to context parameters*/
     private void checkContextForNotification() {
         Log.e(TAG, userActivity);
-        Log.e(TAG, "send notification counter:" + opensurveycounter);
+        Log.e(TAG, "send notification counter:" + notificationSendCounter);
         checkIfScreenLocked();
         if(isLocked && notificationSendCounter < Constants.NOTIFICATION_SEND_MAX_NUMBER) {
             if (userActivity.equals(getString(R.string.activity_running))) {

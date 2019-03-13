@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private double ambient_temperature = 0;
 
     private EditText userIdInput;
+    private TextView userIDTextView;
     private Button startTrackingButton, stopTrackingButton, enterIDButton;
 
     private boolean userpermission = false;
@@ -128,11 +130,46 @@ public class MainActivity extends AppCompatActivity {
         return prefs.getString(Constants.KEY_ID, "");
     }
 
+
+    /*private void setupUserId() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+
+        View mDialogView = getLayoutInflater().inflate(R.layout.setup_id_dialog, null);
+        final EditText editTextID = mDialogView.findViewById(R.id.editTextID);
+
+        builder.setView(mDialogView)
+                .setTitle("Enter your received ID")
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(MainActivity.this, "Please enter ID", Toast.LENGTH_LONG).show();
+                    }
+                })
+                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String id = editTextID.getText().toString();
+                        if(!id.isEmpty()){
+                            writeIDtoSharedPreferences(id);
+                            Toast.makeText(MainActivity.this, "ID set", Toast.LENGTH_LONG).show();
+                            openInitialSurvey();
+                        }else {
+                            Toast.makeText(MainActivity.this, "Please enter ID", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }*/
+
+
     private void setUserId() {
         userIdInput = findViewById(R.id.set_id_input);
         final String id = getIDfromSharedPreferences();
         if(!id.equals("")){
             userIdInput.setText(id, TextView.BufferType.EDITABLE);
+            userIdInput.setKeyListener(null);
         }
         enterIDButton = findViewById(R.id.set_user_id_button);
         enterIDButton.setOnClickListener(new View.OnClickListener() {
@@ -141,8 +178,13 @@ public class MainActivity extends AppCompatActivity {
                 String userID = userIdInput.getText().toString();
                 if(!userID.isEmpty()){
                     writeIDtoSharedPreferences(userID);
-                    Toast.makeText(MainActivity.this, "ID set", Toast.LENGTH_LONG).show();
-                    openInitialSurvey();
+                    if(!id.equals("")){
+                        Toast.makeText(MainActivity.this, "ID already set", Toast.LENGTH_LONG).show();
+                    }else {
+                        Toast.makeText(MainActivity.this, "ID set", Toast.LENGTH_LONG).show();
+                        userIdInput.setKeyListener(null);
+                        openInitialSurvey();
+                    }
                 }else {
                     Toast.makeText(MainActivity.this, "Please enter ID", Toast.LENGTH_LONG).show();
                 }
@@ -150,10 +192,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void saveInitialVersion() {
+        String userid = getIDfromSharedPreferences();
+        if(!userid.equals("")) {
+            int id = Integer.parseInt(userid);
+            if((id % 2) == 0 ) {
+                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_A );
+            }else {
+                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_B);
+
+            }
+        }
+    }
+
+
     /*open initial survey when user clicks on confirm id button the first time*/
     private void openInitialSurvey() {
         boolean previouslyStarted = prefs.getBoolean(Constants.FIRST_OPEN_SURVEY, false);
         if(!previouslyStarted) {
+            saveInitialVersion();
             Intent i = new Intent(this, InitialSurvey.class);
             startActivity(i);
             SharedPreferences.Editor edit = prefs.edit();
@@ -199,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     // permission denied
-                    Toast.makeText(MainActivity.this, "Please accept GPS permission to user the App", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Please accept GPS permission to user the Appnot", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -288,6 +345,8 @@ public class MainActivity extends AppCompatActivity {
     private void showPermissionDialog() {
         boolean permissionAgreed= prefs.getBoolean(Constants.PERMISSION_AGREE, false);
         AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light_Dialog));
+        mDialogBuilder.setCancelable(false);
+
         View mDialogView = getLayoutInflater().inflate(R.layout.permission_dialog, null);
         TextView permissionTitle = (TextView) mDialogView.findViewById(R.id.permission_title);
         final CheckBox permissionCheckbox = (CheckBox) mDialogView.findViewById(R.id.checkbox_permission_agree);
@@ -339,11 +398,13 @@ public class MainActivity extends AppCompatActivity {
     private void notificationSettingsRequest() {
         boolean previouslyStarted = prefs.getBoolean(Constants.FIRST_OPEN, false);
         if(!previouslyStarted) {
+            //setupUserId();
             setSwitchVersionDate();
             SharedPreferences.Editor edit = prefs.edit();
             edit.putBoolean(Constants.FIRST_OPEN, Boolean.TRUE);
             edit.commit();
-            final AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light_Dialog));
+            Log.e(TAG, "notification settings");
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Notifications on your lock screen needs to be enabled for using the App.")
                     .setCancelable(false)
                     .setPositiveButton("yes", new DialogInterface.OnClickListener() {
@@ -411,7 +472,7 @@ public class MainActivity extends AppCompatActivity {
         //TODO set alarm to midnight/after midnight after testing done
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR_OF_DAY, 24 );
-        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.MINUTE,0);
 
         // alarm will fire the next day if alarm time is before current time
         /*if (c.before(Calendar.getInstance())) {
@@ -428,7 +489,8 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
 
         Calendar c = Calendar.getInstance();
-        c.add(Calendar.MINUTE, 5);
+        c.set(Calendar.HOUR, 1);
+        //c.add(Calendar.MINUTE, 5);
 
         Log.e(TAG, c.toString());
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
