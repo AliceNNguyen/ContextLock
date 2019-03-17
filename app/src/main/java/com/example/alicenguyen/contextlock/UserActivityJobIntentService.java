@@ -86,7 +86,6 @@ public class UserActivityJobIntentService extends JobIntentService {
 
     private void handleUserActivity(int type, int confidence) {
         userActivity = getString(R.string.activity_unknown);
-        //int icon = R.drawable.ic_still;
         switch (type) {
             case DetectedActivity.IN_VEHICLE: {
                 userActivity = getString(R.string.activity_in_vehicle);
@@ -134,33 +133,8 @@ public class UserActivityJobIntentService extends JobIntentService {
         boolean isInserted = mDb.saveToDB(userid, currenttime.toString(), userActivity, "", String.valueOf(isLocked));
         if(isInserted == true) {
             Log.e(TAG, "insertedToDB");
-            //Toast.makeText(MainActivity.this,"Data Inserted",Toast.LENGTH_LONG).show();
         }else{
             Log.e(TAG, "failed to insert DB");
-            //Toast.makeText(MainActivity.this,"Data not Inserted",Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void openExperienceSampling() {
-        Random generator = new Random();
-        int randomInt = generator.nextInt(2-0) + 0;
-        Log.d("random", String.valueOf(randomInt));
-        cooldown = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY);
-        Log.e("cooldown", String.valueOf(cooldown));
-        //survey_open_counter = Integer.parseInt(getSurveyOpenCounterfromSharedPreferences());
-        if(randomInt == 1) {
-            if(!cooldown.equals("true")) {
-                opensurveycounter++;
-                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
-                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "true");
-
-                Intent intent = new Intent(this, ExperienceSamplingActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        }
-        if(randomInt == 0 && cooldown.equals("true")) {
-            SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
         }
     }
 
@@ -215,6 +189,7 @@ public class UserActivityJobIntentService extends JobIntentService {
                 else {
                     // number is odd
                     Log.e(TAG, "condition notification");
+                    Log.e(TAG, message);
                     SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_B );
                     setContextNotification();
                 }
@@ -234,7 +209,6 @@ public class UserActivityJobIntentService extends JobIntentService {
             e.printStackTrace();
             Log.e(TAG, "error parse date");
         }
-        //openExperienceSampling();
         openSurvey();
     }
 
@@ -243,6 +217,9 @@ public class UserActivityJobIntentService extends JobIntentService {
         Log.e(TAG, userActivity);
         Log.e(TAG, "send notification counter:" + notificationSendCounter);
         checkIfScreenLocked();
+        String storedWeather = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.WEATHER_KEY);
+        Log.e(TAG, "storedWeather");
+        Log.e(TAG, storedWeather);
         if(isLocked && notificationSendCounter < Constants.NOTIFICATION_SEND_MAX_NUMBER) {
             if (userActivity.equals(getString(R.string.activity_running))) {
                 message = getString(R.string.running);
@@ -252,7 +229,16 @@ public class UserActivityJobIntentService extends JobIntentService {
                 message = getString(R.string.in_vehicle);
                 icon = R.mipmap.publictransport_ic;
                 setNotificationVersion();
-            } else {
+            } else if(userActivity.equals(getString(R.string.activity_walking )) && storedWeather.contains("Rain")) {
+                Log.e(TAG, "walk and rain");
+                message = getString(R.string.rain);
+                icon = R.mipmap.raindrop_ic;
+                setNotificationVersion();
+            } else if(userActivity.equals(getString(R.string.activity_walking)) && storedWeather.contains("Snow")) {
+                message = getString(R.string.snow);
+                icon = R.mipmap.snow_ic;
+                setNotificationVersion();
+            } else{
                 message = getString(R.string.no_condition_message) + ": " + userActivity;
                 Log.e(TAG, "no conditions met");
             }
@@ -274,6 +260,29 @@ public class UserActivityJobIntentService extends JobIntentService {
             //it is not locked
         }
     }
+
+    /*private void openExperienceSampling() {
+        Random generator = new Random();
+        int randomInt = generator.nextInt(2-0) + 0;
+        Log.d("random", String.valueOf(randomInt));
+        cooldown = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY);
+        Log.e("cooldown", String.valueOf(cooldown));
+        //survey_open_counter = Integer.parseInt(getSurveyOpenCounterfromSharedPreferences());
+        if(randomInt == 1) {
+            if(!cooldown.equals("true")) {
+                opensurveycounter++;
+                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
+                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "true");
+
+                Intent intent = new Intent(this, ExperienceSamplingActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        }
+        if(randomInt == 0 && cooldown.equals("true")) {
+            SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
+        }
+    }*/
 
     @Override
     public void onDestroy() {

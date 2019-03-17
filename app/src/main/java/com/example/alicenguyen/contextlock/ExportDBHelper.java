@@ -4,17 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.telecom.Call;
 import android.util.Log;
-
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import java.security.acl.LastOwnerException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 public class ExportDBHelper extends BroadcastReceiver {
     private static final String TAG = "ExportDBHelper";
@@ -69,19 +62,16 @@ public class ExportDBHelper extends BroadcastReceiver {
 
     private void exportDataToFirebase(String version, String userid,String timestamp,String detectedActivity, String detectedWeather, String send ) {
         if(cursor.getCount() > 0) {
-            //do some stuff when there is data in the table
-
-            //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            //export sql lite database to firebase when there is data in the table
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("logEvents").child(version).child(userid);
             ref.child(timestamp).child("detectedActivity").setValue(detectedActivity);
             ref.child(timestamp).child("detectedWeather").setValue(detectedWeather);
             ref.child(timestamp).child("isLocked").setValue(send);
             Log.e(TAG, "exported");
             //TODO
+            /*delete database entries after exported?*/
             //db.deleteAllData();
-            /*delete database after exported*/
         } else {
-            //do some stuff when there is no data
             Log.e(TAG, "database empty");
         }
     }
@@ -94,9 +84,9 @@ public class ExportDBHelper extends BroadcastReceiver {
         if(Integer.parseInt(unlockCounter) > 0) {
             ctx.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.UNLOCK_COUNTER_KEY).apply();
         }
-
     }
 
+    /*daily reset notification send counter*/
     private void resetNotificationCounter() {
         Log.e(TAG, "reset counter");
         ctx.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.NOTIFICATION_SEND_KEY).apply();

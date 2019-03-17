@@ -3,6 +3,7 @@ package com.example.alicenguyen.contextlock;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -18,9 +19,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.LocationManager;
 
-import android.net.Uri;
+import android.hardware.fingerprint.FingerprintManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -43,8 +43,7 @@ import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.FirebaseDatabase;
+
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -65,16 +64,14 @@ public class MainActivity extends AppCompatActivity {
     private Sensor ambientTemperatureSensor;
 
     //context variables
-    private int  relative_humidity = 0;
+    private int relative_humidity = 0;
     private double ambient_temperature = 0;
 
     private EditText userIdInput;
-    private TextView userIDTextView;
     private Button startTrackingButton, stopTrackingButton, enterIDButton;
 
     private boolean userpermission = false;
     private boolean jobstarted = false;
-    //private boolean permissionAgreed = false;
 
     private ActivityRecognitionClient mActivityRecognitionClient;
     private PendingIntent mPendingIntent;
@@ -93,8 +90,7 @@ public class MainActivity extends AppCompatActivity {
         notificationSettingsRequest();
         showPermissionDialog();
         setUserId();
-        setRandomAlarmReceiver();
-        //startAlarm();
+        //setRandomAlarmReceiver();
         setAlarmForLogEventsExport();
         initTrackingButtons();
 
@@ -106,17 +102,15 @@ public class MainActivity extends AppCompatActivity {
         registerLockScreenReceiver();
     }
 
+
+
     private void registerLockScreenReceiver() {
         mLockScreenReceiver = new LockScreenReceiver();
-
         final IntentFilter intentFilter = new IntentFilter();
-        /** System Defined Broadcast */
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
         intentFilter.addAction(Intent.ACTION_USER_PRESENT);
         registerReceiver(mLockScreenReceiver, intentFilter);
-        //registerReceiver(mLockScreenReceiver, new IntentFilter("android.intent.action.USER_PRESENT"));
-
     }
 
 
@@ -125,67 +119,36 @@ public class MainActivity extends AppCompatActivity {
         prefs.edit().putString(Constants.KEY_ID, id).apply();
     }
 
-    public String getIDfromSharedPreferences(){
+    public String getIDfromSharedPreferences() {
         SharedPreferences prefs = this.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         return prefs.getString(Constants.KEY_ID, "");
     }
 
 
-    /*private void setupUserId() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
-
-        View mDialogView = getLayoutInflater().inflate(R.layout.setup_id_dialog, null);
-        final EditText editTextID = mDialogView.findViewById(R.id.editTextID);
-
-        builder.setView(mDialogView)
-                .setTitle("Enter your received ID")
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(MainActivity.this, "Please enter ID", Toast.LENGTH_LONG).show();
-                    }
-                })
-                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        String id = editTextID.getText().toString();
-                        if(!id.isEmpty()){
-                            writeIDtoSharedPreferences(id);
-                            Toast.makeText(MainActivity.this, "ID set", Toast.LENGTH_LONG).show();
-                            openInitialSurvey();
-                        }else {
-                            Toast.makeText(MainActivity.this, "Please enter ID", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        alert.show();
-    }*/
-
-
+    /*store user id and enable input field, so that ID can't be changed after ID is entered*/
     private void setUserId() {
         userIdInput = findViewById(R.id.set_id_input);
         final String id = getIDfromSharedPreferences();
-        if(!id.equals("")){
+        if (!id.equals("")) {
             userIdInput.setText(id, TextView.BufferType.EDITABLE);
             userIdInput.setKeyListener(null);
+            setRandomAlarmReceiver();
         }
         enterIDButton = findViewById(R.id.set_user_id_button);
         enterIDButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String userID = userIdInput.getText().toString();
-                if(!userID.isEmpty()){
+                if (!userID.isEmpty()) {
                     writeIDtoSharedPreferences(userID);
-                    if(!id.equals("")){
+                    if (!id.equals("")) {
                         Toast.makeText(MainActivity.this, "ID already set", Toast.LENGTH_LONG).show();
-                    }else {
+                    } else {
                         Toast.makeText(MainActivity.this, "ID set", Toast.LENGTH_LONG).show();
                         userIdInput.setKeyListener(null);
                         openInitialSurvey();
                     }
-                }else {
+                } else {
                     Toast.makeText(MainActivity.this, "Please enter ID", Toast.LENGTH_LONG).show();
                 }
             }
@@ -194,22 +157,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveInitialVersion() {
         String userid = getIDfromSharedPreferences();
-        if(!userid.equals("")) {
+        Log.e(TAG, "init version id: " + userid);
+        if (!userid.equals("")) {
+            Log.e(TAG, "version init");
             int id = Integer.parseInt(userid);
-            if((id % 2) == 0 ) {
-                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_A );
-            }else {
+            if ((id % 2) == 0) {
+                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_A);
+            } else {
                 SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_B);
-
             }
         }
     }
 
-
     /*open initial survey when user clicks on confirm id button the first time*/
     private void openInitialSurvey() {
         boolean previouslyStarted = prefs.getBoolean(Constants.FIRST_OPEN_SURVEY, false);
-        if(!previouslyStarted) {
+        if (!previouslyStarted) {
             saveInitialVersion();
             Intent i = new Intent(this, InitialSurvey.class);
             startActivity(i);
@@ -232,9 +195,9 @@ public class MainActivity extends AppCompatActivity {
             Log.e("permission", "GPS permission granted");
             userpermission = true;
             final String id = getIDfromSharedPreferences();
-            if(id.equals("")){
+            if (id.equals("")) {
                 Toast.makeText(this, "Please enter ID and submit", Toast.LENGTH_LONG).show();
-            }else {
+            } else {
                 startBackgroundServices();
             }
         }
@@ -249,9 +212,9 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted
                     final String id = getIDfromSharedPreferences();
-                    if(id.equals("")){
+                    if (id.equals("")) {
                         Toast.makeText(this, "Please enter ID and submit", Toast.LENGTH_LONG).show();
-                    }else {
+                    } else {
                         startBackgroundServices();
                     }
                 } else {
@@ -270,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
             // TODO Auto-generated method stub
         }
+
         @Override
         public void onSensorChanged(SensorEvent event) {
             Log.d("sensor changed", "in method");
@@ -328,22 +292,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void checkGPS() {
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        Log.e(TAG, "checkGPS");
-
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            Log.e(TAG, "GPS enabled");
-            //Toast.makeText(this, "GPS is Enabled in your devide", Toast.LENGTH_SHORT).show();
-        }else{
-            Log.e(TAG, "no GPS");
-            buildAlertMessageNoGps();
-        }
-    }
 
     /*Inform the user which data are tracked for the user study and ask for permission*/
     private void showPermissionDialog() {
-        boolean permissionAgreed= prefs.getBoolean(Constants.PERMISSION_AGREE, false);
+        boolean permissionAgreed = prefs.getBoolean(Constants.PERMISSION_AGREE, false);
         AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Light_Dialog));
         mDialogBuilder.setCancelable(false);
 
@@ -351,33 +303,33 @@ public class MainActivity extends AppCompatActivity {
         TextView permissionTitle = (TextView) mDialogView.findViewById(R.id.permission_title);
         final CheckBox permissionCheckbox = (CheckBox) mDialogView.findViewById(R.id.checkbox_permission_agree);
         Button mAgreeButton = (Button) mDialogView.findViewById(R.id.agree_permission_button);
-        Button mCancelButton= (Button) mDialogView.findViewById(R.id.cancel_permission_button);
+        Button mCancelButton = (Button) mDialogView.findViewById(R.id.cancel_permission_button);
         mDialogBuilder.setView(mDialogView);
         final AlertDialog dialog = mDialogBuilder.create();
         //set opacity of dialog
         //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.white)));
 
-        if(!permissionAgreed) {
+        if (!permissionAgreed) {
             dialog.show();
         }
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!permissionCheckbox.isChecked()) {
-                    Toast.makeText(getApplicationContext(),getString(R.string.agree_permission_request), Toast.LENGTH_LONG).show();
+                if (!permissionCheckbox.isChecked()) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.agree_permission_request), Toast.LENGTH_LONG).show();
                 }
             }
         });
         mAgreeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(permissionCheckbox.isChecked()) {
+                if (permissionCheckbox.isChecked()) {
                     //permissionAgreed = true;
                     SharedPreferences.Editor edit = prefs.edit();
                     edit.putBoolean(Constants.PERMISSION_AGREE, Boolean.TRUE);
                     edit.commit();
                     dialog.cancel();
-                }else {
+                } else {
                     Toast.makeText(getApplicationContext(), getString(R.string.agree_permission_request), Toast.LENGTH_LONG).show();
                 }
             }
@@ -397,15 +349,15 @@ public class MainActivity extends AppCompatActivity {
     /*helper dialog to support user setting up notification permission*/
     private void notificationSettingsRequest() {
         boolean previouslyStarted = prefs.getBoolean(Constants.FIRST_OPEN, false);
-        if(!previouslyStarted) {
+        if (!previouslyStarted) {
             //setupUserId();
             setSwitchVersionDate();
             SharedPreferences.Editor edit = prefs.edit();
             edit.putBoolean(Constants.FIRST_OPEN, Boolean.TRUE);
             edit.commit();
             Log.e(TAG, "notification settings");
-            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Notifications on your lock screen needs to be enabled for using the App.")
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
+            builder.setMessage("Notifications need to be enabled to use the app.")
                     .setCancelable(false)
                     .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                         public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
@@ -429,36 +381,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void buildAlertMessageNoGps() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(" Your GPS seems to be disabled, do you want to enable it?")
-                .setCancelable(false)
-                .setPositiveButton("ّyes", new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                    }
-                })
-                .setNegativeButton("no", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        dialog.cancel();
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-
-    private void turnGPSOff() {
-        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-
-        if (provider.contains("gps")) { //if gps is enabled
-            final Intent poke = new Intent();
-            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
-            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-            poke.setData(Uri.parse("3"));
-            sendBroadcast(poke);
-        }
-    }
 
     /*This method schedule an alarm to send locally stored data to firebase DB.
     Function is called each day at nighttime
@@ -471,15 +393,15 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO set alarm to midnight/after midnight after testing done
         Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, 24 );
-        c.set(Calendar.MINUTE,0);
+        c.set(Calendar.HOUR_OF_DAY, 24);
+        c.set(Calendar.MINUTE, 0);
 
         // alarm will fire the next day if alarm time is before current time
         /*if (c.before(Calendar.getInstance())) {
             c.add(Calendar.DATE, 1);
         }*/
 
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),AlarmManager.INTERVAL_DAY, pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     private void setRandomAlarmReceiver() {
@@ -490,7 +412,6 @@ public class MainActivity extends AppCompatActivity {
 
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR, 1);
-        //c.add(Calendar.MINUTE, 5);
 
         Log.e(TAG, c.toString());
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
@@ -500,6 +421,7 @@ public class MainActivity extends AppCompatActivity {
     notification even if no context conditions are met and/or background tracking is enabled/ not working
     Alarm is set randomly
     */
+
     private void startAlarm() {
         Log.e(TAG, "startAlarm");
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -528,7 +450,6 @@ public class MainActivity extends AppCompatActivity {
         }*/
 
         alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
-
         //alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY / 3, pendingIntent);
     }
 
@@ -582,10 +503,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     /*receive activities from broadcast*/
     public void receiveUserActivity() {
-        Intent serviceIntent = new Intent(this,UserActivityJobIntentService.class);
+        Intent serviceIntent = new Intent(this, UserActivityJobIntentService.class);
         mPendingIntent = PendingIntent.getBroadcast(getApplicationContext(),
                 0,
                 mActivityBroadcastReceiver.getIntent(this, serviceIntent, 1234),
@@ -595,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*ob button pressed: tracking of user location for weather and user activity are started*/
-    private void initTrackingButtons(){
+    private void initTrackingButtons() {
         startTrackingButton = findViewById(R.id.start_tracking_button);
         stopTrackingButton = findViewById(R.id.stop_tracking_button);
         startJobScheduler();
@@ -603,8 +523,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*init Job Schedulars*/
-    public void startBackgroundServices(){
-        startTrackingButton.setBackgroundColor(ContextCompat.getColor(this,R.color.button_active_color));
+    public void startBackgroundServices() {
+        startTrackingButton.setBackgroundColor(ContextCompat.getColor(this, R.color.button_active_color));
         stopTrackingButton.setBackgroundResource(R.drawable.button_color_gradient);
         Toast.makeText(getApplicationContext(), "Tracking gestartet", Toast.LENGTH_SHORT).show();
         receiveUserActivity();
@@ -623,7 +543,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void startJobScheduler() {
         startTrackingButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -632,7 +551,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     /*on button pressed: background tracking will be stopped*/
     public void stopJobScheduler() {
@@ -653,13 +571,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-       if(isRegistered){
-           unregisterReceiver(mActivityBroadcastReceiver);
-           unregisterReceiver(mLockScreenReceiver);
-       }
+        if (isRegistered) {
+            unregisterReceiver(mActivityBroadcastReceiver);
+            unregisterReceiver(mLockScreenReceiver);
+        }
         try {
-           unregisterReceiver(mActivityBroadcastReceiver);
-           unregisterReceiver(mLockScreenReceiver);
+            unregisterReceiver(mActivityBroadcastReceiver);
+            unregisterReceiver(mLockScreenReceiver);
 
         } catch (Exception e) {
             e.printStackTrace();

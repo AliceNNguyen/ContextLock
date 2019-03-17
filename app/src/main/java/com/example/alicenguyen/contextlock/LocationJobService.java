@@ -53,10 +53,10 @@ public class LocationJobService extends JobService {
     private int humidity = 0;
     private String provider, latitude, longitude;
     private boolean isLocked = false;
-    private int opensurveycounter;
+    //private int opensurveycounter;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private String currentDate, switchVersionDate;
-    private String cooldown;
+    //private String cooldown;
     private String userid;
     private Date current, switchDate;
     private String message;
@@ -71,7 +71,6 @@ public class LocationJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
         Log.e(TAG, "job started");
-        //createNotificationChannel();
         SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE);
         userid = pref.getString(Constants.KEY_ID, "0");
         Date date = Calendar.getInstance().getTime();
@@ -106,44 +105,18 @@ public class LocationJobService extends JobService {
         startActivity(intent);
     }
 
-
-    private void openExperienceSampling() {
-        Random generator = new Random();
-        int randomInt = generator.nextInt(2-0) + 0;
-        Log.d("random", String.valueOf(randomInt));
-
-        cooldown = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY);
-
-        Log.e("cooldown", String.valueOf(cooldown));
-        if(randomInt == 1) {
-            if(!cooldown.equals("true")) {
-                opensurveycounter++;
-                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
-                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "true");
-
-                Intent intent = new Intent(this, ExperienceSamplingActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        }
-        if(randomInt == 0 && cooldown.equals("true")) {
-            SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
-        }
-    }
-
+    /*notification with given fingerprint failure reason*/
     private void setContextNotification() {
         Log.e(TAG, "send");
-        //setNotificationMessage();
         updateSendCounter();
         Log.e(TAG, String.valueOf(notificationSendCounter));
-        /*notificationSendCounter++;
-        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.NOTIFICATION_SEND_KEY, String.valueOf(notificationSendCounter));*/
 
         NotificationHelper notificationHelper = new NotificationHelper(this);
         NotificationCompat.Builder nb = notificationHelper.getChannelNotification(icon, message);
         notificationHelper.getManager().notify(Constants.NOTIFICATION_ID, nb.build());
     }
 
+    /*notification without given fingerprint failure reason*/
     private void setNonContextNotification() {
         Log.e(TAG, "send");
         updateSendCounter();
@@ -160,6 +133,7 @@ public class LocationJobService extends JobService {
     /*notification version is handled by user id:
     if user id is even: start with non-context notification than switch to context notification when first part of study duration is over
     if user id is uneven: start with context notification than switch to non-context notification
+    if device is not locked, save notification parameters locally until the device is locked again
     */
    private void setNotificationVersion () {
        int id = Integer.parseInt(userid);
@@ -236,6 +210,7 @@ public class LocationJobService extends JobService {
         SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.NOTIFICATION_SEND_KEY, String.valueOf(notificationSendCounter));
     }
 
+    /*store notification parameters locally*/
     private void bufferNotification(String message, int icon) {
         Log.e(TAG, "bufferNotification");
         Log.e(TAG, String.valueOf(icon));
@@ -331,6 +306,7 @@ public class LocationJobService extends JobService {
                             humidity = (int)response.getJSONObject("main").get("humidity");
                             temperature = (Number)response.getJSONObject("main").get("temp");
                             temperature = temperature.doubleValue();
+                            saveWeather();
                             checkContextForNotification();
                         } catch (JSONException e) {
                             Log.d("json exception","json exception log");
@@ -346,6 +322,10 @@ public class LocationJobService extends JobService {
                     }
                 });
         queue.add(jsonObjectRequest);
+    }
+
+    private void saveWeather() {
+        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.WEATHER_KEY, mainWeather);
     }
 
     /*get latitude and longitude to retrieve weather data if GPS permission in enabled*/
@@ -373,7 +353,6 @@ public class LocationJobService extends JobService {
             public void onProviderDisabled(String provider) {
             }
         };
-
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         // getting GPS status
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -394,4 +373,29 @@ public class LocationJobService extends JobService {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.LOCATION_INTERVAL, Constants.LOCATION_DISTANCE, locationListener);
             }
     }
+
+    /*cooldown function*/
+    /*private void openExperienceSampling() {
+        Random generator = new Random();
+        int randomInt = generator.nextInt(2-0) + 0;
+        Log.d("random", String.valueOf(randomInt));
+
+        cooldown = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY);
+
+        Log.e("cooldown", String.valueOf(cooldown));
+        if(randomInt == 1) {
+            if(!cooldown.equals("true")) {
+                opensurveycounter++;
+                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
+                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "true");
+
+                Intent intent = new Intent(this, ExperienceSamplingActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        }
+        if(randomInt == 0 && cooldown.equals("true")) {
+            SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
+        }
+    }*/
 }

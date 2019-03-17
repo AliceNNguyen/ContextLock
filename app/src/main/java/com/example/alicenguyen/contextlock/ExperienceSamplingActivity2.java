@@ -45,8 +45,7 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle b = intent.getExtras();
 
-        if(b!=null)
-        {
+        if (b != null) {
             predictionValue = b.getInt("predictionValue");
             //reasonableValue = b.getInt("reasonableValue");
             fingerErrorValue = b.getString("fingerErrorValue");
@@ -65,10 +64,7 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
         setReasonableSeekbarListener();
 
 
-
     }
-
-
 
 
     private void initViewElements() {
@@ -84,29 +80,27 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
     }
 
 
-    private void initSendButton(){
+    private void initSendButton() {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-            currenttime = Calendar.getInstance().getTime();
+                currenttime = Calendar.getInstance().getTime();
 
-            //TODO set locationValue to database
+                mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("lockscreen-switch-value").setValue(switchValue);
+                mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("prediction-rate").setValue(predictionValue);
+                mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("annoyance-rate").setValue(annoyanceValue);
+                mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reasonable-rate").setValue(reasonableValue);
 
-            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("lockscreen-switch-value").setValue(switchValue);
-            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("prediction-rate").setValue(predictionValue);
-            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("annoyance-rate").setValue(annoyanceValue);
-            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reasonable-rate").setValue(reasonableValue);
+                mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("fingererror-value").setValue(fingerErrorValue);
+                mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("user-current-location").setValue(locationValue);
+                mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("location-free-text").setValue(locationEditText.getText().toString());
+                mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reason-free-text-B").setValue(reasonFreeText);
+                mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reason-free-text-A").setValue(reasonFreeTextVersionA);
 
-            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("fingererror-value").setValue(fingerErrorValue);
-            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("user-current-location").setValue(locationValue);
-            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("location-free-text").setValue(locationEditText.getText().toString());
-            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reason-free-text-B").setValue(reasonFreeText);
-            mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reason-free-text-A").setValue(reasonFreeTextVersionA);
-
-            Toast.makeText(ExperienceSamplingActivity2.this, "gesendet", Toast.LENGTH_SHORT).show();
-            NotificationHelper.cancelNotification(ExperienceSamplingActivity2.this, Constants.NOTIFICATION_ID);
-            finishAffinity();
+                Toast.makeText(ExperienceSamplingActivity2.this, "gesendet", Toast.LENGTH_SHORT).show();
+                NotificationHelper.cancelNotification(ExperienceSamplingActivity2.this, Constants.NOTIFICATION_ID);
+                finishAffinity();
 
             }
         });
@@ -117,7 +111,6 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 reasonableValue = progress;
-                //Toast.makeText(ExperienceSamplingActivity.this, String.valueOf(progress), Toast.LENGTH_SHORT).show();
                 switch (progress) {
                     case (0):
                         reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.teal));
@@ -164,7 +157,6 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
                         reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
                         break;
                 }
-
             }
 
             @Override
@@ -179,10 +171,7 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
         });
     }
 
-
-    //TODO
     public void onLocationRadioButtonClicked(View view) {
-        // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
 
         RadioButton invehicleRadioButton = (RadioButton) findViewById(R.id.in_vehicle_radio_button);
@@ -192,10 +181,8 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
         RadioButton outdoorRadioButton = findViewById(R.id.outdoor_radio_button);
         RadioButton somethgelsekRadioButton = findViewById(R.id.something_else__radio_button);
 
-
-
         // Check which radio button was clicked
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.in_vehicle_radio_button:
                 if (checked)
                     locationValue = invehicleRadioButton.getText().toString();
@@ -223,26 +210,5 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
                 break;
         }
     }
-
-   /* public void onFingerErrorRadioButtonClicked(View view) {
-        boolean checked = ((RadioButton) view).isChecked();
-
-        RadioButton trueRadioButton = findViewById(R.id.fingerprint_error_true);
-        RadioButton falseRadioButton = findViewById(R.id.fingerprint_error_false);
-
-
-        // Check which radio button was clicked
-        switch (view.getId()) {
-            case R.id.fingerprint_error_true:
-                if (checked)
-                    fingerErrorValue = trueRadioButton.getText().toString();
-
-                break;
-            case R.id.fingerprint_error_false:
-                if (checked)
-                    fingerErrorValue = falseRadioButton.getText().toString();
-                break;
-        }
-    }*/
 }
 

@@ -40,12 +40,10 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
 
     private TextView predictionStronglyAgree, predictionAgree, predictionNeutral, predictionDisagree, predictionStronglyDisagree;
     private TextView annoyanceStronglyAgree, annoyanceAgree, annoyanceNeutral, annoyanceDisagree, annoyanceStronglyDisagree;
-    //private TextView reasonableStronglyAgree, reasonableAgree, reasonableNeutral, reasonableDisagree, reasonableStronglyDisagree;
 
     private EditText reasonEditext, reasonEditextVersionA;
 
-    private int annoyanceValue, predictionValue, reasonableValue;
-    private String locationValue;
+    private int annoyanceValue, predictionValue;
     private String reasonFreeText = "";
     private String reasonFreeTextVersionA = "";
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -67,12 +65,8 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         currenttime = Calendar.getInstance().getTime();
 
-        Log.d("survey", "survey open");
         SharedPreferences pref = getApplicationContext().getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         userid = pref.getString("user_id", "no id");
-
-
-        Log.e("user id", userid);
 
         initNotNowButton();
         initViewElements();
@@ -80,22 +74,16 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         Log.e("version", version);
 
         /*handle survey version based on notification version*/
-        if(version.equals(Constants.VERSION_A)){
+        if (version.equals(Constants.VERSION_A)) {
             seekbarContainer.setVisibility(View.GONE);
             checkBoxContainer.setVisibility(View.VISIBLE);
-        }else if(version.equals(Constants.VERSION_B)) {
+        } else if (version.equals(Constants.VERSION_B)) {
             seekbarContainer.setVisibility(View.VISIBLE);
             checkBoxContainer.setVisibility(View.GONE);
         }
         setPredictionSeekbarListener();
         setAnnoyanceSeekbarListener();
-        //setReasonableSeekbarListener();
-        //getEditText();
-
         initNextButton();
-
-        //getLocationEditText();
-        //initSendButton();
     }
 
     //TODO
@@ -123,99 +111,6 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-    /*private void initSendButton(){
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                currenttime = Calendar.getInstance().getTime();
-
-                //TODO set locationValue to database
-                mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("prediction-rate").setValue(predictionValue);
-                mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("annoyance-rate").setValue(annoyanceValue);
-                mDatabaseReference.child("users").child(userid).child(currenttime.toString()).child("reasonable-rate").setValue(reasonableValue);
-
-                Toast.makeText(ExperienceSamplingActivity.this, "gesendet", Toast.LENGTH_SHORT).show();
-                finishAffinity();
-
-            }
-        });
-    }*/
-
-    /*private void getLocationEditText() {
-        locationFreeText = locationEditText.getText().toString();
-    }*/
-
-    /*private void setReasonableSeekbarListener() {
-        reasonableSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                reasonableValue = progress;
-                //Toast.makeText(ExperienceSamplingActivity.this, String.valueOf(progress), Toast.LENGTH_SHORT).show();
-                switch (progress) {
-                    case (0):
-                        reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.teal));
-                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableAgree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        break;
-                    case (1):
-                        reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableDisagree.setTextColor(getResources().getColor(R.color.teal));
-                        reasonableNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableAgree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        break;
-                    case (2):
-                        reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableNeutral.setTextColor(getResources().getColor(R.color.teal));
-                        reasonableAgree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        break;
-                    case (3):
-                        reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableAgree.setTextColor(getResources().getColor(R.color.teal));
-                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        break;
-                    case (4):
-                        reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableAgree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.teal));
-                        break;
-                    default:
-                        //This code is executed when value of variable 'day'
-                        //doesn't match with any of case above
-                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableAgree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
-                        break;
-                }
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                seekBar.getThumb().setColorFilter(getResources().getColor(R.color.teal), PorterDuff.Mode.SRC);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-    }*/
 
     private void setAnnoyanceSeekbarListener() {
         annoyanceSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -326,8 +221,6 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
                         predictionStronglyAgree.setTextColor(getResources().getColor(R.color.teal));
                         break;
                     default:
-                        //This code is executed when value of variable 'day'
-                        //doesn't match with any of case above
                         predictionStronglyDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
                         predictionDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
                         predictionNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
@@ -417,7 +310,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
                     switchValue = falseRadioButton.getText().toString();
                 break;
             case R.id.lockswitch_dontremember:
-                if(checked)
+                if (checked)
                     switchValue = dontRememberRadioButton.getText().toString();
         }
     }
@@ -451,7 +344,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
     public void onCheckboxClicked(View view) {
         boolean checked = ((CheckBox) view).isChecked();
 
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.rain_checkbox:
                 if (checked) {
                     reasonValue = ((CheckBox) view).getText().toString();
@@ -473,8 +366,6 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.e("ExperienceSampling", "onDestroy");
-        //String version = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY);
-        //mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("v1values").setValue(extras.toString());
         mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("lockscreen-switch-value").setValue(switchValue);
         mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("prediction-rate").setValue(predictionValue);
         mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("annoyance-rate").setValue(annoyanceValue);

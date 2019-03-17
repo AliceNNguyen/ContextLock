@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/*local sql lite database to store log events, like all detected user activities and locations/weather */
 public class LocalDatabase extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "logEvents_database";
@@ -13,7 +14,7 @@ public class LocalDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "ID";
     public static final String COLUMN_USERID = "user_id";
     public static final String COLUMN_TIMESTAMP = "timestamp";
-    public static final String COLUMN_DETECTED_ACTIVITY= "detected_activity";
+    public static final String COLUMN_DETECTED_ACTIVITY = "detected_activity";
     public static final String COLUMN_DETECTED_WEATHER = "detected_weather";
     public static final String COLUMN_ISLOCKED = "is_locked";
 
@@ -43,7 +44,7 @@ public class LocalDatabase extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ TABLE_NAME_UNLOCK);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME_UNLOCK);
         onCreate(sqLiteDatabase);
 
     }
@@ -57,11 +58,10 @@ public class LocalDatabase extends SQLiteOpenHelper {
         values.put(LocalDatabase.COLUMN_DETECTED_ACTIVITY, detectedActivity);
         values.put(LocalDatabase.COLUMN_DETECTED_WEATHER, detectedWeather);
         values.put(LocalDatabase.COLUMN_ISLOCKED, isLocked);
-        //values.put(LocalDatabase.COLUMN_SURVEY_CANCELED, surveyCanceled);
         long newRowId = database.insert(LocalDatabase.TABLE_NAME, null, values);
-        if(newRowId == -1) {
+        if (newRowId == -1) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
@@ -71,27 +71,27 @@ public class LocalDatabase extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(LocalDatabase.COLUMN_ON_UNLOCK, timestamp);
         long newRowId = database.insert(LocalDatabase.TABLE_NAME_UNLOCK, null, values);
-        if(newRowId == -1) {
+        if (newRowId == -1) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
 
     public Cursor getAllData() {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+ TABLE_NAME,null);
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME, null);
         return res;
     }
 
     public Cursor getUnlockData() {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+ TABLE_NAME_UNLOCK,null);
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME_UNLOCK, null);
         return res;
     }
 
     public void deleteAllData() {
-        SQLiteDatabase db= this.getWritableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAME, null, null);
     }
 

@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.google.firebase.database.FirebaseDatabase;
 
+/*enable offline method for Firebase*/
 public class FirebaseHandler extends Application {
     @Override
     public void onCreate() {

@@ -1,26 +1,28 @@
 package com.example.alicenguyen.contextlock;
 
+/*Constants accessible from any class*/
 public class Constants {
+    /*constants for ActivityRecognitionClient*/
     public static final String BROADCAST_DETECTED_ACTIVITY = "activity_intent";
     static final long DETECTION_INTERVAL_IN_MILLISECONDS = 60 * 1000 * 60;//30 * 1000;
     public static final int CONFIDENCE = 70;
 
-    public static final int LOCATION_INTERVAL = 60 * 1000 * 60;
-    public  static final float LOCATION_DISTANCE = 10f;
+    /*constants for LocationListener*/
+    public static final int LOCATION_INTERVAL = 15 * 1000 * 60;
+    public static final float LOCATION_DISTANCE = 10f;
+    public static final String WEATHER_KEY = "weather_key";
 
-    public static final String BROADCAST_DETECTED_LOCATION = "location_intent";
-
+    //public static final String BROADCAST_DETECTED_LOCATION = "location_intent";
     //public static final String BROADCAST_DETECTED_GOOGLE_LOCATION = "google_location_intent";
 
     public static final int JOB_SERVICE_INTERVAL = 60 * 60 * 1000;
     public static final int NOTIFICATION_TIMEOUT = 120 * 60 * 1000; //2 hours
 
-    public static final String CHANNEL_ID = "context-notification-id";
-    public static final String CHANNEL_ID_DEFAULT = "notification-default-id";
+    //public static final String CHANNEL_ID = "context-notification-id";
+    //public static final String CHANNEL_ID_DEFAULT = "notification-default-id";
 
     public static final String KEY_ID = "user_id";
     public static final String COUNTER_KEY = "counter_key";
-    public static final String DATE_KEY = "date_key";
     public static final String COOLDOWN_KEY = "cooldown_key";
     public static final String SWITCH_VERSION_KEY = "switch_version_key";
     public static final String VERSION_KEY = "version_key";
@@ -38,7 +40,6 @@ public class Constants {
 
     public static final int NOTIFICATION_SEND_MAX_NUMBER = 5;
     public static final String NOTIFICATION_SEND_KEY = "notification_send_key";
-    public static final int SURVEY_OPEN_NUMBER = 6;
     public static final int STUDY_LENGTH = 1;
     public static final String PREFERENCES = "com.example.alicenguyen.contextlock";
     public static final String FIRST_OPEN = "first_open_key";

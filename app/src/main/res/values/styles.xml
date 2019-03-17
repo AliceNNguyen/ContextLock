@@ -21,6 +21,9 @@
         <item name="android:background">@color/teal</item>
     </style>
 
+    <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+    </style>
+
     <style name="DialogTheme" parent="android:Theme.Dialog">
         <!-- Fill the screen -->
         <item name="android:layout_width">fill_parent</item>

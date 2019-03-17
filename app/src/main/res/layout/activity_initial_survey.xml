@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".InitialSurvey">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="0dp"
@@ -34,144 +34,213 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="0dp"
             android:background="@color/teal"
+            android:onClick="openNext"
             android:padding="15dp"
             android:text="next"
             android:textAlignment="center"
             android:textColor="@color/init_survey_btn_text_color"
-            android:textSize="16sp"
-            android:onClick="openNext"/>
-
-
+            android:textSize="16sp" />
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/container1"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="50dp"
-        android:background="@color/transparent_white"
-        android:orientation="vertical"
-        android:padding="15dp"
-        android:gravity="center_vertical"
-        android:visibility="visible">
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
 
-        <TextView
-            android:id="@+id/sex_text"
+        <LinearLayout
+            android:id="@+id/container1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/onside_border"
-            android:paddingLeft="@dimen/init_survey_header_padding"
-            android:text="I am"
-            android:textColor="@color/dark_grey"
-            android:textSize="@dimen/question_text_size" />
+            android:layout_marginTop="0dp"
+            android:background="@color/transparent_white"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="15dp"
+            android:visibility="visible">
 
-        <RadioGroup
-            android:id="@+id/sexRadioButtonGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/female"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:buttonTint="@color/teal"
-                android:text="@string/female"
-                android:textColor="@color/dark_grey"
-                android:onClick="onSexClick"/>
-
-            <RadioButton
-                android:id="@+id/male"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:buttonTint="@color/teal"
-                android:text="@string/male"
-                android:textColor="@color/dark_grey"
-                android:onClick="onSexClick"/>
-        </RadioGroup>
-
-        <TextView
-            android:id="@+id/age_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/init_survey_header_margin_top"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/onside_border"
-            android:paddingLeft="@dimen/init_survey_header_padding"
-            android:text="My age"
-            android:textColor="@color/dark_grey"
-            android:textSize="@dimen/question_text_size" />
-
-        <EditText
-            android:id="@+id/age"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="age"
-            android:inputType="number"
-            android:textColor="@color/dark_grey" />
-
-        <TextView
-            android:id="@+id/profession_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/init_survey_header_margin_top"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/onside_border"
-            android:paddingLeft="@dimen/init_survey_header_padding"
-            android:text="My profession"
-            android:textColor="@color/dark_grey"
-            android:textSize="@dimen/question_text_size" />
-
-        <RadioGroup
-            android:id="@+id/radioGroupProfession"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <RadioButton
-                android:id="@+id/profession_student"
+            <TextView
+                android:id="@+id/sex_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:buttonTint="@color/teal"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/onside_border"
+                android:paddingLeft="@dimen/init_survey_header_padding"
+                android:text="I am"
                 android:textColor="@color/dark_grey"
-                android:text="@string/profession_student"
-                android:onClick="getProfession"/>
-            <RadioButton
-                android:id="@+id/profession_postgraduate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/teal"
-                android:textColor="@color/dark_grey"
-                android:text="@string/profession_postgraduate"
-                android:onClick="getProfession"/>
-            <RadioButton
-                android:id="@+id/profession_employee"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/teal"
-                android:textColor="@color/dark_grey"
-                android:text="@string/profession_employee"
-                android:onClick="getProfession"/>
-            <RadioButton
-                android:id="@+id/profession_self_employed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/teal"
-                android:textColor="@color/dark_grey"
-                android:text="@string/profession_self_employed"
-                android:onClick="getProfession"/>
-            <RadioButton
-                android:id="@+id/profession_other"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:buttonTint="@color/teal"
-                android:textColor="@color/dark_grey"
-                android:text="@string/profession_other"
-                android:onClick="getProfession"/>
-        </RadioGroup>
+                android:textSize="@dimen/question_text_size" />
 
-    </LinearLayout>
-</RelativeLayout>
+            <RadioGroup
+                android:id="@+id/sexRadioButtonGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/female"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:buttonTint="@color/teal"
+                    android:onClick="onSexClick"
+                    android:text="@string/female"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/male"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:buttonTint="@color/teal"
+                    android:onClick="onSexClick"
+                    android:text="@string/male"
+                    android:textColor="@color/dark_grey" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/age_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/init_survey_header_margin_top"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/onside_border"
+                android:paddingLeft="@dimen/init_survey_header_padding"
+                android:text="My age"
+                android:textColor="@color/dark_grey"
+                android:textSize="@dimen/question_text_size" />
+
+            <EditText
+                android:id="@+id/age"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/teal"
+                android:hint="age"
+                android:textColorHint="@color/grey"
+                android:inputType="number"
+                android:textColor="@color/dark_grey" />
+
+            <TextView
+                android:id="@+id/profession_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/init_survey_header_margin_top"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/onside_border"
+                android:paddingLeft="@dimen/init_survey_header_padding"
+                android:text="My profession"
+                android:textColor="@color/dark_grey"
+                android:textSize="@dimen/question_text_size" />
+
+            <RadioGroup
+                android:id="@+id/radioGroupProfession"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:id="@+id/profession_student"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/teal"
+                    android:onClick="getProfession"
+                    android:text="@string/profession_student"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/profession_postgraduate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/teal"
+                    android:onClick="getProfession"
+                    android:text="@string/profession_postgraduate"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/profession_employee"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/teal"
+                    android:onClick="getProfession"
+                    android:text="@string/profession_employee"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/profession_self_employed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/teal"
+                    android:onClick="getProfession"
+                    android:text="@string/profession_self_employed"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/profession_other"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/teal"
+                    android:onClick="getProfession"
+                    android:text="@string/profession_other"
+                    android:textColor="@color/dark_grey" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/fallback_unlock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/init_survey_header_margin_top"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/onside_border"
+                android:paddingLeft="@dimen/init_survey_header_padding"
+                android:text="Which kind of unlock method do you use if fingerprint does not work?"
+                android:textColor="@color/dark_grey"
+                android:textSize="@dimen/question_text_size" />
+
+            <RadioGroup
+                android:id="@+id/radioGroupFallback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:id="@+id/pin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/teal"
+                    android:onClick="getProfession"
+                    android:text="PIN"
+                    android:textColor="@color/dark_grey" />
+
+                <RadioButton
+                    android:id="@+id/pattern"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/teal"
+                    android:onClick="getFallbackMethod"
+                    android:text="Pattern"
+                    android:textColor="@color/dark_grey" />
+
+
+                <RadioButton
+                    android:id="@+id/unlock_other"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/teal"
+                    android:onClick="getFallbackMethod"
+                    android:text="@string/profession_other"
+                    android:layout_marginRight="2dp"
+                    android:textColor="@color/dark_grey" />
+
+            </RadioGroup>
+            <EditText
+                android:id="@+id/unlock_other_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/teal"
+                android:hint="if other; which alternative do you use instead?"
+                android:textColorHint="@color/grey"
+                android:textSize="12sp"
+                android:textColor="@color/dark_grey" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

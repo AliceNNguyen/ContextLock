@@ -33,22 +33,23 @@ public class InitialSurvey4 extends AppCompatActivity {
 
     }
 
+    /*display button state if user select button previously*/
     @Override
     protected void onResume() {
         super.onResume();
         int pressedButtonId = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, ERROR_HANDLING_KEY));
-        if(pressedButtonId > 0) {
+        if (pressedButtonId > 0) {
             TextView pressedButton = findViewById(pressedButtonId);
-            if(pressedButton != null) {
+            if (pressedButton != null) {
                 pressedButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.checkmark, 0);
                 pressedButton.setBackground(getDrawable(R.drawable.survey_btn_border_active));
                 value = pressedButton.getText().toString();
             }
         }
         freeTextValue = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, ERROR_HANDLING_FREE_KEY);
-        if(!freeTextValue.equals("0")) {
+        if (!freeTextValue.equals("0")) {
             EditText editText = findViewById(R.id.errorHandlingEditText);
-            if(editText != null) {
+            if (editText != null) {
                 editText.setText(freeTextValue);
             }
         }
@@ -57,9 +58,9 @@ public class InitialSurvey4 extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        EditText errorHandlingEditText= findViewById(R.id.errorHandlingEditText);
+        EditText errorHandlingEditText = findViewById(R.id.errorHandlingEditText);
         freeTextValue = errorHandlingEditText.getText().toString();
-        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, ERROR_HANDLING_FREE_KEY , freeTextValue);
+        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, ERROR_HANDLING_FREE_KEY, freeTextValue);
 
     }
 
@@ -71,15 +72,16 @@ public class InitialSurvey4 extends AppCompatActivity {
         notSure = findViewById(R.id.handle_not_sure);
     }
 
+    /*save button state*/
     private void savedPressedButtonToPreferences(int buttonId) {
         SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, ERROR_HANDLING_KEY, String.valueOf(buttonId));
     }
 
     public void sendResults(View view) {
-       sendResultsToFirebase();
-       Intent i = new Intent(this, MainActivity.class);
-       startActivity(i);
-       setResult(Activity.RESULT_OK);
+        sendResultsToFirebase();
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+        setResult(Activity.RESULT_OK);
     }
 
     private void sendResultsToFirebase() {
@@ -87,20 +89,17 @@ public class InitialSurvey4 extends AppCompatActivity {
         String userid = pref.getString("user_id", "no id");
         DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mDatabaseReference.child("initialSurvey").child(userid).child("errorHandling").setValue(value);
-        EditText errorHandlingEditText= findViewById(R.id.errorHandlingEditText);
+        EditText errorHandlingEditText = findViewById(R.id.errorHandlingEditText);
         freeTextValue = errorHandlingEditText.getText().toString();
         mDatabaseReference.child("initialSurvey").child(userid).child("errorHandlingFreeText").setValue(freeTextValue);
     }
 
-
-
     public void openPrevious(View view) {
         Intent i = new Intent(this, InitialSurvey3.class);
-        //i.putExtras(extras);
-        //Log.e("bundle", extras.toString());
         startActivity(i);
     }
 
+    /*get selected button value and handle UI of buttons*/
     public void onButtonClicked(View view) {
         switch (view.getId()) {
             case (R.id.handle_ignore):

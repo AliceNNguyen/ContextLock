@@ -14,8 +14,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-/**Helper class to integrate ActivityRecognitionClient since PendingIntent is needed and normal background services
- * is deprecated since Android Oreo**/
+/*Helper class to integrate ActivityRecognitionClient since PendingIntent is needed and normal background services
+ * is deprecated since Android Oreo
+ * Code snippet based by https://stackoverflow.com/questions/46675242/issue-moving-from-intentservice-to-jobintentservice-for-android-o*/
 
 public class ActivityBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "BroadcastReceiver";
@@ -77,6 +78,7 @@ public class ActivityBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
+    /*request user activity updates with given pending intent*/
     public void requestActivityUpdatesHandler() {
         Task<Void> task = mActivityRecognitionClient.requestActivityUpdates(
                 Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
