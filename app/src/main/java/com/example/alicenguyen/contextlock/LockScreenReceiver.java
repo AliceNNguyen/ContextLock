@@ -13,7 +13,7 @@ public class LockScreenReceiver extends BroadcastReceiver {
     private static final String TAG ="LockScreenReceiver";
     private Context ctx;
     private String userid;
-    private int unlockCounter = 0;
+    private int unlockCounter;
 
     /*Remove notification when user unlocked the device
     * Retrieve unlock/lock events */

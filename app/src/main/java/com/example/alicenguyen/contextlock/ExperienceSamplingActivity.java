@@ -64,13 +64,14 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         currenttime = Calendar.getInstance().getTime();
+        version = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY);
+
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         userid = pref.getString("user_id", "no id");
 
         initNotNowButton();
         initViewElements();
-        version = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY);
         Log.e("version", version);
 
         /*handle survey version based on notification version*/
@@ -276,7 +277,9 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
     }
 
     private void insertToFirebase() {
-        mDatabaseReference.child("logEvents").child(version).child(userid).child(currenttime.toString()).child("notNowButton").setValue("clicked");
+        //mDatabaseReference.child("logEvents").child(version).child(userid).child(currenttime.toString()).child("notNowButton").setValue("clicked");
+        mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("notNowButton").setValue("clicked");
+
     }
 
     private void initNotNowButton() {

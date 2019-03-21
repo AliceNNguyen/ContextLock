@@ -249,14 +249,14 @@ public class LocationJobService extends JobService {
                 //sendNotification(getString(R.string.rain), R.mipmap.raindrop_ic);
                 message = getString(R.string.rain);
                 icon = R.mipmap.raindrop_ic;
-                setNotificationVersion();
+                //setNotificationVersion();
 
                 //openExperienceSampling();
             }else if(mainWeather.contains("Snow")) {
                 //sendNotification(getString(R.string.snow), R.mipmap.snow_ic);
                 message = getString(R.string.snow);
                 icon = R.mipmap.snow_ic;
-                setNotificationVersion();
+                //setNotificationVersion();
 
                 //openExperienceSampling();
             }else if(mainWeather.contains("Drizzle") /*&& provider.equals("gps")*/) {

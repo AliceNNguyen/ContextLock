@@ -206,7 +206,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/teal"
-                    android:onClick="getProfession"
+                    android:onClick="getFallbackMethod"
                     android:text="PIN"
                     android:textColor="@color/dark_grey" />
 

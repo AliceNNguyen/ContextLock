@@ -29,7 +29,7 @@ public class RandomAlarmReceiver extends BroadcastReceiver {
         c2.set(Calendar.HOUR_OF_DAY, random.nextInt(17-11) + 11);
 
         Calendar c3= Calendar.getInstance();
-        c3.set(Calendar.HOUR_OF_DAY, random.nextInt(11-5) + 5);
+        c3.set(Calendar.HOUR_OF_DAY, random.nextInt(11-7) + 7);
 
 
         /*Calendar c = Calendar.getInstance();

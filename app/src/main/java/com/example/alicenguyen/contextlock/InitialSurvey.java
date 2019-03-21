@@ -139,6 +139,7 @@ public class InitialSurvey extends AppCompatActivity {
     public void openNext(View view) {
         getAge();
         getFallBackOther();
+        Log.e(TAG, String.valueOf(checkedFallback));
         if (checkedProfession && checkedSex && !age.equals("") && checkedFallback) {
             Intent i = new Intent(this, InitialSurvey2.class);
             sendResultsToFirebase();
