@@ -390,8 +390,6 @@ public class SetupActivity extends AppCompatActivity {
         SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.SWITCH_VERSION_KEY, switchVersionDate);
         mDatabaseReference.child("Users").child(userId).child("start-date").setValue(Calendar.getInstance().getTime().toString());
         mDatabaseReference.child("Users").child(userId).child("switch-date").setValue(switchVersionDate);
-
-
     }
 
     private void setStudyEndDate() {
