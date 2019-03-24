@@ -47,10 +47,10 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
 
         if (b != null) {
             predictionValue = b.getInt("predictionValue");
-            //reasonableValue = b.getInt("reasonableValue");
-            fingerErrorValue = b.getString("fingerErrorValue");
+            reasonableValue = b.getInt("reasonableValue");
+            //fingerErrorValue = b.getString("fingerErrorValue");
             annoyanceValue = b.getInt("annoyanceValue");
-            switchValue = b.getString("switchValue");
+            //switchValue = b.getString("switchValue");
             reasonFreeText = b.getString("reasonFreeText");
             reasonFreeTextVersionA = b.getString("reasonFreeTextVersionA");
         }
@@ -61,7 +61,7 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
         Log.e("ExperienceSampling", userid);
         initViewElements();
         initSendButton();
-        setReasonableSeekbarListener();
+        //setReasonableSeekbarListener();
 
 
     }
@@ -71,12 +71,12 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
         sendButton = findViewById(R.id.send_button);
         locationEditText = findViewById(R.id.location_freetext);
 
-        reasonableSeekbar = findViewById(R.id.seekBarReasonable);
+        /*reasonableSeekbar = findViewById(R.id.seekBarReasonable);
         reasonableStronglyDisagree = findViewById(R.id.reasonable_strongly_disagree);
         reasonableDisagree = findViewById(R.id.reasonable_disagree);
         reasonableNeutral = findViewById(R.id.reasonable_neutral);
         reasonableAgree = findViewById(R.id.reasonable_agree);
-        reasonableStronglyAgree = findViewById(R.id.reasonable_strongly_agree);
+        reasonableStronglyAgree = findViewById(R.id.reasonable_strongly_agree);*/
     }
 
 
@@ -87,12 +87,12 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
 
                 currenttime = Calendar.getInstance().getTime();
 
-                mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("lockscreen-switch-value").setValue(switchValue);
+               // mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("lockscreen-switch-value").setValue(switchValue);
                 mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("prediction-rate").setValue(predictionValue);
                 mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("annoyance-rate").setValue(annoyanceValue);
                 mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reasonable-rate").setValue(reasonableValue);
 
-                mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("fingererror-value").setValue(fingerErrorValue);
+                //mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("fingererror-value").setValue(fingerErrorValue);
                 mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("user-current-location").setValue(locationValue);
                 mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("location-free-text").setValue(locationEditText.getText().toString());
                 mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reason-free-text-B").setValue(reasonFreeText);
@@ -106,6 +106,7 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
         });
     }
 
+    /*
     private void setReasonableSeekbarListener() {
         reasonableSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -169,7 +170,7 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
 
             }
         });
-    }
+    }*/
 
     public void onLocationRadioButtonClicked(View view) {
         boolean checked = ((RadioButton) view).isChecked();

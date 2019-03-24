@@ -6,24 +6,25 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/*local sql lite database to store log events, like all detected user activities and locations/weather */
-public class LocalDatabase extends SQLiteOpenHelper {
+public class SQLiteDB extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "logEvents_database";
-    public static final String TABLE_NAME = "logevents_table";
+    public static final String DATABASE_NAME = "eventslog_database";
+    public static final String TABLE_NAME = "eventslog_table";
     public static final String COLUMN_ID = "ID";
     public static final String COLUMN_USERID = "user_id";
     public static final String COLUMN_TIMESTAMP = "timestamp";
-    public static final String COLUMN_DETECTED_ACTIVITY = "detected_activity";
-    public static final String COLUMN_DETECTED_WEATHER = "detected_weather";
-    public static final String COLUMN_ISLOCKED = "is_locked";
+    public static final String COLUMN_REASON = "displayed_reason";
+    public static final String COLUMN_PIN_USED = "pin_used";
 
-    public static final String TABLE_NAME_UNLOCK = "unlockevents_table";
-    public static final String COLUMN_ON_UNLOCK = "on_unlock";
+    public static final String TABLE_NAME_UNLOCK = "unlock_events_table";
+    public static final String COLUMN_UNLOCK_FIRST_TIMESTAMP = "unlock_time";
+    public static final String COLUMN_UNLOCK_FAILED_COUNTER = "unlock_failed_counter";
+    public static final String COLUMN_UNLOCK_SUCCESS_TIMESTAMP = "unlock_success_time";
 
 
-    LocalDatabase(Context context) {
-        super(context, DATABASE_NAME,null, DATABASE_VERSION);
+
+    SQLiteDB(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
@@ -32,13 +33,14 @@ public class LocalDatabase extends SQLiteOpenHelper {
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_USERID + " TEXT, " +
                 COLUMN_TIMESTAMP + " TEXT, " +
-                COLUMN_DETECTED_ACTIVITY + " TEXT, " +
-                COLUMN_DETECTED_WEATHER + " TEXT, " +
-                COLUMN_ISLOCKED + " TEXT" + ")");
+                COLUMN_REASON + " TEXT, " +
+                COLUMN_PIN_USED + " TEXT" + ")");
 
         sqLiteDatabase.execSQL("CREATE TABLE " + TABLE_NAME_UNLOCK + " (" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_ON_UNLOCK + " TEXT" + ")");
+                COLUMN_USERID + " TEXT, " +
+                COLUMN_UNLOCK_FAILED_COUNTER + " TEXT, " +
+                COLUMN_UNLOCK_SUCCESS_TIMESTAMP + " TEXT" + ")");
     }
 
     @Override
@@ -49,16 +51,15 @@ public class LocalDatabase extends SQLiteOpenHelper {
 
     }
 
-    public boolean saveToDB(String userid, String timestamp, String detectedActivity,
-                            String detectedWeather, String isLocked) {
+    public boolean saveToDB(String userid, String timestamp, String pinUsed,
+                            String reason) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(LocalDatabase.COLUMN_USERID, userid);
-        values.put(LocalDatabase.COLUMN_TIMESTAMP, timestamp);
-        values.put(LocalDatabase.COLUMN_DETECTED_ACTIVITY, detectedActivity);
-        values.put(LocalDatabase.COLUMN_DETECTED_WEATHER, detectedWeather);
-        values.put(LocalDatabase.COLUMN_ISLOCKED, isLocked);
-        long newRowId = database.insert(LocalDatabase.TABLE_NAME, null, values);
+        values.put(SQLiteDB.COLUMN_USERID, userid);
+        values.put(SQLiteDB.COLUMN_TIMESTAMP, timestamp);
+        values.put(SQLiteDB.COLUMN_REASON, reason);
+        values.put(SQLiteDB.COLUMN_PIN_USED, pinUsed);
+        long newRowId = database.insert(SQLiteDB.TABLE_NAME, null, values);
         if (newRowId == -1) {
             return false;
         } else {
@@ -66,11 +67,14 @@ public class LocalDatabase extends SQLiteOpenHelper {
         }
     }
 
-    public boolean saveUnlockEventsToDB(String timestamp) {
+    public boolean saveUnlockEventsToDB(String userid, String failedCounter,String unlockSuccessTimestamp) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(LocalDatabase.COLUMN_ON_UNLOCK, timestamp);
-        long newRowId = database.insert(LocalDatabase.TABLE_NAME_UNLOCK, null, values);
+        values.put(SQLiteDB.COLUMN_USERID, userid);
+        values.put(SQLiteDB.COLUMN_UNLOCK_FAILED_COUNTER, failedCounter);
+        values.put(SQLiteDB.COLUMN_UNLOCK_SUCCESS_TIMESTAMP, unlockSuccessTimestamp);
+
+        long newRowId = database.insert(SQLiteDB.TABLE_NAME_UNLOCK, null, values);
         if (newRowId == -1) {
             return false;
         } else {

@@ -59,7 +59,9 @@
             android:gravity="center_vertical"
             android:orientation="vertical"
             android:padding="15dp"
-            android:visibility="visible">
+            android:visibility="visible"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
             <TextView
                 android:id="@+id/sex_text"

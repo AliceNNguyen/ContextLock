@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".SetupActivity">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/background_image_description"
+            android:scaleType="fitXY"
+            android:src="@drawable/bg" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/color_gradient"
+            android:orientation="vertical"></LinearLayout>
+
+    <ImageView
+        android:id="@+id/settings"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="right"
+        android:src="@mipmap/ic_settings"
+        android:onClick="openSettings"/>
+
+    <TextView
+        android:id="@+id/setup_finished"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        android:layout_marginTop="70dp"
+        android:textAlignment="center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Your ID"
+            android:textAlignment="center"
+            />
+
+        <TextView
+            android:id="@+id/user_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/teal"
+            android:textSize="40sp"
+            android:textAlignment="center"/>
+    </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="5dp"
+            android:text="Contact alice.nguyen@campus.lmu.de to report problems"
+            android:textAlignment="center"
+            android:textColor="@color/contact_color"
+            android:textSize="12sp" />
+    </RelativeLayout>
+

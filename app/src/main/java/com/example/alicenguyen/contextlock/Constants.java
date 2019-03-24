@@ -25,6 +25,7 @@ public class Constants {
     public static final String COUNTER_KEY = "counter_key";
     public static final String COOLDOWN_KEY = "cooldown_key";
     public static final String SWITCH_VERSION_KEY = "switch_version_key";
+    public static final String STUDY_END_KEY = "study_end_key";
     public static final String VERSION_KEY = "version_key";
 
 
@@ -39,12 +40,22 @@ public class Constants {
 
 
     public static final int NOTIFICATION_SEND_MAX_NUMBER = 5;
+    public static final String LOCKSCREEN_SHOW_KEY = "lockscreen_show_key";
+
+    public static final String LOCKSCREEN_STORED_KEY = "lockscreen_stored_key";
+    public static final int LOCKSCREEN_SHOW_COUNTER = 15; //TODO to set
+    public static final String UNLOCK_FAILURE_COUNTER = "unlock_failure_counter";
+
+    public static final int SURVEY_COOLDOWN = 2; //possibility that survey opens, here 50% chance TODO to set
+
+
     public static final String NOTIFICATION_SEND_KEY = "notification_send_key";
     public static final int STUDY_LENGTH = 1;
     public static final String PREFERENCES = "com.example.alicenguyen.contextlock";
     public static final String FIRST_OPEN = "first_open_key";
     public static final String FIRST_OPEN_SURVEY = "first_open_survey_key";
     public static final String PERMISSION_AGREE = "permission_agree_key";
+    public static final String FIRST_SETUP = "first_setup";
 
     public static final int NOTIFICATION_ID = 1;
 }

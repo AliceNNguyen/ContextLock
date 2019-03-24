@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Lockscreen">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/bg"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/color_gradient"></LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="horizontal">
+
+        <!--<TextView
+            android:id="@+id/clock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="12:12"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            tools:layout_editor_absoluteX="163dp"
+            tools:layout_editor_absoluteY="68dp" />-->
+
+        <TextClock
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:format24Hour="k:mm"
+            android:format12Hour="k:mm"/>
+
+        <!--<ImageView
+            android:id="@+id/settings"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="right"
+            android:src="@mipmap/ic_settings" />-->
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextClock
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:layout_marginTop="45dp"
+            android:format24Hour="EEEE, MMM dd"
+            android:format12Hour="EEEE, MMM dd"/>
+    </RelativeLayout>
+
+
+
+    <ImageView
+        android:id="@+id/context_icon"
+        android:layout_width="@dimen/context_icon"
+        android:layout_height="@dimen/context_icon"
+        android:layout_marginTop="@dimen/context_icon_margintop"
+        android:layout_gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!--
+    <TextView
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="130dp"
+        android:gravity="center"
+        android:text="GPS position"
+        android:textColor="@color/text_title"
+        android:textSize="@dimen/textsize_title"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />-->
+
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/title_margintop"
+        android:gravity="center"
+        android:text="@string/pinlock_title"
+        android:textColor="@color/text_title"
+        android:textSize="@dimen/textsize_title"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+    <!--<com.amirarcane.lockscreen.andrognito.pinlockview.IndicatorDots
+        android:id="@+id/indicator_dots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dot_margintop"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title" />-->
+
+    <com.example.alicenguyen.contextlock.andrognito.pinlockview.IndicatorDots
+        android:id="@+id/indicator_dots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dot_margintop"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+        android:id="@+id/attempts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/attempts_margintop"
+        android:textColor="@color/text_attempts"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/indicator_dots" />
+
+    <!--<com.amirarcane.lockscreen.andrognito.pinlockview.PinLockView
+        android:id="@+id/pinlockView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/lockview_margin"
+        app:layout_constraintBottom_toTopOf="@+id/fingerView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/attempts"
+        app:layout_constraintVertical_bias="0.1" />-->
+    <com.example.alicenguyen.contextlock.andrognito.pinlockview.PinLockView
+        android:id="@+id/pinlockView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="116dp"
+        tools:layout_editor_absoluteY="250dp"
+        app:layout_constraintBottom_toTopOf="@+id/fingerView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/attempts"
+        app:layout_constraintVertical_bias="0.1"
+        />
+
+    <!--
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:orientation="vertical"
+        android:background="@color/transparent_white">
+
+        <TextClock
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            android:format24Hour="k:mm"
+            android:format12Hour="k:mm"/>
+
+        <TextClock
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textAlignment="center"
+            android:format24Hour="EEEE, MMM dd"
+            android:format12Hour="EEEE, MMM dd"/>
+    </LinearLayout>-->
+    <!--
+        <TextClock
+            android:id="@+id/big_clock"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:text="test test"
+            android:textAlignment="center"
+            android:background="@color/transparent_white"
+            android:padding="20dp"
+            android:textColor="@color/dark_grey"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/attempts"
+            android:format24Hour="k:mm"
+            android:format12Hour="k:mm"/>-->
+
+    <!--<TextClock
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        android:format24Hour="EEEE, MMM dd"
+        android:format12Hour="EEEE, MMM dd"/>-->
+
+    <!--<ImageView
+        android:id="@+id/show_pin"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_setpin"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/fingerText"
+        app:layout_constraintLeft_toLeftOf="@+id/fingerView"
+        app:layout_constraintRight_toRightOf="parent"/>-->
+
+
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/fingerView"
+        android:layout_width="@dimen/finger_icon"
+        android:layout_height="@dimen/finger_icon"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/finger_icon_marginbottom"
+        android:src="@drawable/ic_fingerprint"
+        app:layout_constraintBottom_toTopOf="@+id/fingerText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/fingerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/finger_text_marginbottom"
+        android:text="@string/pinlock_pin"
+        android:textColor="@color/text_fingerprint"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

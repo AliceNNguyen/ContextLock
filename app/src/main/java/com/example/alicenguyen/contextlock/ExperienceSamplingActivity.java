@@ -40,10 +40,12 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
 
     private TextView predictionStronglyAgree, predictionAgree, predictionNeutral, predictionDisagree, predictionStronglyDisagree;
     private TextView annoyanceStronglyAgree, annoyanceAgree, annoyanceNeutral, annoyanceDisagree, annoyanceStronglyDisagree;
+    private TextView reasonableStronglyAgree, reasonableAgree, reasonableNeutral, reasonableDisagree, reasonableStronglyDisagree;
+
 
     private EditText reasonEditext, reasonEditextVersionA;
 
-    private int annoyanceValue, predictionValue;
+    private int annoyanceValue, predictionValue, reasonableValue;
     private String reasonFreeText = "";
     private String reasonFreeTextVersionA = "";
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -84,6 +86,8 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         }
         setPredictionSeekbarListener();
         setAnnoyanceSeekbarListener();
+        setReasonableSeekbarListener();
+
         initNextButton();
     }
 
@@ -99,9 +103,9 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 extras.putInt("predictionValue", predictionValue);
                 extras.putInt("annoyanceValue", annoyanceValue);
-                //extras.putInt("reasonableValue", reasonableValue);
-                extras.putString("switchValue", switchValue);
-                extras.putString("fingerErrorValue", fingerErrorValue);
+                extras.putInt("reasonableValue", reasonableValue);
+                //extras.putString("switchValue", switchValue);
+                //extras.putString("fingerErrorValue", fingerErrorValue);
                 extras.putString("reasonFreeText", reasonEditext.getText().toString());
                 extras.putString("reasonFreeTextVersionA", reasonEditextVersionA.getText().toString());
                 //startActivity(new Intent(ExperienceSamplingActivity.this, ExperienceSamplingActivity2.class));
@@ -109,6 +113,71 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
                 i.putExtras(extras);
                 Log.e("bundle", extras.toString());
                 startActivity(i);
+            }
+        });
+    }
+
+    private void setReasonableSeekbarListener() {
+        reasonableSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                reasonableValue = progress;
+                switch (progress) {
+                    case (0):
+                        reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.teal));
+                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableAgree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        break;
+                    case (1):
+                        reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableDisagree.setTextColor(getResources().getColor(R.color.teal));
+                        reasonableNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableAgree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        break;
+                    case (2):
+                        reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableNeutral.setTextColor(getResources().getColor(R.color.teal));
+                        reasonableAgree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        break;
+                    case (3):
+                        reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableAgree.setTextColor(getResources().getColor(R.color.teal));
+                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        break;
+                    case (4):
+                        reasonableStronglyDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableAgree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.teal));
+                        break;
+                    default:
+                        //This code is executed when value of variable 'day'
+                        //doesn't match with any of case above
+                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableDisagree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableNeutral.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableAgree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        reasonableStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
+                        break;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                seekBar.getThumb().setColorFilter(getResources().getColor(R.color.teal), PorterDuff.Mode.SRC);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
     }
@@ -229,8 +298,6 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
                         predictionStronglyAgree.setTextColor(getResources().getColor(R.color.dark_grey));
                         break;
                 }
-
-
             }
 
             @Override
@@ -270,6 +337,13 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         annoyanceAgree = findViewById(R.id.annoyance_agree);
         annoyanceStronglyAgree = findViewById(R.id.annoyance_strongly_agree);
 
+        reasonableSeekbar = findViewById(R.id.seekBarReasonable);
+        reasonableStronglyDisagree = findViewById(R.id.reasonable_strongly_disagree);
+        reasonableDisagree = findViewById(R.id.reasonable_disagree);
+        reasonableNeutral = findViewById(R.id.reasonable_neutral);
+        reasonableAgree = findViewById(R.id.reasonable_agree);
+        reasonableStronglyAgree = findViewById(R.id.reasonable_strongly_agree);
+
 
         //sendButton = findViewById(R.id.send_button);
         reasonEditext = findViewById(R.id.reasonEdittext);
@@ -295,7 +369,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
     }
 
 
-    public void onSwitchButtonClicked(View view) {
+   /* public void onSwitchButtonClicked(View view) {
         boolean checked = ((RadioButton) view).isChecked();
 
         RadioButton trueRadioButton = findViewById(R.id.lockswitch_true);
@@ -306,7 +380,6 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
             case R.id.lockswitch_true:
                 if (checked)
                     switchValue = trueRadioButton.getText().toString();
-
                 break;
             case R.id.lockswitch_false:
                 if (checked)
@@ -316,8 +389,9 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
                 if (checked)
                     switchValue = dontRememberRadioButton.getText().toString();
         }
-    }
+    }*/
 
+   /*
     public void onFingerErrorRadioButtonClicked(View view) {
         boolean checked = ((RadioButton) view).isChecked();
 
@@ -342,7 +416,7 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
                     fingerErrorValue = notSureRadioButton.getText().toString();
                 break;
         }
-    }
+    }*/
 
     public void onCheckboxClicked(View view) {
         boolean checked = ((CheckBox) view).isChecked();

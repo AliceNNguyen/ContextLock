@@ -12,9 +12,9 @@
         android:padding="15dp">
 
 
-        <ScrollView
+       <!-- <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent">-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -23,7 +23,7 @@
                 android:orientation="vertical"
                 android:padding="15dp">
 
-                <TextView
+                <!--<TextView
                     android:id="@+id/reasonableSwitch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
                         android:textColor="@color/dark_grey"
                         android:textSize="@dimen/rating_label"
                         android:textStyle="bold" />
-                </LinearLayout>
+                </LinearLayout>-->
 
 
                 <TextView
@@ -237,7 +237,7 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </ScrollView>
+        <!--</ScrollView>-->
 
     </RelativeLayout>
 

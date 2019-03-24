@@ -26,9 +26,9 @@
         android:padding="15dp">
 
 
-        <ScrollView
+        <!--<ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content">-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -37,7 +37,7 @@
                 android:orientation="vertical"
                 android:padding="15dp">
 
-                <TextView
+               <!-- <TextView
                     android:id="@+id/lockswitch_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -84,8 +84,8 @@
                         android:text="@string/do_not_remember"
                         android:textColor="@color/dark_grey"
                         android:textSize="@dimen/radio_button_textsize" />
-                </RadioGroup>
-
+                </RadioGroup>-->
+                <!--
                 <TextView
                     android:id="@+id/fingerprint_error_text"
                     android:layout_width="match_parent"
@@ -134,7 +134,7 @@
                         android:text="@string/dont_know"
                         android:textColor="@color/dark_grey"
                         android:textSize="@dimen/radio_button_textsize" />
-                </RadioGroup>
+                </RadioGroup>-->
 
 
                 <LinearLayout
@@ -183,6 +183,7 @@
                             android:text="@string/strongly_disagree"
                             android:textColor="@color/dark_grey"
                             android:textSize="@dimen/rating_label"
+                            android:textAlignment="center"
                             android:textStyle="bold" />
 
                         <TextView
@@ -193,6 +194,7 @@
                             android:layout_weight="@dimen/radio_button_text_weight"
                             android:text="@string/disagree"
                             android:textSize="@dimen/rating_label"
+                            android:textAlignment="center"
                             android:textStyle="bold" />
 
                         <TextView
@@ -203,6 +205,7 @@
                             android:layout_weight="@dimen/radio_button_text_weight"
                             android:text="@string/neutral"
                             android:textSize="@dimen/rating_label"
+                            android:textAlignment="center"
                             android:textStyle="bold" />
 
                         <TextView
@@ -213,6 +216,7 @@
                             android:layout_weight="@dimen/radio_button_text_weight"
                             android:text="@string/agree"
                             android:textSize="@dimen/rating_label"
+                            android:textAlignment="center"
                             android:textStyle="bold" />
 
                         <TextView
@@ -223,6 +227,7 @@
                             android:layout_weight="@dimen/radio_button_text_weight"
                             android:text="@string/strongly_agree"
                             android:textSize="@dimen/rating_label"
+                            android:textAlignment="center"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -356,6 +361,100 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/reasonableSwitch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/onside_border"
+                    android:padding="@dimen/header_padding"
+                    android:text="@string/reasonable_switch"
+                    android:textColor="@color/dark_grey"
+                    android:textSize="@dimen/header_text_size" />
+
+
+                <SeekBar
+                    android:id="@+id/seekBarReasonable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:max="4"
+                    android:maxHeight="3dp"
+                    android:minHeight="3dp"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/seekbar_style"
+                    android:thumbTint="@color/transparent" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/rating_container_margin_bottom"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/reasonable_strongly_disagree"
+                        android:layout_width="@dimen/radio_button_text_width"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="@dimen/radio_button_text_weight"
+                        android:text="@string/strongly_disagree"
+                        android:textColor="@color/dark_grey"
+                        android:textSize="@dimen/rating_label"
+                        android:textAlignment="center"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/reasonable_disagree"
+                        android:layout_width="@dimen/radio_button_text_width"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="@dimen/radio_button_text_weight"
+                        android:text="@string/disagree"
+                        android:textColor="@color/dark_grey"
+                        android:textSize="@dimen/rating_label"
+                        android:textAlignment="center"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/reasonable_neutral"
+                        android:layout_width="@dimen/radio_button_text_width"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="@dimen/radio_button_text_weight"
+                        android:text="@string/neutral"
+                        android:textColor="@color/dark_grey"
+                        android:textSize="@dimen/rating_label"
+                        android:textAlignment="center"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/reasonable_agree"
+                        android:layout_width="@dimen/radio_button_text_width"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="@dimen/radio_button_text_weight"
+                        android:text="@string/agree"
+                        android:textColor="@color/dark_grey"
+                        android:textSize="@dimen/rating_label"
+                        android:textAlignment="center"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/reasonable_strongly_agree"
+                        android:layout_width="@dimen/radio_button_text_width"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="12dp"
+                        android:layout_weight="@dimen/radio_button_text_weight"
+                        android:text="@string/strongly_agree"
+                        android:textColor="@color/dark_grey"
+                        android:textSize="@dimen/rating_label"
+                        android:textAlignment="center"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
+                <TextView
                     android:id="@+id/annoyance_level"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -395,6 +494,7 @@
                         android:text="@string/strongly_disagree"
                         android:textColor="@color/dark_grey"
                         android:textSize="@dimen/rating_label"
+                        android:textAlignment="center"
                         android:textStyle="bold" />
 
                     <TextView
@@ -406,6 +506,7 @@
                         android:text="@string/disagree"
                         android:textColor="@color/dark_grey"
                         android:textSize="@dimen/rating_label"
+                        android:textAlignment="center"
                         android:textStyle="bold" />
 
                     <TextView
@@ -417,6 +518,7 @@
                         android:text="@string/neutral"
                         android:textColor="@color/dark_grey"
                         android:textSize="@dimen/rating_label"
+                        android:textAlignment="center"
                         android:textStyle="bold" />
 
                     <TextView
@@ -428,6 +530,7 @@
                         android:text="@string/agree"
                         android:textColor="@color/dark_grey"
                         android:textSize="@dimen/rating_label"
+                        android:textAlignment="center"
                         android:textStyle="bold" />
 
                     <TextView
@@ -439,6 +542,7 @@
                         android:text="@string/strongly_agree"
                         android:textColor="@color/dark_grey"
                         android:textSize="@dimen/rating_label"
+                        android:textAlignment="center"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -452,12 +556,15 @@
                     android:background="@drawable/button_radius"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
-                    android:padding="8dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingRight="15dp"
+                    android:paddingLeft="15dp"
                     android:text="@string/next_string"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/send_text_size" />
             </LinearLayout>
-        </ScrollView>
+        <!--</ScrollView>-->
     </RelativeLayout>
 
 </RelativeLayout>

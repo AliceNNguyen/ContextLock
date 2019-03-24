@@ -79,9 +79,15 @@ public class InitialSurvey4 extends AppCompatActivity {
 
     public void sendResults(View view) {
         sendResultsToFirebase();
-        Intent i = new Intent(this, MainActivity.class);
+        setPin();
+        /*Intent i = new Intent(this, SetupActivity.class);
         startActivity(i);
-        setResult(Activity.RESULT_OK);
+        setResult(Activity.RESULT_OK);*/
+    }
+    private void setPin() {
+        Log.e(TAG, "setPin");
+        Intent intent = Lockscreen.getIntent(this, true);
+        startActivity(intent);
     }
 
     private void sendResultsToFirebase() {

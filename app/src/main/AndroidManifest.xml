@@ -6,6 +6,11 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+
+
+
     <!-- GPS permission -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -16,6 +21,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
 
     <!--
     <uses-feature android:name="android.hardware.fingerprint"
@@ -30,11 +38,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity
             android:name=".ExperienceSamplingActivity"
@@ -45,21 +52,33 @@
             android:name=".ExperienceSamplingActivity2"
             android:label="@string/feedback_survey"
             android:theme="@style/LightTheme" />
+        <service android:name=".KioskService" android:exported="false"/>
 
+
+        <service
+            android:name=".DetectedActivitiesIntentService"
+            android:exported="false" />
+        <service android:name=".BackgroundDetectedActivitiesService" />
         <service
             android:name=".LocationJobService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".UserActivityJobIntentService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <receiver android:name=".ActivityBroadcastReceiver" />
-        <receiver android:name=".RandomAlarmReceiver" >
+        <receiver android:name=".RandomAlarmReceiver"
             android:directBootAware="true"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true">  <!--android:directBootAware="true" android:enabled="true" android:exported="true-->
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".LockscreenHelper">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <receiver android:name=".AlarmReceiver">
@@ -68,15 +87,42 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".ExportDBHelper" />
-        <receiver android:name=".LockScreenReceiver" />
+        <receiver android:name=".LockScreenReceiver">
+        </receiver>
 
+
+        <receiver
+            android:name=".AdminReceiver"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_receiver"
+                />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.ACTION_PASSWORD_FAILED"/>
+                <action android:name="android.app.action.ACTION_PASSWORD_SUCCEEDED"/>
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".InitialSurvey"
             android:exported="true" />
         <activity android:name=".InitialSurvey2" />
         <activity android:name=".InitialSurvey3" />
-        <activity android:name=".InitialSurvey4"></activity>
+        <activity android:name=".InitialSurvey4" />
+        <activity
+            android:name=".Lockscreen"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+        <activity android:name=".SetupActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

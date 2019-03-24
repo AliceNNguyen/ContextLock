@@ -4,6 +4,10 @@ import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.PowerManager;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import java.util.Calendar;
@@ -14,6 +18,9 @@ public class LockScreenReceiver extends BroadcastReceiver {
     private Context ctx;
     private String userid;
     private int unlockCounter;
+    private KeyguardManager myKM;
+    private boolean isScreenOn;
+    private int lockscreenShowCounter;
 
     /*Remove notification when user unlocked the device
     * Retrieve unlock/lock events */
@@ -22,20 +29,93 @@ public class LockScreenReceiver extends BroadcastReceiver {
         ctx = context.getApplicationContext();
         unlockCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.UNLOCK_COUNTER_KEY));
 
-        KeyguardManager myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
-        if( myKM.isKeyguardLocked()) {
-            Log.e(TAG, "device is locked");
-            checkForNotification(context);
-            //it is locked
-        } else {
-            Log.e(TAG, "device not locked");
-            Log.e(TAG, String.valueOf(unlockCounter));
-            writeUnlockEventsToDB(context);
-            unlockCounter++;
-            SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.UNLOCK_COUNTER_KEY, String.valueOf(unlockCounter));
-            NotificationHelper.cancelNotification(context, Constants.NOTIFICATION_ID);
+        myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+        Log.e(TAG, "action");
+        Log.e(TAG, intent.getAction());
+        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF) && myKM.isDeviceLocked()) {
+            Log.e(TAG, "received alarm");
+            int failCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.UNLOCK_FAILURE_COUNTER));
+            String storedLockscreen = SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_STORED_KEY);
+            Log.e(TAG, storedLockscreen);
+            Log.e(TAG, String.valueOf(failCounter));
+            if(storedLockscreen.equals("true") && failCounter < 1) {
+                Log.e(TAG, "lockscreen open");
+                //vibrate(context);
+                setLockscreen(context);
+            }
+            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.UNLOCK_FAILURE_COUNTER).apply();
+        }
+        //checkIsDeviceLocked();
+    }
+
+    /*set lock screen if max number is not exceeded*/
+    private void setLockscreen(Context context){
+        lockscreenShowCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY));
+        Log.e(TAG, String.valueOf(lockscreenShowCounter));
+        Intent i = new Intent(context, Lockscreen.class);
+        if(lockscreenShowCounter < Constants.LOCKSCREEN_SHOW_COUNTER) {
+            //Intent i = new Intent(context, Lockscreen.class);
+            context.startActivity(i);
+            lockscreenShowCounter++;
+            SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY, String.valueOf(lockscreenShowCounter));
+            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.LOCKSCREEN_STORED_KEY).apply();
+            //checkIsDeviceSecure();
         }
     }
+
+    private void vibrate(Context context) {
+        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 500 milliseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            v.vibrate(100);
+        }
+    }
+
+
+
+    private void checkScreenState() {
+        PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
+        isScreenOn = pm.isInteractive();
+        Log.e(TAG, "screen state");
+        Log.e(TAG, String.valueOf(isScreenOn));
+    }
+
+    private void checkIsDeviceLocked() {
+        checkScreenState();
+        if(!myKM.isDeviceLocked() && isScreenOn) { //device not locked and screen on
+            Log.e(TAG, String.valueOf(myKM.isDeviceLocked()));
+            Log.e(TAG, "screen on");
+            //setLockscreen();
+        }else if(!myKM.isDeviceLocked() && !isScreenOn) { //device is not locked and screen off
+            Log.e(TAG, "is not device locked");
+            Log.e(TAG, "screen is not on");
+        }else if(myKM.isDeviceLocked() && !isScreenOn){ //device is locked and screen off
+            Log.e(TAG, "device is locked and screen of");
+            //setLockscreen();
+        }else{
+            Log.e(TAG, "device is locked");
+            //setLockscreen();
+
+        }
+    }
+
+    /*set lock screen if max number is not exceeded*/
+    private void setLockscreen(){
+        lockscreenShowCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY));
+        Log.e(TAG, String.valueOf(lockscreenShowCounter));
+        if(lockscreenShowCounter < Constants.LOCKSCREEN_SHOW_COUNTER) {
+            Intent i = new Intent(ctx, Lockscreen.class);
+            ctx.startActivity(i);
+            lockscreenShowCounter++;
+            SharedPreferencesStorage.writeSharedPreference(ctx, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY, String.valueOf(lockscreenShowCounter));
+            //checkIsDeviceSecure();
+        }
+    }
+
+
     private void writeUnlockEventsToDB(Context context) {
         LocalDatabase mDb = new LocalDatabase(context);
         Date currenttime = Calendar.getInstance().getTime();

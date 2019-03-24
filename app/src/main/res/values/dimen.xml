@@ -39,7 +39,7 @@
 
     // fingerprint
     <dimen name="finger_text_marginbottom">22dp</dimen>
-    <dimen name="finger_icon">60dp</dimen>
+    <dimen name="finger_icon">30dp</dimen>
     <dimen name="finger_icon_margintop">80dp</dimen>
     <dimen name="finger_icon_marginbottom">10dp</dimen>
     <dimen name="textsize_fingerprint">14sp</dimen>
@@ -50,10 +50,10 @@
 
     //survey header
     <dimen name="header_padding">8dp</dimen>
-    <dimen name="header_text_size">12sp</dimen>
+    <dimen name="header_text_size">13sp</dimen>
 
     //ratings
-    <dimen name="rating_label">8sp</dimen>
+    <dimen name="rating_label">10sp</dimen>
     <dimen name="rating_container_margin_bottom">20dp</dimen>
 
     //radio button

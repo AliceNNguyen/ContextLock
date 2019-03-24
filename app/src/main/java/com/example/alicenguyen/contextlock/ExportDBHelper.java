@@ -11,7 +11,8 @@ import java.util.Calendar;
 
 public class ExportDBHelper extends BroadcastReceiver {
     private static final String TAG = "ExportDBHelper";
-    private LocalDatabase db;
+    //private LocalDatabase db;
+    private SQLiteDB db;
     private Cursor cursor;
     private Context ctx;
     private String userid, version, timestamp;
@@ -22,12 +23,76 @@ public class ExportDBHelper extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         ctx = context.getApplicationContext();
         exportTime = Calendar.getInstance().getTime().toString();
-        db = new LocalDatabase(context);
-        readDataFromDB();
-        resetNotificationCounter();
+        db = new SQLiteDB(context);
+        exportUnlockEvents();
+        //db = new LocalDatabase(context);
+        //readDataFromDB();
+        //readDataFromSQliteDB();
+        //resetNotificationCounter();
+        resetLockscreenShowCounter();
     }
 
-    private void readDataFromDB() {
+    private void readDataFromSQliteDB() {
+        cursor = db.getAllData();
+        if (cursor.moveToFirst() && cursor.getCount() >0) {
+            Log.e(TAG, String.valueOf(cursor.moveToFirst()));
+            Log.e(TAG, String.valueOf(cursor.getCount()));
+            do {
+                version = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.VERSION_KEY);
+                userid = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_USERID));
+                timestamp = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_TIMESTAMP));
+                String reason = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_REASON));
+                String pinUsed = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_PIN_USED));
+                exportDataToFirebase(version, userid, timestamp, reason, pinUsed);
+                Log.e(TAG, userid);
+                Log.e(TAG, version);
+                Log.e(TAG, timestamp);
+                Log.e(TAG, pinUsed);
+                Log.e(TAG, reason);
+            } while (cursor.moveToNext());
+            //exportUnlockCounter(userid, version);
+        }
+        exportUnlockEvents();
+    }
+
+    private void exportDataToFirebase(String version, String userid, String timestamp, String reason, String pinUsed){
+        if(cursor.getCount() > 0) {
+            Log.e(TAG, userid);
+            Log.e(TAG, version);
+            Log.e(TAG, timestamp);
+            Log.e(TAG, pinUsed);
+            Log.e(TAG, reason);
+            //export sql lite database to firebase when there is data in the table
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("logEvents").child(version).child(userid);
+            ref.child(timestamp).child("reason").setValue(reason);
+            ref.child(timestamp).child("pin_used").setValue(pinUsed);
+            Log.e(TAG, "exported");
+            //TODO
+            //delete database entries after exported?
+            //db.deleteAllData();
+        } else {
+            Log.e(TAG, "database empty");
+        }
+    }
+
+    private void exportUnlockEvents() {
+        cursor = db.getUnlockData();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                //String version = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.VERSION_KEY);
+                String version = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.VERSION_KEY);
+                String userid = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_USERID));
+                String failCounter = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_UNLOCK_FAILED_COUNTER));
+                String successUnlockTimestamp = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_UNLOCK_SUCCESS_TIMESTAMP));
+
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("unlockEvents").child(version).child(userid);
+                ref.child(exportTime).child("failed_counter").setValue(failCounter);
+                ref.child(exportTime).child("success_time").setValue(successUnlockTimestamp);
+            } while (cursor.moveToNext());
+        }
+    }
+
+    /*private void readDataFromDB() {
         cursor = db.getAllData();
         if (cursor.moveToFirst()) {
             do {
@@ -45,8 +110,9 @@ public class ExportDBHelper extends BroadcastReceiver {
         }
         exportUnlockEvents();
 
-    }
+    }*/
 
+    /*
     private void exportUnlockEvents() {
         cursor = db.getUnlockData();
         if (cursor.moveToFirst()) {
@@ -58,9 +124,9 @@ public class ExportDBHelper extends BroadcastReceiver {
                 ref.child(exportTime).child(unlockTime).setValue(key);
             } while (cursor.moveToNext());
         }
-    }
+    }*/
 
-    private void exportDataToFirebase(String version, String userid,String timestamp,String detectedActivity, String detectedWeather, String send ) {
+    /*private void exportDataToFirebase(String version, String userid,String timestamp,String detectedActivity, String detectedWeather, String send ) {
         if(cursor.getCount() > 0) {
             //export sql lite database to firebase when there is data in the table
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("logEvents").child(version).child(userid);
@@ -69,12 +135,12 @@ public class ExportDBHelper extends BroadcastReceiver {
             ref.child(timestamp).child("isLocked").setValue(send);
             Log.e(TAG, "exported");
             //TODO
-            /*delete database entries after exported?*/
+            //delete database entries after exported?
             //db.deleteAllData();
         } else {
             Log.e(TAG, "database empty");
         }
-    }
+    }*/
 
     private void exportUnlockCounter(String userid, String version) {
         String unlockCounter = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.UNLOCK_COUNTER_KEY);
@@ -84,6 +150,13 @@ public class ExportDBHelper extends BroadcastReceiver {
         if(Integer.parseInt(unlockCounter) > 0) {
             ctx.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.UNLOCK_COUNTER_KEY).apply();
         }
+    }
+
+    private void resetLockscreenShowCounter() {
+        Log.e(TAG, "reset lockscreen counter");
+        ctx.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.LOCKSCREEN_SHOW_KEY).apply();
+        Log.e(TAG, SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY));
+
     }
 
     /*daily reset notification send counter*/
