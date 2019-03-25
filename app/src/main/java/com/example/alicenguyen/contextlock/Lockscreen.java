@@ -917,8 +917,8 @@ public class Lockscreen extends AppCompatActivity {
             pinUsed = true;
             writeLockscreenDataToFirebase();
             //writeLogEventsToDB();
-            finish();
             openExperienceSampling();
+            finish();
         } else {
             shake();
             mPinTryCount++;
