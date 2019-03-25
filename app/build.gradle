@@ -30,6 +30,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.andrognito.pinlockview:pinlockview:2.1.0'
     implementation 'com.amirarcane.lock-screen:lockscreen:2.0.0'
+    implementation 'com.andrognito.patternlockview:patternlockview:1.0.0'
+
     implementation 'com.android.volley:volley:1.1.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'com.google.firebase:firebase-core:16.0.6'

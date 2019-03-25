@@ -99,7 +99,7 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
                 mDatabaseReference.child(version).child(userid).child(currenttime.toString()).child("reason-free-text-A").setValue(reasonFreeTextVersionA);
 
                 Toast.makeText(ExperienceSamplingActivity2.this, "gesendet", Toast.LENGTH_SHORT).show();
-                NotificationHelper.cancelNotification(ExperienceSamplingActivity2.this, Constants.NOTIFICATION_ID);
+                //NotificationHelper.cancelNotification(ExperienceSamplingActivity2.this, Constants.NOTIFICATION_ID);
                 finishAffinity();
 
             }

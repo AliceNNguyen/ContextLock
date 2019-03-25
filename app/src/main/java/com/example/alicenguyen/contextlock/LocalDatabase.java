@@ -18,7 +18,7 @@ public class LocalDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_DETECTED_WEATHER = "detected_weather";
     public static final String COLUMN_ISLOCKED = "is_locked";
 
-    public static final String TABLE_NAME_UNLOCK = "unlockevents_table";
+    public static final String TABLE_NAME_UNLOCK = "success_unlockevents_table";
     public static final String COLUMN_ON_UNLOCK = "on_unlock";
 
 

@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -19,6 +20,8 @@ import android.widget.LinearLayout;
 
 import com.amirarcane.lockscreen.R;
 import com.amirarcane.lockscreen.andrognito.pinlockview.CustomizationOptionsBundle;
+//import com.example.alicenguyen.contextlock.andrognito.pinlockview.CustomizationOptionsBundle;
+//import com.example.alicenguyen.contextlock.R;
 
 /**
  * Created by aritraroy on 31/05/16.
@@ -237,7 +240,7 @@ public class PinLockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public DeleteViewHolder(final View itemView) {
             super(itemView);
-            mDeleteButton = (LinearLayout) itemView.findViewById(R.id.button);
+            mDeleteButton =  itemView.findViewById(R.id.button);
             mButtonImage = (ImageView) itemView.findViewById(R.id.buttonImage);
 
             if (mCustomizationOptionsBundle.isShowDeleteButton() && mPinLength > 0) {

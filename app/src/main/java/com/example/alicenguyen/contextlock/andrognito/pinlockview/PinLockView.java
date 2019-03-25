@@ -9,7 +9,10 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import com.amirarcane.lockscreen.R;
+//import com.amirarcane.lockscreen.R;
+import  com.example.alicenguyen.contextlock.R;
+
+//import com.example.alicenguyen.contextlock.andrognito.pinlockview.CustomizationOptionsBundle;
 import com.amirarcane.lockscreen.andrognito.pinlockview.CustomizationOptionsBundle;
 //import com.amirarcane.lockscreen.andrognito.pinlockview.IndicatorDots;
 //import com.amirarcane.lockscreen.andrognito.pinlockview.ItemSpaceDecoration;
@@ -168,6 +171,7 @@ public class PinLockView extends RecyclerView{
             mDeleteButtonWidthSize = (int) typedArray.getDimension(R.styleable.PinLockView_keypadDeleteButtonSize, ResourceUtils.getDimensionInPx(getContext(), R.dimen.default_delete_button_size_width));
             mDeleteButtonHeightSize = (int) typedArray.getDimension(R.styleable.PinLockView_keypadDeleteButtonSize, ResourceUtils.getDimensionInPx(getContext(), R.dimen.default_delete_button_size_height));
             mButtonBackgroundDrawable = typedArray.getDrawable(R.styleable.PinLockView_keypadButtonBackgroundDrawable);
+            //mButtonBackgroundDrawable = typedArray.getDrawable(R.drawable.circlebutton_selector);
             mDeleteButtonDrawable = typedArray.getDrawable(R.styleable.PinLockView_keypadDeleteButtonDrawable);
             mShowDeleteButton = typedArray.getBoolean(R.styleable.PinLockView_keypadShowDeleteButton, true);
             mDeleteButtonPressedColor = typedArray.getColor(R.styleable.PinLockView_keypadDeleteButtonPressedColor, ResourceUtils.getColor(getContext(), R.color.text_numberpressed));

@@ -36,6 +36,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andrognito.patternlockview.PatternLockView;
+import com.andrognito.patternlockview.listener.PatternLockViewListener;
+import com.andrognito.patternlockview.utils.PatternLockUtils;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -70,6 +73,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -174,6 +178,8 @@ public class Lockscreen extends AppCompatActivity {
     private FirebaseAnalytics mFirebaseAnalytics;
 
 
+
+
     public static Intent getIntent(Context context, boolean setPin) {
         Intent intent = new Intent(context, Lockscreen.class);
         intent.putExtra(EXTRA_SET_PIN, setPin);
@@ -200,7 +206,7 @@ public class Lockscreen extends AppCompatActivity {
 
         getUserLocation();
         /**startservice not for higher version**/
-        getUserActivity();
+        //getUserActivity();
         //setContextIcon();
         //getLocationService();
 
@@ -288,6 +294,8 @@ public class Lockscreen extends AppCompatActivity {
         pinLockView = findViewById(R.id.pinlockView);
         pinTitle = findViewById(R.id.title);
         methodTitle = findViewById(R.id.fingerText);
+
+
         //showpinButton = findViewById(R.id.show_pin);
     }
 
@@ -656,9 +664,8 @@ public class Lockscreen extends AppCompatActivity {
         contextIcon.setVisibility(View.VISIBLE);
         pinLockView.setVisibility(View.VISIBLE);
         //pinTitle.setText(R.string.pinlock_title);
-        methodTitle.setText(R.string.pinlock_pin);
+        //methodTitle.setText(R.string.pinlock_pin);
 
-        setNotificationVersion();
 
        if(userActivity.equals("still") && mainWeather.contains("Drizzle")){
            Log.e(TAG, "tada");
@@ -691,6 +698,7 @@ public class Lockscreen extends AppCompatActivity {
         } else{
             setRandomIcon();
         }
+        setNotificationVersion();
         locationManager.removeUpdates(locationListener);
     }
 
@@ -881,7 +889,7 @@ public class Lockscreen extends AppCompatActivity {
     private void openExperienceSampling() {
         Random generator = new Random();
         int randomInt = generator.nextInt(Constants.SURVEY_COOLDOWN-0) + 0;
-        Log.d("random", String.valueOf(randomInt));
+        Log.e("random", String.valueOf(randomInt));
         cooldown = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY);
         Log.e("cooldown", String.valueOf(cooldown));
         //survey_open_counter = Integer.parseInt(getSurveyOpenCounterfromSharedPreferences());
@@ -891,8 +899,9 @@ public class Lockscreen extends AppCompatActivity {
                 SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
                 SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "true");
 
+                Log.e(TAG, "startActivity");
                 Intent intent = new Intent(this, ExperienceSamplingActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             //}
         }
@@ -900,8 +909,6 @@ public class Lockscreen extends AppCompatActivity {
             SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
             finish();
         }
-
-
     }
 
     private void checkPin(String pin) {
@@ -1009,10 +1016,12 @@ public class Lockscreen extends AppCompatActivity {
     }
 
     private void checkForFingerPrint() {
+        Log.e(TAG, "checkForFingerprint");
         final FingerPrintListener fingerPrintListener = new FingerPrintListener() {
 
             @Override
             public void onSuccess() {
+                Log.e(TAG, "fingerprint success");
                 setResult(RESULT_OK);
                 Animate.animate(mImageViewFingerView, fingerprintToTick);
                 final Handler handler = new Handler();
@@ -1020,7 +1029,7 @@ public class Lockscreen extends AppCompatActivity {
                     @Override
                     public void run() {
                         pinUsed = false;
-                        writeLogEventsToDB();
+                        //writeLogEventsToDB();
                         finish();
                         openExperienceSampling();
                     }
@@ -1031,7 +1040,8 @@ public class Lockscreen extends AppCompatActivity {
             @Override
             public void onFailed() {
 
-                mFingerprintTryCount++;
+                //mFingerprintTryCount++;
+                Log.e(TAG, "fingerprint failed");
                 Animate.animate(mImageViewFingerView, fingerprintToCross);
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -1044,9 +1054,10 @@ public class Lockscreen extends AppCompatActivity {
 
             @Override
             public void onError(CharSequence errorString) {
-                Bundle bundle = new Bundle();
+               /* Bundle bundle = new Bundle();
                 bundle.putString("fingerprint_error", errorString.toString());
-                mFirebaseAnalytics.logEvent("fingerprint_error", bundle);
+                mFirebaseAnalytics.logEvent("fingerprint_error", bundle);*/
+               Log.e(TAG, "fingerprint error");
 
                 Toast.makeText(Lockscreen.this, errorString, Toast.LENGTH_SHORT).show();
             }
@@ -1056,6 +1067,7 @@ public class Lockscreen extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 bundle.putString("fingerprint_help", helpString.toString());
                 mFirebaseAnalytics.logEvent("fingerprint_help", bundle);
+                Log.e(TAG, "fingerprint help");
                 Toast.makeText(Lockscreen.this, helpString, Toast.LENGTH_SHORT).show();
             }
 
@@ -1142,6 +1154,7 @@ public class Lockscreen extends AppCompatActivity {
             super(e);
         }
     }
+
 
     @Override
     public void onStart() {

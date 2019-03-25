@@ -50,6 +50,7 @@ public class ExportDBHelper extends BroadcastReceiver {
                 Log.e(TAG, pinUsed);
                 Log.e(TAG, reason);
             } while (cursor.moveToNext());
+            //cursor.close();
             //exportUnlockCounter(userid, version);
         }
         exportUnlockEvents();
@@ -90,6 +91,8 @@ public class ExportDBHelper extends BroadcastReceiver {
                 ref.child(exportTime).child("success_time").setValue(successUnlockTimestamp);
             } while (cursor.moveToNext());
         }
+        exportUnlockSuccessEvents(userid);
+
     }
 
     /*private void readDataFromDB() {
@@ -112,19 +115,19 @@ public class ExportDBHelper extends BroadcastReceiver {
 
     }*/
 
-    /*
-    private void exportUnlockEvents() {
-        cursor = db.getUnlockData();
+
+    private void exportUnlockSuccessEvents(String id) {
+        cursor = db.getSuccessUnlockData();
         if (cursor.moveToFirst()) {
             do {
-                String key = cursor.getString(cursor.getColumnIndex(LocalDatabase.COLUMN_ID));
-                String unlockTime = cursor.getString(cursor.getColumnIndex(LocalDatabase.COLUMN_ON_UNLOCK));
+                String key = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_ID));
+                String unlockTime = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_ON_UNLOCK));
                 String version = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.VERSION_KEY);
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("unlockEvents").child(version).child(userid);
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("unlockEvents").child(version).child(id);
                 ref.child(exportTime).child(unlockTime).setValue(key);
             } while (cursor.moveToNext());
         }
-    }*/
+    }
 
     /*private void exportDataToFirebase(String version, String userid,String timestamp,String detectedActivity, String detectedWeather, String send ) {
         if(cursor.getCount() > 0) {

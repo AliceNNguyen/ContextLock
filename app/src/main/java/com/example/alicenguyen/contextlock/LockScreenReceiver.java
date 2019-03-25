@@ -10,6 +10,9 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.google.firebase.database.snapshot.IndexedNode;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -45,6 +48,9 @@ public class LockScreenReceiver extends BroadcastReceiver {
             }
             context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.UNLOCK_FAILURE_COUNTER).apply();
         }
+        if(!myKM.isDeviceLocked() && intent.getAction().equals(Intent.ACTION_USER_PRESENT)){
+            writeUnlockEventsToDB(context);
+        }
         //checkIsDeviceLocked();
     }
 
@@ -60,6 +66,18 @@ public class LockScreenReceiver extends BroadcastReceiver {
             SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY, String.valueOf(lockscreenShowCounter));
             context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.LOCKSCREEN_STORED_KEY).apply();
             //checkIsDeviceSecure();
+        }
+    }
+
+    private void writeUnlockEventsToDB(Context context) {
+        LocalDatabase mDb = new LocalDatabase(context);
+        Date currenttime = Calendar.getInstance().getTime();
+        boolean isInserted = mDb.saveUnlockEventsToDB(currenttime.toString());
+        if(isInserted == true) {
+            Log.e(TAG, "insertedToDB");
+        }else{
+            Log.e(TAG, "failed to insert DB");
+            //TODO send failed log to firebase
         }
     }
 
@@ -116,17 +134,7 @@ public class LockScreenReceiver extends BroadcastReceiver {
     }
 
 
-    private void writeUnlockEventsToDB(Context context) {
-        LocalDatabase mDb = new LocalDatabase(context);
-        Date currenttime = Calendar.getInstance().getTime();
-        boolean isInserted = mDb.saveUnlockEventsToDB(currenttime.toString());
-        if(isInserted == true) {
-            Log.e(TAG, "insertedToDB");
-        }else{
-            Log.e(TAG, "failed to insert DB");
-            //TODO send failed log to firebase
-        }
-    }
+
 
     private void openSurvey(Context context) {
         Intent intent = new Intent(context, ExperienceSamplingActivity.class);

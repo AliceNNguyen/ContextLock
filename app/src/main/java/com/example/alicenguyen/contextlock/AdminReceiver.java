@@ -31,6 +31,7 @@ public class AdminReceiver extends DeviceAdminReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+        Log.e(TAG, "onReceive");
         Log.e(TAG, intent.getAction());
         myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         //checkIsDeviceLocked(context);

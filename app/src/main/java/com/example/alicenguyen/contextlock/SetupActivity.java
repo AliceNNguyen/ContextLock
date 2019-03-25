@@ -90,12 +90,8 @@ public class SetupActivity extends AppCompatActivity {
         //initTrackingButtons();
         registerLockScreenReceiver();
         setupDeviceAdministratorPermissions(prefs);
-        //startKioskService();
     }
 
-    private void startKioskService() { // ... and this method
-        startService(new Intent(this, KioskService.class));
-    }
 
     private void setFinished() {
         Intent intent = getIntent();
@@ -145,7 +141,7 @@ public class SetupActivity extends AppCompatActivity {
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
             builder.setCancelable(false);
-            builder.setTitle("Enter your received input");
+            builder.setTitle("Enter your received ID");
 
             // Set up the input
             final EditText input = new EditText(this);
@@ -204,7 +200,7 @@ public class SetupActivity extends AppCompatActivity {
                                 Toast.makeText(SetupActivity.this, "ID set", Toast.LENGTH_LONG).show();
                                 setSwitchVersionDate();
                                 setStudyEndDate();
-                                setRandomAlarmReceiver();
+                                //setRandomAlarmReceiver(); TODO wieder rein
                                 dialog.dismiss();
                                 //setPin();
                                 openInitialSurvey();
@@ -491,9 +487,9 @@ public class SetupActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (isRegistered) {
+        /*if (isRegistered) {
             unregisterReceiver(mLockScreenReceiver);
-        }
+        }*/
         try {
             unregisterReceiver(mLockScreenReceiver);
         } catch (Exception e) {

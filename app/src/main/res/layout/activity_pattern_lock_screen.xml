@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Lockscreen">
+    tools:context=".PatternLockScreen">
 
     <ImageView
         android:layout_width="match_parent"
@@ -26,16 +25,6 @@
         android:layout_marginBottom="5dp"
         android:orientation="horizontal">
 
-        <!--<TextView
-            android:id="@+id/clock"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="12:12"
-            android:textSize="30sp"
-            android:textAlignment="center"
-            tools:layout_editor_absoluteX="163dp"
-            tools:layout_editor_absoluteY="68dp" />-->
-
         <TextClock
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,14 +33,6 @@
             android:textAlignment="center"
             android:format24Hour="k:mm"
             android:format12Hour="k:mm"/>
-
-        <!--<ImageView
-            android:id="@+id/settings"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentRight="true"
-            android:layout_gravity="right"
-            android:src="@mipmap/ic_settings" />-->
 
     </RelativeLayout>
 
@@ -82,28 +63,13 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <!--
-    <TextView
-        android:id="@+id/location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="130dp"
-        android:gravity="center"
-        android:text="GPS position"
-        android:textColor="@color/text_title"
-        android:textSize="@dimen/textsize_title"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />-->
-
-
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/title_margintop"
         android:gravity="center"
-        android:text="@string/pinlock_title"
+        android:text="Use Pattern!"
         android:textColor="@color/text_title"
         android:textSize="@dimen/textsize_title"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -111,57 +77,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-
-    <!--<com.amirarcane.lockscreen.andrognito.pinlockview.IndicatorDots
-        android:id="@+id/indicator_dots"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dot_margintop"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title" />-->
-
-    <com.example.alicenguyen.contextlock.andrognito.pinlockview.IndicatorDots
-        android:id="@+id/indicator_dots"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dot_margintop"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
-
-    <TextView
-        android:id="@+id/attempts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/attempts_margintop"
-        android:textColor="@color/text_attempts"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/indicator_dots" />
-
-    <!--<com.amirarcane.lockscreen.andrognito.pinlockview.PinLockView
-        android:id="@+id/pinlockView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/lockview_margin"
+    <com.andrognito.patternlockview.PatternLockView
+        android:id="@+id/pattern_lock_view"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="76dp"
         app:layout_constraintBottom_toTopOf="@+id/fingerView"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/attempts"
-        app:layout_constraintVertical_bias="0.1" />-->
-    <com.example.alicenguyen.contextlock.andrognito.pinlockview.PinLockView
-        android:id="@+id/pinlockView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="116dp"
-        tools:layout_editor_absoluteY="250dp"
-        app:layout_constraintBottom_toTopOf="@+id/fingerView"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/attempts"
-        app:layout_constraintVertical_bias="0.1"
-        />
+        app:layout_constraintVertical_bias="0.1" />
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/fingerView"
