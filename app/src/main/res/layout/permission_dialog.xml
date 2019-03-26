@@ -64,6 +64,14 @@
         android:textSize="17sp"
         android:textColor="@color/dark_grey"
         />
+    <TextView
+        android:id="@+id/permission_lockscreen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_lockscreen_data"
+        android:textSize="17sp"
+        android:textColor="@color/dark_grey"
+        />
 
     <TextView
         android:id="@+id/permission_agree"

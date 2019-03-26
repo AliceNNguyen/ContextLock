@@ -3,11 +3,14 @@ package com.example.alicenguyen.contextlock;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.util.Calendar;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class ExportDBHelper extends BroadcastReceiver {
     private static final String TAG = "ExportDBHelper";
@@ -25,6 +28,8 @@ public class ExportDBHelper extends BroadcastReceiver {
         exportTime = Calendar.getInstance().getTime().toString();
         db = new SQLiteDB(context);
         exportUnlockEvents();
+        exportUnlockSuccessEvents(context);
+
         //db = new LocalDatabase(context);
         //readDataFromDB();
         //readDataFromSQliteDB();
@@ -82,7 +87,7 @@ public class ExportDBHelper extends BroadcastReceiver {
             do {
                 //String version = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.VERSION_KEY);
                 String version = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.VERSION_KEY);
-                String userid = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_USERID));
+                userid = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_USERID));
                 String failCounter = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_UNLOCK_FAILED_COUNTER));
                 String successUnlockTimestamp = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_UNLOCK_SUCCESS_TIMESTAMP));
 
@@ -91,8 +96,6 @@ public class ExportDBHelper extends BroadcastReceiver {
                 ref.child(exportTime).child("success_time").setValue(successUnlockTimestamp);
             } while (cursor.moveToNext());
         }
-        exportUnlockSuccessEvents(userid);
-
     }
 
     /*private void readDataFromDB() {
@@ -116,14 +119,18 @@ public class ExportDBHelper extends BroadcastReceiver {
     }*/
 
 
-    private void exportUnlockSuccessEvents(String id) {
+    private void exportUnlockSuccessEvents(Context context) {
+        Log.e(TAG, "get success unlock data");
+        SharedPreferences pref = context.getApplicationContext().getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE);
+        String userid = pref.getString(Constants.KEY_ID, "0");
+        Log.e(TAG, userid);
         cursor = db.getSuccessUnlockData();
+        String version = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.VERSION_KEY);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("unlockEvents").child(version).child(userid);
         if (cursor.moveToFirst()) {
             do {
                 String key = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_ID));
                 String unlockTime = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_ON_UNLOCK));
-                String version = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.VERSION_KEY);
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("unlockEvents").child(version).child(id);
                 ref.child(exportTime).child(unlockTime).setValue(key);
             } while (cursor.moveToNext());
         }

@@ -84,10 +84,26 @@ public class InitialSurvey4 extends AppCompatActivity {
         startActivity(i);
         setResult(Activity.RESULT_OK);*/
     }
+
     private void setPin() {
         Log.e(TAG, "setPin");
-        Intent intent = Lockscreen.getIntent(this, true);
-        startActivity(intent);
+        String fallback = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.UNLOCK_METHOD_KEY);
+        Log.e(TAG, fallback);
+        if(fallback.equals("PIN")) {
+            Log.e(TAG, "setPin");
+            Intent intent = Lockscreen.getIntent(this, true);
+            startActivity(intent);
+
+        }else if(fallback.equals("Pattern")) {
+            Log.e(TAG, "setPattern");
+            Intent intent = PatternLockScreen.getIntent(this, true);
+            startActivity(intent);
+        }else {
+            Log.e(TAG, "setPattern other");
+            Intent intent = PatternLockScreen.getIntent(this, true);
+            startActivity(intent);
+            SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.UNLOCK_METHOD_KEY, "Pattern");
+        }
     }
 
     private void sendResultsToFirebase() {

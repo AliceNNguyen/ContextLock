@@ -15,6 +15,7 @@ import com.google.firebase.database.snapshot.IndexedNode;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class LockScreenReceiver extends BroadcastReceiver {
     private static final String TAG ="LockScreenReceiver";
@@ -35,7 +36,7 @@ public class LockScreenReceiver extends BroadcastReceiver {
         myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         Log.e(TAG, "action");
         Log.e(TAG, intent.getAction());
-        if (myKM.isDeviceLocked()) { //intent.getAction().equals(Intent.ACTION_SCREEN_OFF) &&
+        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) { //intent.getAction().equals(Intent.ACTION_SCREEN_OFF) && myKM.isDeviceLocked()
             Log.e(TAG, "received alarm");
             int failCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.UNLOCK_FAILURE_COUNTER));
             String storedLockscreen = SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_STORED_KEY);
@@ -58,10 +59,19 @@ public class LockScreenReceiver extends BroadcastReceiver {
     private void setLockscreen(Context context){
         lockscreenShowCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY));
         Log.e(TAG, String.valueOf(lockscreenShowCounter));
-        Intent i = new Intent(context, Lockscreen.class);
+
+
+
         if(lockscreenShowCounter < Constants.LOCKSCREEN_SHOW_COUNTER) {
             //Intent i = new Intent(context, Lockscreen.class);
-            context.startActivity(i);
+            String fallback = SharedPreferencesStorage.readSharedPreference(context,Constants.PREFERENCES, Constants.UNLOCK_METHOD_KEY);
+            if(fallback.equals("PIN")) {
+                Intent i = new Intent(context, Lockscreen.class);
+                context.startActivity(i);
+            }else if(fallback.equals("Pattern")) {
+                Intent i = new Intent(context, PatternLockScreen.class);
+                context.startActivity(i);
+            }
             lockscreenShowCounter++;
             SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY, String.valueOf(lockscreenShowCounter));
             context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.LOCKSCREEN_STORED_KEY).apply();
@@ -70,9 +80,9 @@ public class LockScreenReceiver extends BroadcastReceiver {
     }
 
     private void writeUnlockEventsToDB(Context context) {
-        LocalDatabase mDb = new LocalDatabase(context);
+        SQLiteDB mDb = new SQLiteDB(context);
         Date currenttime = Calendar.getInstance().getTime();
-        boolean isInserted = mDb.saveUnlockEventsToDB(currenttime.toString());
+        boolean isInserted = mDb.saveSUnlockSuccessEventsToDB(currenttime.toString());
         if(isInserted == true) {
             Log.e(TAG, "insertedToDB");
         }else{

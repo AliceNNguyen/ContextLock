@@ -58,4 +58,7 @@ public class Constants {
     public static final String FIRST_SETUP = "first_setup";
 
     public static final int NOTIFICATION_ID = 1;
+    public static final String UNLOCK_METHOD_KEY = "unlock_method_key";
+
+
 }

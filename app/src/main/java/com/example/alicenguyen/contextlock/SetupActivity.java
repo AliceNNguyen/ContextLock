@@ -85,11 +85,11 @@ public class SetupActivity extends AppCompatActivity {
         setID();
         setFinished();
         //setUserId();
-        //setRandomAlarmReceiver(); //TODO nach testen wieder raus
+        //setRandomAlarmReceiver(); //TODO nach testen wieder
         setAlarmForLogEventsExport();
+
         //initTrackingButtons();
         //registerLockScreenReceiver();
-        startService();
         setupDeviceAdministratorPermissions(prefs);
     }
 
@@ -176,6 +176,7 @@ public class SetupActivity extends AppCompatActivity {
                                 Toast.makeText(SetupActivity.this, "ID set", Toast.LENGTH_LONG).show();
                                 setSwitchVersionDate();
                                 setStudyEndDate();
+                                startService();
                                 setRandomAlarmReceiver(); //TODO wieder rein
                                 dialog.dismiss();
                                 //setPin();
@@ -259,8 +260,18 @@ public class SetupActivity extends AppCompatActivity {
 
     private void setPin() {
         Log.e(TAG, "setPin");
-        Intent intent = Lockscreen.getIntent(this, true);
-        startActivity(intent);
+        /*Intent intent = Lockscreen.getIntent(this, true);
+        startActivity(intent);*/
+        String fallback = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.UNLOCK_METHOD_KEY);
+        if(fallback.equals("PIN")) {
+            Intent intent = Lockscreen.getIntent(this, true);
+            startActivity(intent);
+        }else if(fallback.equals("Pattern")) {
+            Intent intent = PatternLockScreen.getIntent(this, true);
+            startActivity(intent);
+        }else {
+            Log.e(TAG, "not found");
+        }
     }
 
     /*if permission are granted, background services will be started after user starts the tracking (on start tracking clicked)*/
@@ -386,7 +397,7 @@ public class SetupActivity extends AppCompatActivity {
         Log.e(TAG, "start export");
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, ExportDBHelper.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 20, intent, 0);
 
         //TODO set alarm to midnight/after midnight after testing done
         Calendar c = Calendar.getInstance();
@@ -405,7 +416,7 @@ public class SetupActivity extends AppCompatActivity {
         Log.e(TAG, "startAlarm");
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, RandomAlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 10, intent, 0);
 
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR, 1);

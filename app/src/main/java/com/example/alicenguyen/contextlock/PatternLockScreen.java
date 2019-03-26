@@ -842,5 +842,12 @@ public class PatternLockScreen extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        if(!keyguardManager.isDeviceLocked()){
+            vibrate();
+        }
+    }
 }

@@ -57,7 +57,7 @@ public class LockscreenService extends Service {
 
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Track lock screen")
+                .setContentTitle("Study is running")
                 .setContentText(input)
                 .setSmallIcon(R.mipmap.ic_fingerprint_white)
                 .setContentIntent(pendingIntent)

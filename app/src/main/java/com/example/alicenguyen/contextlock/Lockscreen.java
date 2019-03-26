@@ -20,6 +20,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.security.keystore.KeyGenParameterSpec;
@@ -202,24 +203,13 @@ public class Lockscreen extends AppCompatActivity {
         }
 
         getPinlockViews();
-
-
         getUserLocation();
         /**startservice not for higher version**/
         //getUserActivity();
-        //setContextIcon();
         //getLocationService();
 
-
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-
         mSetPin = getIntent().getBooleanExtra(EXTRA_SET_PIN, false);
-
-        //settings = (ImageView) findViewById(R.id.settings);
-
-        //setSettingsDialog();
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             showFingerprint = (AnimatedVectorDrawable) getDrawable(R.drawable.show_fingerprint);
@@ -239,7 +229,11 @@ public class Lockscreen extends AppCompatActivity {
                         new Runnable() {
                             public void run() {
                                 Log.e("tag", "This'll run 2 seconds later");
-                                checkForFingerPrint();
+                                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                                if(pm.isInteractive()) {
+                                    Log.e(TAG, "is interactive");
+                                    checkForFingerPrint();
+                                }
                             }
                         },
                         3000);
@@ -268,10 +262,6 @@ public class Lockscreen extends AppCompatActivity {
             }
         };
 
-        //mPinLockView   = findViewById(R.id.pinlockView);
-        //mIndicatorDots = findViewById(R.id.indicator_dots);
-
-        //startActivity(intent);
         mPinLockView.attachIndicatorDots(mIndicatorDots);
         mPinLockView.setPinLockListener(pinLockListener);
 
@@ -281,9 +271,6 @@ public class Lockscreen extends AppCompatActivity {
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-        //setDefaultView();
-
     }
 
     private void getPinlockViews() {
@@ -293,7 +280,7 @@ public class Lockscreen extends AppCompatActivity {
         mImageViewFingerView = (AppCompatImageView) findViewById(R.id.fingerView);
         mTextFingerText = (TextView) findViewById(R.id.fingerText);
         mContextIcon = (ImageView) findViewById(R.id.context_icon);
-        settings = (ImageView) findViewById(R.id.settings);
+        //settings = (ImageView) findViewById(R.id.settings);
         mPinLockView   = findViewById(R.id.pinlockView);
         mIndicatorDots = findViewById(R.id.indicator_dots);
         contextIcon = findViewById(R.id.context_icon);
@@ -406,33 +393,6 @@ public class Lockscreen extends AppCompatActivity {
             // permissions this app might request.
         }
     }
-    //TODO
-    private void handleUserLocation(String longitude, String latiude) {
-    }
-
-    /*private void getLocationService(){
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Log.e("on broadcast receive", "get location service");
-                Log.e("broadcast", intent.getAction());
-                if (intent.getAction().equals(Constants.BROADCAST_DETECTED_LOCATION)) {
-                    String longitude = "" + intent.getDoubleExtra("longitude", 0);
-                    String latitude = "" + intent.getDoubleExtra("latitude", 0);
-                    Log.e("location service",intent.getExtras().get("longitude").toString());
-                    Log.e("location service", longitude + " " + latitude);
-                    //handleUserActivity(type, confidence);
-                    handleUserLocation(longitude, latitude);
-                }
-            }
-        };
-        startTrackingLocation();
-    }*/
-    /*private void startTrackingLocation() {
-        Intent locationIntent = new Intent(Lockscreen.this, LocationService.class);
-        startService(locationIntent);
-    }*/
-
 
 
     private void getUserActivity(){
@@ -451,26 +411,21 @@ public class Lockscreen extends AppCompatActivity {
 
     private void handleUserActivity(int type, int confidence) {
         userActivity = getString(R.string.activity_unknown);
-        //int icon = R.drawable.ic_still;
         switch (type) {
             case DetectedActivity.IN_VEHICLE: {
                 userActivity = getString(R.string.activity_in_vehicle);
-                //icon = R.drawable.ic_driving;
                 break;
             }
             case DetectedActivity.ON_BICYCLE: {
                 userActivity = getString(R.string.activity_on_bicycle);
-                //icon = R.drawable.ic_on_bicycle;
                 break;
             }
             case DetectedActivity.ON_FOOT: {
                 userActivity = getString(R.string.activity_on_foot);
-                //icon = R.drawable.ic_walking;
                 break;
             }
             case DetectedActivity.RUNNING: {
                 userActivity = getString(R.string.activity_running);
-                //icon = R.drawable.ic_running;
                 break;
             }
             case DetectedActivity.STILL: {
@@ -479,12 +434,10 @@ public class Lockscreen extends AppCompatActivity {
             }
             case DetectedActivity.TILTING: {
                 userActivity = getString(R.string.activity_tilting);
-                //icon = R.drawable.ic_tilting;
                 break;
             }
             case DetectedActivity.WALKING: {
                 userActivity = getString(R.string.activity_walking);
-                //icon = R.drawable.ic_walking;
                 break;
             }
             case DetectedActivity.UNKNOWN: {
@@ -496,11 +449,6 @@ public class Lockscreen extends AppCompatActivity {
         Log.d(TAG, "User activity: " + userActivity + ", Confidence: " + confidence);
         getUserLocation();
         if (confidence > Constants.CONFIDENCE) {
-            //txtActivity.setText(label);
-            //txtConfidence.setText("Confidence: " + confidence);
-            //imgActivity.setImageResource(icon);
-
-            //Toast.makeText(this, userActivity, Toast.LENGTH_LONG).show();
             setContextIcon();
         }
     }
@@ -606,10 +554,10 @@ public class Lockscreen extends AppCompatActivity {
             return;
         }else{ //if permission enabled
             if(isNetworkEnabled) {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Constants.LOCATION_INTERVAL, Constants.LOCATION_DISTANCE, locationListener);
             }
             if(isGPSEnabled)  {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.LOCATION_INTERVAL, Constants.LOCATION_DISTANCE, locationListener);
             }else {
                 setContextIcon();
             }
@@ -914,7 +862,11 @@ public class Lockscreen extends AppCompatActivity {
         }
         if(randomInt == 0 /*&& cooldown.equals("true")*/) {
             SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
-            finish();
+            Log.e(TAG, "finish");
+            setResult(RESULT_CANCELED);
+            finishAffinity();
+            //finishAndRemoveTask();
+            //finish();
         }
     }
 
@@ -1037,6 +989,7 @@ public class Lockscreen extends AppCompatActivity {
                     public void run() {
                         pinUsed = false;
                         //writeLogEventsToDB();
+                        writeLockscreenDataToFirebase();
                         finish();
                         openExperienceSampling();
                     }

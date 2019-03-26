@@ -121,7 +121,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PatternLockScreen"></activity>
+        <activity android:name=".PatternLockScreen"
+            android:exported="true"></activity>
     </application>
 
 </manifest>

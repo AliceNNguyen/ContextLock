@@ -28,7 +28,7 @@ public class InitialSurvey extends AppCompatActivity {
     private static final String PROFESSION_ID_KEY = "checkedProfessionButtonId";
     private static final String SEX_ID_KEY = "checkedSexButtonId";
     private static final String AGE_ID_KEY = "agedInputStringKey";
-    private static final String FALLBACK_ID_KEY = "fallbackButtonId";
+    public static final String FALLBACK_ID_KEY = "fallbackButtonId";
     private static final String FALLBACK_OTHER_ID_KEY = "fallbackOtherId";
     private boolean checkedSex, checkedProfession, checkedFallback;
     private String sex, profession, age, fallbackUnlock, fallbackUnlockOther;
@@ -122,6 +122,10 @@ public class InitialSurvey extends AppCompatActivity {
                     fallbackUnlock = ((RadioButton) view).getText().toString();
                 }
         }
+        Log.e(TAG, fallbackUnlock);
+        SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.UNLOCK_METHOD_KEY, fallbackUnlock);
+
+
     }
 
     private void sendResultsToFirebase() {
