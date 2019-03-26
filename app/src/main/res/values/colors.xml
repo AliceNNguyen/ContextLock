@@ -27,8 +27,8 @@
     <color name="transparent_black">#80000000</color>
     <color name="semitransparent_black">#80000000</color>
     <color name="semitransparent_grey">#CC323254</color>
-    <color name="button_gradient_start">#80008080</color>
-    <color name="button_gradient_end">#801AEBE2</color>
+    <color name="button_gradient_start">#E6008080</color>
+    <color name="button_gradient_end">#E61AEBE2</color>
     <color name="transparent_white">#E6FFFFFF</color>
     <color name="gradient_start_2">#4ECDC4</color>
     <color name="gradient_end_2">#556270</color>

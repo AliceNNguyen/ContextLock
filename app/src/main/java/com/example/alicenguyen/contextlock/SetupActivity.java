@@ -85,10 +85,11 @@ public class SetupActivity extends AppCompatActivity {
         setID();
         setFinished();
         //setUserId();
-        setRandomAlarmReceiver(); //TODO nach testen wieder raus
+        //setRandomAlarmReceiver(); //TODO nach testen wieder raus
         setAlarmForLogEventsExport();
         //initTrackingButtons();
-        registerLockScreenReceiver();
+        //registerLockScreenReceiver();
+        startService();
         setupDeviceAdministratorPermissions(prefs);
     }
 
@@ -152,36 +153,11 @@ public class SetupActivity extends AppCompatActivity {
             input.setInputType(InputType.TYPE_CLASS_NUMBER);
             builder.setView(input);
             builder.setPositiveButton("Submit", null);
-
-            // Set up the buttons
-            /*builder.setPositiveButton("Sumbit", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    userId = input.getText().toString();
-                    Log.e(TAG, userId);
-                    if (!userId.equals("")) {
-                        writeIDtoSharedPreferences(userId);
-                        SharedPreferences.Editor edit = prefs.edit();
-                        edit.putBoolean(Constants.FIRST_SETUP, Boolean.TRUE);
-                        edit.commit();
-                        Log.e(TAG, String.valueOf(prefs.getBoolean(Constants.FIRST_SETUP, false)));
-                        Toast.makeText(SetupActivity.this, "ID set", Toast.LENGTH_LONG).show();
-                        setSwitchVersionDate();
-                        dialog.dismiss();
-                        openInitialSurvey();
-                        //}
-                    } else {
-                        Toast.makeText(SetupActivity.this, "Please enter ID", Toast.LENGTH_LONG).show();
-
-                    }
-                }
-            });*/
             final AlertDialog alert = builder.create();
             alert.setOnShowListener(new DialogInterface.OnShowListener() {
 
                 @Override
                 public void onShow(final DialogInterface dialog) {
-
                     Button b = alert.getButton(AlertDialog.BUTTON_POSITIVE);
                     b.setTextColor(ContextCompat.getColor(SetupActivity.this, R.color.teal));
                     b.setOnClickListener(new View.OnClickListener() {
@@ -200,7 +176,7 @@ public class SetupActivity extends AppCompatActivity {
                                 Toast.makeText(SetupActivity.this, "ID set", Toast.LENGTH_LONG).show();
                                 setSwitchVersionDate();
                                 setStudyEndDate();
-                                //setRandomAlarmReceiver(); TODO wieder rein
+                                setRandomAlarmReceiver(); //TODO wieder rein
                                 dialog.dismiss();
                                 //setPin();
                                 openInitialSurvey();
@@ -432,8 +408,8 @@ public class SetupActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
 
         Calendar c = Calendar.getInstance();
-        //c.set(Calendar.HOUR, 1);
-        c.add(Calendar.MINUTE, 5);
+        c.set(Calendar.HOUR, 1);
+        //c.add(Calendar.MINUTE, 2);
 
         Log.e(TAG, c.toString());
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
@@ -480,20 +456,86 @@ public class SetupActivity extends AppCompatActivity {
     }*/
 
     public void openSettings(View view) {
-       setPin();
+        //setPin();
+
+        AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(SetupActivity.this);
+        mDialogBuilder.setCancelable(false);
+        View mDialogView = getLayoutInflater().inflate(R.layout.settings_dialog, null);
+
+        Button mSetPIN = (Button) mDialogView.findViewById(R.id.setPin);
+        Button mCancelDialogButton = (Button) mDialogView.findViewById(R.id.cancel_dialog);
+        Button mstopTrackingButton = (Button) mDialogView.findViewById(R.id.stop_tracking);
+        Button mstartTrackingButton = (Button) mDialogView.findViewById(R.id.start_tracking);
+
+        mDialogBuilder.setView(mDialogView);
+        final AlertDialog dialog = mDialogBuilder.create();
+        //set opacity of dialog
+        //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.white)));
+        dialog.show();
+
+        mCancelDialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+            }
+        });
+        mSetPIN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setPin();
+            }
+        });
+        mstopTrackingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(SetupActivity.this, R.style.AlertDialogStyle)
+                        .setMessage("Are you sure you want to stop tracking?"
+                                + " The app won't receive relevant study data anymore")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                stopService();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+                //stopService();
+            }
+        });
+        mstartTrackingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startService();
+            }
+        });
     }
+
 
     /*unregister receiver*/
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //stopService();
         /*if (isRegistered) {
             unregisterReceiver(mLockScreenReceiver);
         }*/
-        try {
+        /*try {
             unregisterReceiver(mLockScreenReceiver);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+    }
+
+    public void startService() {
+        Intent serviceIntent = new Intent(this, LockscreenService.class);
+        ContextCompat.startForegroundService(this, serviceIntent);
+        Toast.makeText(this, "tracking started", Toast.LENGTH_LONG);
+
+    }
+
+    public void stopService() {
+        Intent serviceIntent = new Intent(this, LockscreenService.class);
+        stopService(serviceIntent);
+        Toast.makeText(this, "tracking stopped", Toast.LENGTH_LONG);
     }
 }

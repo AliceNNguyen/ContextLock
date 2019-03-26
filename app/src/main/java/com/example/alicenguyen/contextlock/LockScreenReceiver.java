@@ -35,7 +35,7 @@ public class LockScreenReceiver extends BroadcastReceiver {
         myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         Log.e(TAG, "action");
         Log.e(TAG, intent.getAction());
-        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF) && myKM.isDeviceLocked()) {
+        if (myKM.isDeviceLocked()) { //intent.getAction().equals(Intent.ACTION_SCREEN_OFF) &&
             Log.e(TAG, "received alarm");
             int failCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.UNLOCK_FAILURE_COUNTER));
             String storedLockscreen = SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_STORED_KEY);

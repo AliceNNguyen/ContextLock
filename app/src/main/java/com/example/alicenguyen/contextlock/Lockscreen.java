@@ -235,7 +235,14 @@ public class Lockscreen extends AppCompatActivity {
                 changeLayoutForSetPin();
                 mSetPin = true;
             } else {
-                checkForFingerPrint();
+                new android.os.Handler().postDelayed(
+                        new Runnable() {
+                            public void run() {
+                                Log.e("tag", "This'll run 2 seconds later");
+                                checkForFingerPrint();
+                            }
+                        },
+                        3000);
             }
         }
 
