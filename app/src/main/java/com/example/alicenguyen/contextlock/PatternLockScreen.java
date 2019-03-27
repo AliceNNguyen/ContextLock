@@ -160,6 +160,7 @@ public class PatternLockScreen extends AppCompatActivity {
 
 
     private FirebaseAnalytics mFirebaseAnalytics;
+    private FingerprintHandler helper;
 
     private PatternLockViewListener mPatternLockViewListener = new PatternLockViewListener() {
         @Override
@@ -424,21 +425,21 @@ public class PatternLockScreen extends AppCompatActivity {
             //patternTitle.setText(getString(R.string.running) + " " + getString(R.string.pinlock_title));
         } else if(mainWeather.contains("Rain") && userActivity.equals(R.string.activity_walking)) {
             contextIcon.setImageResource(R.drawable.raindrop);
-            patternTitle.setText(getString(R.string.rain) + " " + getString(R.string.pinlock_title));
+            patternTitle.setText(getString(R.string.rain) + " " + getString(R.string.patternlock_title));
             Log.d("mist", "it's wet outside!");
         }else if(mainWeather.contains("Drizzle")){ //Drizzle
             contextIcon.setImageResource(R.drawable.raindrop);
-            patternTitle.setText(getString(R.string.running) + " " + getString(R.string.pinlock_title));
+            patternTitle.setText(getString(R.string.running) + " " + getString(R.string.patternlock_title));
         }
         else if(mainWeather.contains("Snow")) { //compareAccuracy >= 0
             contextIcon.setImageResource(R.drawable.snowflake_white);
-            patternTitle.setText(getString(R.string.snow) + " " + getString(R.string.pinlock_title));
+            patternTitle.setText(getString(R.string.snow) + " " + getString(R.string.patternlock_title));
         } else if(humidity > 75 && temperature.doubleValue() > 27.0) {
             contextIcon.setImageResource(R.drawable.raindrop);
-            patternTitle.setText(getString(R.string.wet) + " " + getString(R.string.pinlock_title));
+            patternTitle.setText(getString(R.string.wet) + " " + getString(R.string.patternlock_title));
         }else if(temperature.doubleValue() > 27.0 ){
             contextIcon.setImageResource(R.drawable.humidity_white);
-            patternTitle.setText(getString(R.string.muggy) + " " + getString(R.string.pinlock_title));
+            patternTitle.setText(getString(R.string.muggy) + " " + getString(R.string.patternlock_title));
         } else{
             setRandomIcon();
         }
@@ -490,7 +491,7 @@ public class PatternLockScreen extends AppCompatActivity {
                     Log.e(TAG, "non condition notification");
                     SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_A );
                     contextIcon.setVisibility(View.INVISIBLE);
-                    patternTitle.setText(getString(R.string.pinlock_title));
+                    patternTitle.setText(getString(R.string.patternlock_title));
                 }
                 else {
                     // number is odd
@@ -508,7 +509,7 @@ public class PatternLockScreen extends AppCompatActivity {
                     // number is odd
                     SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_A );
                     contextIcon.setVisibility(View.INVISIBLE);
-                    patternTitle.setText(R.string.pinlock_title);
+                    patternTitle.setText(R.string.patternlock_title);
                 }
             }
         } catch (ParseException e) {
@@ -805,7 +806,7 @@ public class PatternLockScreen extends AppCompatActivity {
 
                             // Here, I’m referencing the FingerprintHandler class that we’ll create in the next section. This class will be responsible
                             // for starting the authentication process (via the startAuth method) and processing the authentication process events//
-                            FingerprintHandler helper = new FingerprintHandler(this);
+                            /*FingerprintHandler*/ helper = new FingerprintHandler(this);
                             helper.startAuth(mFingerprintManager, mCryptoObject);
                             helper.setFingerPrintListener(fingerPrintListener);
                         }
@@ -823,7 +824,17 @@ public class PatternLockScreen extends AppCompatActivity {
         }
     }
 
+
+
+    private class FingerprintException extends Exception {
+        public FingerprintException(Exception e) {
+            super(e);
+        }
+    }
+
+
     private void vibrate() {
+        Log.e(TAG, "vibrate");
         if(!mSetPattern){
             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             // Vibrate for 500 milliseconds
@@ -836,18 +847,27 @@ public class PatternLockScreen extends AppCompatActivity {
         }
     }
 
-    private class FingerprintException extends Exception {
-        public FingerprintException(Exception e) {
-            super(e);
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.e(TAG, "onPause");
+        if(helper!= null) {
+            Log.e(TAG, "cancel finger");
+            helper.stopListening();
         }
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.e(TAG, "onResume");
+        vibrate();
         KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        if(!keyguardManager.isDeviceLocked()){
+        /*if(!keyguardManager.isDeviceLocked()){
+            Log.e(TAG, "vibrate");
             vibrate();
-        }
+        }*/
     }
 }

@@ -14,6 +14,7 @@ import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.CancellationSignal;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 @TargetApi(Build.VERSION_CODES.M)
 public class FingerprintHandler extends FingerprintManager.AuthenticationCallback {
@@ -24,6 +25,7 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     private CancellationSignal cancellationSignal;
     private Context context;
     private FingerPrintListener mfingerPrintListener;
+
 
     public FingerprintHandler(Context mContext) {
         context = mContext;
@@ -44,10 +46,22 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
         this.mfingerPrintListener = mfingerPrintListener;
     }
 
+    public void stopListening() {
+        if (cancellationSignal != null) {
+            cancellationSignal.cancel();
+            cancellationSignal = null;
+        }
+    }
+
+
     @Override
     //onAuthenticationError is called when a fatal error has occurred. It provides the error code and error message as its parameters//
     public void onAuthenticationError(int errMsgId, CharSequence errString) {
         mfingerPrintListener.onError(errString);
+        Log.e("handler", "error");
+        if (errMsgId == FingerprintManager.FINGERPRINT_ERROR_CANCELED) {
+            Log.e("handler",  errString.toString());
+        }
     }
 
     @Override

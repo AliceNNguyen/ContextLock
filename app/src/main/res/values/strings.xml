@@ -9,7 +9,7 @@
     <string name="pinlock_secondPin">Enter Pin Code Again</string>
     <string name="pinlock_tryagain">Pin Codes Are Not The Same</string>
     <string name="pinlock_fingerprint">Use Fingerprint</string>
-    <string name="pinlock_pin">Your fingerprint might not work.</string>
+    <string name="fingererror_title">A problem with your fingerprint was detected</string>
     <string name="set_pin">Change PIN/Pattern</string>
     <string name="set_id">Enter your received ID</string>
     <string name="settings">Settings</string>
@@ -121,5 +121,9 @@
     <string name="male">male</string>
 
     <string name="admin_explanation">Unlock events are logged anonymously for study analytics</string>
+    <string name="lockout_scenario">How often do you experience lockout* scenarios? </string>
+    <string name="lockout_explanation">*Lockout means you failed to unlock your phone too often, therefor you need to wait to try again</string>
+    <string name="fingererror_scenario">How often do you have problems with your fingerprint authentication?* </string>
+    <string name="fingererror_explanation">*This means your fingerprint could not be recognized immediately</string>
 
 </resources>

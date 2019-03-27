@@ -178,6 +178,7 @@ public class Lockscreen extends AppCompatActivity {
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
+    private FingerprintHandler helper;
 
 
 
@@ -453,6 +454,20 @@ public class Lockscreen extends AppCompatActivity {
         }
     }
 
+
+    private void vibrate() {
+        if(!mSetPin){
+            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            // Vibrate for 500 milliseconds
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else {
+                //deprecated in API 26
+                v.vibrate(100);
+            }
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -461,9 +476,13 @@ public class Lockscreen extends AppCompatActivity {
 
         KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
 
-        if(!keyguardManager.isDeviceLocked()){
+        /*if(!keyguardManager.isKeyguardLocked()){
+            Log.e(TAG, "unlock");
             vibrate();
-        }
+        }else {
+            Log.e(TAG, "locked");
+        }*/
+        vibrate();
         Log.e("Lockscreen", "lockscreen active");
 
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
@@ -474,16 +493,6 @@ public class Lockscreen extends AppCompatActivity {
                 new IntentFilter(Constants.BROADCAST_DETECTED_LOCATION));*/
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-        ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-
-        activityManager.moveTaskToFront(getTaskId(), 0);
-
-
-    }
 
 
     private void startTracking() {
@@ -618,38 +627,29 @@ public class Lockscreen extends AppCompatActivity {
         checkForOutdoor();
         contextIcon.setVisibility(View.VISIBLE);
         pinLockView.setVisibility(View.VISIBLE);
-        //pinTitle.setText(R.string.pinlock_title);
-        //methodTitle.setText(R.string.pinlock_pin);
-
 
        if(userActivity.equals("still") && mainWeather.contains("Drizzle")){
            Log.e(TAG, "tada");
             contextIcon.setImageResource(R.drawable.running);
             pinTitle.setText(getString(R.string.running) + " " + getString(R.string.pinlock_title));
-            //methodTitle.setText(R.string.pinlock_pin);
 
        } else if(mainWeather.contains("Rain") && userActivity.equals(R.string.activity_walking)) {
             contextIcon.setImageResource(R.drawable.raindrop);
            pinTitle.setText(getString(R.string.rain) + " " + getString(R.string.pinlock_title));
-           //methodTitle.setText(R.string.pinlock_pin);
             Log.d("mist", "it's wet outside!");
         }else if(mainWeather.contains("Drizzle")){ //Drizzle
            contextIcon.setImageResource(R.drawable.raindrop);
            pinTitle.setText(getString(R.string.running) + " " + getString(R.string.pinlock_title));
-           //methodTitle.setText(R.string.pinlock_pin);
         }
         else if(mainWeather.contains("Snow")) { //compareAccuracy >= 0
            contextIcon.setImageResource(R.drawable.snowflake_white);
            pinTitle.setText(getString(R.string.snow) + " " + getString(R.string.pinlock_title));
-           //methodTitle.setText(R.string.pinlock_pin);
         } else if(humidity > 75 && temperature.doubleValue() > 27.0) {
            contextIcon.setImageResource(R.drawable.raindrop);
            pinTitle.setText(getString(R.string.wet) + " " + getString(R.string.pinlock_title));
-           //methodTitle.setText(R.string.pinlock_pin);
         }else if(temperature.doubleValue() > 27.0 ){
            contextIcon.setImageResource(R.drawable.humidity_white);
            pinTitle.setText(getString(R.string.muggy) + " " + getString(R.string.pinlock_title));
-           //methodTitle.setText(R.string.pinlock_pin);
         } else{
             setRandomIcon();
         }
@@ -665,12 +665,10 @@ public class Lockscreen extends AppCompatActivity {
             case 1: //humdidity
                 contextIcon.setImageResource(R.drawable.humidity_white);
                 pinTitle.setText(getString(R.string.default_humidity) + " " + getString(R.string.pinlock_title));
-                //methodTitle.setText(R.string.pinlock_pin);
                 break;
             default: //movement
                 contextIcon.setImageResource(R.drawable.running);
                 pinTitle.setText(getString(R.string.default_movement) + " " + getString(R.string.pinlock_title));
-                //methodTitle.setText(R.string.pinlock_pin);
                 break;
         }
 
@@ -1017,7 +1015,7 @@ public class Lockscreen extends AppCompatActivity {
                /* Bundle bundle = new Bundle();
                 bundle.putString("fingerprint_error", errorString.toString());
                 mFirebaseAnalytics.logEvent("fingerprint_error", bundle);*/
-               Log.e(TAG, "fingerprint error");
+                Log.e(TAG, "fingerprint error");
 
                 Toast.makeText(Lockscreen.this, errorString, Toast.LENGTH_SHORT).show();
             }
@@ -1077,7 +1075,7 @@ public class Lockscreen extends AppCompatActivity {
 
                             // Here, I’m referencing the FingerprintHandler class that we’ll create in the next section. This class will be responsible
                             // for starting the authentication process (via the startAuth method) and processing the authentication process events//
-                            FingerprintHandler helper = new FingerprintHandler(this);
+                            helper = new FingerprintHandler(this);
                             helper.startAuth(mFingerprintManager, mCryptoObject);
                             helper.setFingerPrintListener(fingerPrintListener);
                         }
@@ -1095,25 +1093,27 @@ public class Lockscreen extends AppCompatActivity {
         }
     }
 
-    private void vibrate() {
-        if(!mSetPin){
-            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            // Vibrate for 500 milliseconds
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                //deprecated in API 26
-                v.vibrate(100);
-            }
-        }
-    }
-
-
     private class FingerprintException extends Exception {
         public FingerprintException(Exception e) {
             super(e);
         }
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+        ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        activityManager.moveTaskToFront(getTaskId(), 0);
+
+        if(helper != null) {
+            helper.stopListening();
+        }
+
+
+
+    }
+
 
 
     @Override

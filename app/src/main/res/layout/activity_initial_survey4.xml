@@ -171,7 +171,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="10dp"
-                    android:text="other comments"
+                    android:text="or write your other coping strategy here"
                     android:textColor="@color/dark_grey" />
             </LinearLayout>
         </LinearLayout>
