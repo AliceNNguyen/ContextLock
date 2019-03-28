@@ -398,7 +398,7 @@ public class SetupActivity extends AppCompatActivity {
         Log.e(TAG, "start export");
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, ExportDBHelper.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 20, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 20, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //TODO set alarm to midnight/after midnight after testing done
         Calendar c = Calendar.getInstance();
@@ -409,7 +409,6 @@ public class SetupActivity extends AppCompatActivity {
         /*if (c.before(Calendar.getInstance())) {
             c.add(Calendar.DATE, 1);
         }*/
-
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
