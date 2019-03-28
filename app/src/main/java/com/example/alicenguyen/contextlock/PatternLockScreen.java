@@ -16,6 +16,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.security.keystore.KeyGenParameterSpec;
@@ -80,7 +81,6 @@ public class PatternLockScreen extends AppCompatActivity {
 
     public static final String TAG = "PatternLockscreen";
     public static final int RESULT_TOO_MANY_TRIES = RESULT_FIRST_USER + 1;
-    private static final int PIN_LENGTH = 4;
     private static final String FINGER_PRINT_KEY = "FingerPrintKey";
     public static final String EXTRA_SET_PATTERN = "set_pattern";
     private static final String KEY_PATTERN = "pattern";
@@ -156,7 +156,7 @@ public class PatternLockScreen extends AppCompatActivity {
     private PendingIntent mPendingIntent;
     BroadcastReceiver broadcastReceiver;
     private boolean active;
-    private boolean patternUsed;
+    //private boolean patternUsed;
 
 
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -185,7 +185,6 @@ public class PatternLockScreen extends AppCompatActivity {
                 checkPattern(p);
             }
         }
-
         @Override
         public void onCleared() {
             Log.d(getClass().getName(), "Pattern has been cleared");
@@ -230,41 +229,11 @@ public class PatternLockScreen extends AppCompatActivity {
                                 checkForFingerPrint();
                             }
                         },
-                        3000);
+                        Constants.CHECK_FINGERPRINT_TIMEOUT);
             }
         }
         mPatternLockView = (PatternLockView) findViewById(R.id.pattern_lock_view);
         mPatternLockView.addPatternLockListener(mPatternLockViewListener);
-        /*final PatternLockViewListener mPatternLockViewListener = new PatternLockViewListener() {
-            @Override
-            public void onStarted() {
-                Log.e(getClass().getName(), "Pattern drawing started");
-            }
-
-            @Override
-            public void onProgress(List<PatternLockView.Dot> progressPattern) {
-                Log.e(getClass().getName(), "Pattern progress: " +
-                        PatternLockUtils.patternToString(mPatternLockView, progressPattern));
-            }
-
-            @Override
-            public void onComplete(List<PatternLockView.Dot> pattern) {
-                Log.e(getClass().getName(), "Pattern complete: " +
-                        PatternLockUtils.patternToString(mPatternLockView, pattern));
-                String p =  PatternLockUtils.patternToString(mPatternLockView, pattern);
-                if (mSetPattern) {
-                    setPattern(p);
-                } else {
-                    checkPattern(p);
-                }
-            }
-
-            @Override
-            public void onCleared() {
-                Log.e(getClass().getName(), "Pattern has been cleared");
-            }
-        };*/
-
     }
 
 
@@ -272,8 +241,8 @@ public class PatternLockScreen extends AppCompatActivity {
         Log.e(TAG, "checkPattern");
         if (Utils.sha256(pattern).equals(getPatternFromSharedPreferences())) {
             setResult(RESULT_OK);
-            patternUsed = true;
-            writeLockscreenDataToFirebase();
+            //patternUsed = true;
+            writeLockscreenDataToFirebase(true);
             openExperienceSampling();
             finish();
         } else {
@@ -281,15 +250,10 @@ public class PatternLockScreen extends AppCompatActivity {
             mPatternTryCount++;
             mTextAttempts.setText(getString(R.string.patternlock_wrongpin));
             mPatternLockView.clearPattern();
-
-            //mPinLockView.resetPinLockView();
-
             if (mPatternTryCount == 1) {
                 mTextAttempts.setText(getString(R.string.patternlock_wrongpin));
-                //mPinLockView.resetPinLockView();
             } else if (mPatternTryCount == 2) {
                 mTextAttempts.setText(getString(R.string.patternlock_wrongpin));
-                //mPinLockView.resetPinLockView();
             } else if (mPatternTryCount == MAX_ATTEMPS) {
                 setResult(RESULT_TOO_MANY_TRIES);
                 mPatternTryCount = 0;
@@ -401,10 +365,6 @@ public class PatternLockScreen extends AppCompatActivity {
         queue.add(jsonObjectRequest);
     }
 
-    private boolean checkForOutdoor(){
-        return isGPSEnabled;
-    }
-
     private void setContextIcon() {
 
         if(mSetPattern){
@@ -414,10 +374,8 @@ public class PatternLockScreen extends AppCompatActivity {
         Log.e(TAG, mainWeather);
         Log.d("user context icon hum", String.valueOf(humidity));
         Log.e(TAG,"activity " + userActivity);
-        int compareAccuracy = Float.compare(gpsAccuracy, LOCATION_ACCURACY);
 
         contextIcon.setVisibility(View.VISIBLE);
-        //mPatternLockView.setVisibility(View.VISIBLE);
 
         if(userActivity.equals("still") && mainWeather.contains("Drizzle")){
             Log.e(TAG, "tada");
@@ -525,7 +483,7 @@ public class PatternLockScreen extends AppCompatActivity {
         return prefs.getString(KEY_PATTERN, "");
     }
 
-    private void writeLockscreenDataToFirebase() {
+    private void writeLockscreenDataToFirebase(boolean patternUsed) {
         Log.e(TAG, "write to firebase");
         Date currenttime = Calendar.getInstance().getTime();
         String version = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY);
@@ -629,11 +587,11 @@ public class PatternLockScreen extends AppCompatActivity {
 
     private void initElements() {
 
-        mTextAttempts = (TextView) findViewById(R.id.attempts);
-        mTextTitle = (TextView) findViewById(R.id.title);
-        mImageViewFingerView = (AppCompatImageView) findViewById(R.id.fingerView);
-        mTextFingerText = (TextView) findViewById(R.id.fingerText);
-        mContextIcon = (ImageView) findViewById(R.id.context_icon);
+        mTextAttempts =  findViewById(R.id.attempts);
+        mTextTitle = findViewById(R.id.title);
+        mImageViewFingerView = findViewById(R.id.fingerView);
+        mTextFingerText = findViewById(R.id.fingerText);
+        mContextIcon = findViewById(R.id.context_icon);
         contextIcon = findViewById(R.id.context_icon);
         fingerprintIcon = findViewById(R.id.fingerView);
         patternTitle = findViewById(R.id.title);
@@ -724,11 +682,11 @@ public class PatternLockScreen extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        patternUsed = false;
+                        //patternUsed = false;
                         //writeLogEventsToDB();
-                        writeLockscreenDataToFirebase();
-                        finish();
+                        writeLockscreenDataToFirebase(false);
                         openExperienceSampling();
+                        finish();
                     }
                 }, 750);
 
@@ -750,9 +708,14 @@ public class PatternLockScreen extends AppCompatActivity {
             }
 
             @Override
-            public void onError(CharSequence errorString) {
+            public void onError(CharSequence errorString, int errMsgId) {
                 Log.e(TAG, "fingerprint error");
-                Toast.makeText(PatternLockScreen.this, errorString, Toast.LENGTH_SHORT).show();
+                if (errMsgId == FingerprintManager.FINGERPRINT_ERROR_CANCELED) {
+                    Log.e(TAG,  errorString.toString());
+                }else {
+                    Toast.makeText(PatternLockScreen.this, errorString, Toast.LENGTH_SHORT).show();
+                }
+                //Toast.makeText(PatternLockScreen.this, errorString, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -816,11 +779,9 @@ public class PatternLockScreen extends AppCompatActivity {
                 }
             } else {
                 mImageViewFingerView.setVisibility(View.GONE);
-//                mTextFingerText.setVisibility(View.GONE);
             }
         } else {
             mImageViewFingerView.setVisibility(View.GONE);
-//            mTextFingerText.setVisibility(View.GONE);
         }
     }
 
@@ -847,6 +808,8 @@ public class PatternLockScreen extends AppCompatActivity {
         }
     }
 
+
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -855,19 +818,17 @@ public class PatternLockScreen extends AppCompatActivity {
             Log.e(TAG, "cancel finger");
             helper.stopListening();
         }
-
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.e(TAG, "onResume");
-        vibrate();
-        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        /*if(!keyguardManager.isDeviceLocked()){
-            Log.e(TAG, "vibrate");
+        //vibrate();
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if(pm.isInteractive()) {
+            Log.e(TAG, "isInteractive");
             vibrate();
-        }*/
+        }
     }
 }

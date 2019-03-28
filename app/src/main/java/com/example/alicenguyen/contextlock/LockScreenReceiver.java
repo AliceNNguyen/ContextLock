@@ -1,22 +1,14 @@
 package com.example.alicenguyen.contextlock;
-
 import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.os.PowerManager;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
-import com.google.firebase.database.snapshot.IndexedNode;
-
 import java.util.Calendar;
 import java.util.Date;
-import java.util.regex.Pattern;
 
+/*LockScreenReceiver checks each time the screen turns off if a lock screen in stored ti trigger */
 public class LockScreenReceiver extends BroadcastReceiver {
     private static final String TAG ="LockScreenReceiver";
     private Context ctx;
@@ -32,7 +24,6 @@ public class LockScreenReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         ctx = context.getApplicationContext();
         unlockCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.UNLOCK_COUNTER_KEY));
-
         myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         Log.e(TAG, "action");
         Log.e(TAG, intent.getAction());
@@ -52,15 +43,12 @@ public class LockScreenReceiver extends BroadcastReceiver {
         if(!myKM.isDeviceLocked() && intent.getAction().equals(Intent.ACTION_USER_PRESENT)){
             writeUnlockEventsToDB(context);
         }
-        //checkIsDeviceLocked();
     }
 
     /*set lock screen if max number is not exceeded*/
     private void setLockscreen(Context context){
         lockscreenShowCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY));
         Log.e(TAG, String.valueOf(lockscreenShowCounter));
-
-
 
         if(lockscreenShowCounter < Constants.LOCKSCREEN_SHOW_COUNTER) {
             //Intent i = new Intent(context, Lockscreen.class);
@@ -75,7 +63,6 @@ public class LockScreenReceiver extends BroadcastReceiver {
             lockscreenShowCounter++;
             SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY, String.valueOf(lockscreenShowCounter));
             context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.LOCKSCREEN_STORED_KEY).apply();
-            //checkIsDeviceSecure();
         }
     }
 
@@ -91,44 +78,6 @@ public class LockScreenReceiver extends BroadcastReceiver {
         }
     }
 
-    private void vibrate(Context context) {
-        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        // Vibrate for 500 milliseconds
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-            //deprecated in API 26
-            v.vibrate(100);
-        }
-    }
-
-
-
-    private void checkScreenState() {
-        PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
-        isScreenOn = pm.isInteractive();
-        Log.e(TAG, "screen state");
-        Log.e(TAG, String.valueOf(isScreenOn));
-    }
-
-    private void checkIsDeviceLocked() {
-        checkScreenState();
-        if(!myKM.isDeviceLocked() && isScreenOn) { //device not locked and screen on
-            Log.e(TAG, String.valueOf(myKM.isDeviceLocked()));
-            Log.e(TAG, "screen on");
-            //setLockscreen();
-        }else if(!myKM.isDeviceLocked() && !isScreenOn) { //device is not locked and screen off
-            Log.e(TAG, "is not device locked");
-            Log.e(TAG, "screen is not on");
-        }else if(myKM.isDeviceLocked() && !isScreenOn){ //device is locked and screen off
-            Log.e(TAG, "device is locked and screen of");
-            //setLockscreen();
-        }else{
-            Log.e(TAG, "device is locked");
-            //setLockscreen();
-
-        }
-    }
 
     /*set lock screen if max number is not exceeded*/
     private void setLockscreen(){
@@ -139,12 +88,8 @@ public class LockScreenReceiver extends BroadcastReceiver {
             ctx.startActivity(i);
             lockscreenShowCounter++;
             SharedPreferencesStorage.writeSharedPreference(ctx, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY, String.valueOf(lockscreenShowCounter));
-            //checkIsDeviceSecure();
         }
     }
-
-
-
 
     private void openSurvey(Context context) {
         Intent intent = new Intent(context, ExperienceSamplingActivity.class);

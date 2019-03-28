@@ -17,7 +17,7 @@ import org.w3c.dom.Text;
 public class InitialSurvey2 extends AppCompatActivity {
     private static final String FINGER_ERROR_FREQUENCY_KEY = "error_frequency_id_key";
     private TextView never,onceADay, onceAWeek, onceAMonth, multipeADay, mulipleAWeek, lessAMonth;
-    private String value;
+    private String value = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

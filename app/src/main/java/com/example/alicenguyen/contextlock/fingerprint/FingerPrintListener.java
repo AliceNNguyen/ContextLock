@@ -12,7 +12,7 @@ public interface FingerPrintListener {
 
     void onFailed();
 
-    void onError(CharSequence errorString);
+    void onError(CharSequence errorString, int errMsgId);
 
     void onHelp(CharSequence helpString);
 

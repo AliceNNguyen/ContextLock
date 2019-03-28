@@ -122,7 +122,7 @@ public class InitialSurvey extends AppCompatActivity {
                     fallbackUnlock = ((RadioButton) view).getText().toString();
                 }
         }
-        Log.e(TAG, fallbackUnlock);
+        //Log.e(TAG, fallbackUnlock);
         SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.UNLOCK_METHOD_KEY, fallbackUnlock);
 
 

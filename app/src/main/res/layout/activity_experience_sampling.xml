@@ -153,6 +153,7 @@
                         android:padding="@dimen/header_padding"
                         android:text="@string/prediction_precision"
                         android:textColor="@color/dark_grey"
+                        android:textStyle="bold"
                         android:textSize="@dimen/header_text_size" />
 
 
@@ -162,8 +163,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:max="4"
-                        android:maxHeight="3dp"
-                        android:minHeight="3dp"
+                        android:maxHeight="@dimen/seekbar_height"
+                        android:minHeight="@dimen/seekbar_height"
                         android:progress="0"
                         android:progressDrawable="@drawable/seekbar_style"
                         android:thumbTint="@color/transparent" />
@@ -241,7 +242,7 @@
                         android:hint="@string/reason_hint_input"
                         android:inputType="text"
                         android:textColor="@color/dark_grey"
-                        android:textSize="@dimen/radio_button_textsize" />
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
@@ -259,6 +260,7 @@
                         android:layout_marginBottom="5dp"
                         android:background="@drawable/onside_border"
                         android:padding="@dimen/header_padding"
+                        android:textStyle="bold"
                         android:text="@string/fingererror_reason"
                         android:textColor="@color/dark_grey"
                         android:textSize="@dimen/header_text_size" />
@@ -282,6 +284,7 @@
                                 android:buttonTint="@color/teal"
                                 android:onClick="onCheckboxClicked"
                                 android:text="@string/rain_reason"
+                                android:textSize="@dimen/checkbox_text_size"
                                 android:textColor="@color/dark_grey" />
 
                             <CheckBox
@@ -291,6 +294,7 @@
                                 android:buttonTint="@color/teal"
                                 android:onClick="onCheckboxClicked"
                                 android:text="@string/snow_reason"
+                                android:textSize="@dimen/checkbox_text_size"
                                 android:textColor="@color/dark_grey" />
 
                             <CheckBox
@@ -300,6 +304,7 @@
                                 android:buttonTint="@color/teal"
                                 android:onClick="onCheckboxClicked"
                                 android:text="@string/humidity_reason"
+                                android:textSize="@dimen/checkbox_text_size"
                                 android:textColor="@color/dark_grey" />
 
                             <CheckBox
@@ -309,6 +314,7 @@
                                 android:buttonTint="@color/teal"
                                 android:onClick="onCheckboxClicked"
                                 android:text="@string/heat_reason"
+                                android:textSize="@dimen/checkbox_text_size"
                                 android:textColor="@color/dark_grey" />
 
                         </LinearLayout>
@@ -327,6 +333,7 @@
                                 android:buttonTint="@color/teal"
                                 android:onClick="onCheckboxClicked"
                                 android:text="@string/wet_reason"
+                                android:textSize="@dimen/checkbox_text_size"
                                 android:textColor="@color/dark_grey" />
 
                             <CheckBox
@@ -336,6 +343,7 @@
                                 android:buttonTint="@color/teal"
                                 android:onClick="onCheckboxClicked"
                                 android:text="@string/dirty_finger_reason"
+                                android:textSize="@dimen/checkbox_text_size"
                                 android:textColor="@color/dark_grey" />
 
                             <CheckBox
@@ -345,6 +353,7 @@
                                 android:buttonTint="@color/teal"
                                 android:onClick="onCheckboxClicked"
                                 android:text="@string/cooking_reason"
+                                android:textSize="@dimen/checkbox_text_size"
                                 android:textColor="@color/dark_grey" />
                         </LinearLayout>
                     </LinearLayout>
@@ -358,7 +367,7 @@
                         android:hint="something else"
                         android:inputType="text"
                         android:textColor="@color/dark_grey"
-                        android:textSize="@dimen/radio_button_textsize" />
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <TextView
@@ -371,6 +380,7 @@
                     android:padding="@dimen/header_padding"
                     android:text="@string/reasonable_switch"
                     android:textColor="@color/dark_grey"
+                    android:textStyle="bold"
                     android:textSize="@dimen/header_text_size" />
 
 
@@ -380,8 +390,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:max="4"
-                    android:maxHeight="3dp"
-                    android:minHeight="3dp"
+                    android:maxHeight="@dimen/seekbar_height"
+                    android:minHeight="@dimen/seekbar_height"
                     android:progress="0"
                     android:progressDrawable="@drawable/seekbar_style"
                     android:thumbTint="@color/transparent" />
@@ -465,6 +475,7 @@
                     android:padding="@dimen/header_padding"
                     android:text="@string/annoyance"
                     android:textColor="@color/dark_grey"
+                    android:textStyle="bold"
                     android:textSize="@dimen/header_text_size" />
 
                 <SeekBar
@@ -473,8 +484,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:max="4"
-                    android:maxHeight="3dp"
-                    android:minHeight="3dp"
+                    android:maxHeight="@dimen/seekbar_height"
+                    android:minHeight="@dimen/seekbar_height"
                     android:progress="0"
                     android:progressDrawable="@drawable/seekbar_style"
                     android:thumbTint="@color/transparent" />

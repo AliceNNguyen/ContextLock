@@ -48,9 +48,7 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
         if (b != null) {
             predictionValue = b.getInt("predictionValue");
             reasonableValue = b.getInt("reasonableValue");
-            //fingerErrorValue = b.getString("fingerErrorValue");
             annoyanceValue = b.getInt("annoyanceValue");
-            //switchValue = b.getString("switchValue");
             reasonFreeText = b.getString("reasonFreeText");
             reasonFreeTextVersionA = b.getString("reasonFreeTextVersionA");
         }

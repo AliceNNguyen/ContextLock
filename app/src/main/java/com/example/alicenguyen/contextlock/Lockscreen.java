@@ -3,12 +3,10 @@ package com.example.alicenguyen.contextlock;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -25,7 +23,6 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -36,10 +33,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.andrognito.patternlockview.PatternLockView;
-import com.andrognito.patternlockview.listener.PatternLockViewListener;
-import com.andrognito.patternlockview.utils.PatternLockUtils;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -74,7 +67,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -93,11 +85,8 @@ public class Lockscreen extends AppCompatActivity {
     private static final String KEY_PIN = "pin";
 
     private static final int MAX_ATTEMPS = 3;
-    //private static final int SURVEY_OPEN_NUMBER = 5;
     private static final String COOLDOWN_KEY = "cooldown_key";
     private static final String COUNTER_KEY = "counter_key";
-    //private int survey_open_counter = 0;
-    //private boolean cooldown = false;
     private String cooldown;
     private int opensurveycounter;
 
@@ -131,9 +120,6 @@ public class Lockscreen extends AppCompatActivity {
     private PinLockView mPinLockView;
 
     private ImageView mContextIcon;
-    private ImageView settings;
-    private ImageView showpinButton;
-
     private AnimatedVectorDrawable showFingerprint;
     private AnimatedVectorDrawable fingerprintToTick;
     private AnimatedVectorDrawable fingerprintToCross;
@@ -156,11 +142,7 @@ public class Lockscreen extends AppCompatActivity {
     private ImageView fingerprintIcon;
     private PinLockView pinLockView;
     private TextView pinTitle;
-    private TextView methodTitle;
     private float gpsAccuracy;
-
-    private static final int LOCATION_INTERVAL = 10* 1000 * 60; // 1000 * 60 * 1; --> 1 minute// 5*60*1000
-    private static final float LOCATION_DISTANCE = 10f; //10 meters
 
     //flag for gps status
     boolean isGPSEnabled = false;
@@ -173,13 +155,11 @@ public class Lockscreen extends AppCompatActivity {
     private PendingIntent mPendingIntent;
     BroadcastReceiver broadcastReceiver;
     private boolean active;
-    private boolean pinUsed;
+    //private boolean pinUsed;
 
 
     private FirebaseAnalytics mFirebaseAnalytics;
-
     private FingerprintHandler helper;
-
 
 
     public static Intent getIntent(Context context, boolean setPin) {
@@ -202,12 +182,10 @@ public class Lockscreen extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY );
         }
-
         getPinlockViews();
         getUserLocation();
         /**startservice not for higher version**/
         //getUserActivity();
-        //getLocationService();
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mSetPin = getIntent().getBooleanExtra(EXTRA_SET_PIN, false);
@@ -237,7 +215,7 @@ public class Lockscreen extends AppCompatActivity {
                                 }
                             }
                         },
-                        3000);
+                Constants.CHECK_FINGERPRINT_TIMEOUT);
             }
         }
 
@@ -251,7 +229,6 @@ public class Lockscreen extends AppCompatActivity {
                     checkPin(pin);
                 }
             }
-
             @Override
             public void onEmpty() {
                 Log.d(TAG, "Pin empty");
@@ -265,22 +242,18 @@ public class Lockscreen extends AppCompatActivity {
 
         mPinLockView.attachIndicatorDots(mIndicatorDots);
         mPinLockView.setPinLockListener(pinLockListener);
-
         mPinLockView.setPinLength(PIN_LENGTH);
-
         mIndicatorDots.setIndicatorType(IndicatorDots.IndicatorType.FILL_WITH_ANIMATION);
-
-        // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     private void getPinlockViews() {
-        mTextAttempts = (TextView) findViewById(R.id.attempts);
-        mTextTitle = (TextView) findViewById(R.id.title);
-        mIndicatorDots = (IndicatorDots) findViewById(R.id.indicator_dots);
-        mImageViewFingerView = (AppCompatImageView) findViewById(R.id.fingerView);
-        mTextFingerText = (TextView) findViewById(R.id.fingerText);
-        mContextIcon = (ImageView) findViewById(R.id.context_icon);
+        mTextAttempts =  findViewById(R.id.attempts);
+        mTextTitle =  findViewById(R.id.title);
+        mIndicatorDots = findViewById(R.id.indicator_dots);
+        mImageViewFingerView = findViewById(R.id.fingerView);
+        mTextFingerText = findViewById(R.id.fingerText);
+        mContextIcon = findViewById(R.id.context_icon);
         //settings = (ImageView) findViewById(R.id.settings);
         mPinLockView   = findViewById(R.id.pinlockView);
         mIndicatorDots = findViewById(R.id.indicator_dots);
@@ -288,91 +261,10 @@ public class Lockscreen extends AppCompatActivity {
         fingerprintIcon = findViewById(R.id.fingerView);
         pinLockView = findViewById(R.id.pinlockView);
         pinTitle = findViewById(R.id.title);
-        methodTitle = findViewById(R.id.fingerText);
 
 
         //showpinButton = findViewById(R.id.show_pin);
     }
-
-    /*private void setSettingsDialog() {
-        settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-                mDialogBuilder.setCancelable(false);
-                View mDialogView = getLayoutInflater().inflate(R.layout.dialog_settings, null);
-
-                final EditText mUserId = (EditText) mDialogView.findViewById(R.id.setID);
-                Button mSetPIN = (Button) mDialogView.findViewById(R.id.setPin);
-                Button mCancelDialogButton = (Button) mDialogView.findViewById(R.id.cancel_dialog);
-                Button mOKButton = (Button) mDialogView.findViewById(R.id.ok_dialog);
-                Button mFeedbackButton= (Button) mDialogView.findViewById(R.id.open_survey);
-
-                mDialogBuilder.setView(mDialogView);
-                final AlertDialog dialog = mDialogBuilder.create();
-                //set opacity of dialog
-                //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.white)));
-                dialog.show();
-
-                final String id = getIDfromSharedPreferences();
-                Log.d("pref user id", id);
-                if(!id.equals("")){
-                    mUserId.setText(id, TextView.BufferType.EDITABLE);
-                }
-
-                mOKButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String userID = mUserId.getText().toString();
-                        if(!userID.isEmpty()){
-                            mFirebaseAnalytics.setUserId(userID);
-                            writeIDtoSharedPreferences(userID);
-                            dialog.cancel();
-
-                        }else {
-                            Toast.makeText(Lockscreen.this, "Please set a user id", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-
-                mCancelDialogButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.cancel();
-                    }
-                });
-
-                mSetPIN.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // set pin instead of checking it
-                        Intent intent = Lockscreen.getIntent(Lockscreen.this, true);
-                        startActivity(intent);
-                    }
-                });
-
-                mFeedbackButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.cancel();
-                        startActivity(new Intent(Lockscreen.this, ExperienceSamplingActivity.class));
-                    }
-                });
-            }
-        });
-    }*/
-
-    /*private void writeIDtoSharedPreferences(String id) {
-        SharedPreferences prefs = this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        prefs.edit().putString(KEY_ID, id).apply();
-    }
-
-    public String getIDfromSharedPreferences(){
-        SharedPreferences prefs = this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        return prefs.getString(KEY_ID, "");
-    }*/
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -446,7 +338,6 @@ public class Lockscreen extends AppCompatActivity {
                 break;
             }
         }
-
         Log.d(TAG, "User activity: " + userActivity + ", Confidence: " + confidence);
         getUserLocation();
         if (confidence > Constants.CONFIDENCE) {
@@ -473,24 +364,15 @@ public class Lockscreen extends AppCompatActivity {
         super.onResume();
 
         registerReceiver(mActivityBroadcastReceiver,  new IntentFilter(Constants.BROADCAST_DETECTED_ACTIVITY));
-
-        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-
-        /*if(!keyguardManager.isKeyguardLocked()){
-            Log.e(TAG, "unlock");
-            vibrate();
-        }else {
-            Log.e(TAG, "locked");
-        }*/
-        vibrate();
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if(pm.isInteractive()) {
+            Log.e(TAG, "isInteractive");
+         vibrate();
+        }
         Log.e("Lockscreen", "lockscreen active");
 
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter(Constants.BROADCAST_DETECTED_ACTIVITY));
-
-
-        /*LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter(Constants.BROADCAST_DETECTED_LOCATION));*/
     }
 
 
@@ -609,10 +491,6 @@ public class Lockscreen extends AppCompatActivity {
         queue.add(jsonObjectRequest);
     }
 
-    private boolean checkForOutdoor(){
-        return isGPSEnabled;
-    }
-
     private void setContextIcon() {
 
         if(mSetPin){
@@ -622,9 +500,7 @@ public class Lockscreen extends AppCompatActivity {
         Log.e(TAG, mainWeather);
         Log.d("user context icon hum", String.valueOf(humidity));
         Log.e(TAG,"activity " + userActivity);
-        int compareAccuracy = Float.compare(gpsAccuracy, LOCATION_ACCURACY);
 
-        checkForOutdoor();
         contextIcon.setVisibility(View.VISIBLE);
         pinLockView.setVisibility(View.VISIBLE);
 
@@ -674,7 +550,7 @@ public class Lockscreen extends AppCompatActivity {
 
     }
 
-    private void writeLockscreenDataToFirebase() {
+    private void writeLockscreenDataToFirebase(boolean pinUsed) {
         Log.e(TAG, "write to firebase");
         Date currenttime = Calendar.getInstance().getTime();
         String version = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY);
@@ -694,7 +570,7 @@ public class Lockscreen extends AppCompatActivity {
 
     /*write weather data to local database*/
     private void writeLogEventsToDB() {
-        SQLiteDB mDB = new SQLiteDB(this);
+        /*SQLiteDB mDB = new SQLiteDB(this);
         Date currenttime = Calendar.getInstance().getTime();
         boolean isInserted = mDB.saveToDB(userid, currenttime.toString(), String.valueOf(pinUsed), pinTitle.getText().toString());
         if(isInserted == true) {
@@ -703,11 +579,11 @@ public class Lockscreen extends AppCompatActivity {
             Log.e(TAG, "failed to insert DB");
             //TODO send failed log to firebase
 
-        }
+        }*/
     }
 
 
-    /*handle notification version based on user id*/
+    /*handle lock screen version based on user id*/
     private void setNotificationVersion() {
         Log.e(TAG, "set version");
         SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE);
@@ -722,12 +598,9 @@ public class Lockscreen extends AppCompatActivity {
         try {
             current= simpleDateFormat.parse(currentDate);
             switchDate = simpleDateFormat.parse(switchVersionDate);
-
             Log.e(TAG, userid);
             Log.e(TAG, current.toString());
             Log.e(TAG, switchDate.toString());
-
-
             if(current.before(switchDate)){
                 Log.e(TAG, current.toString());
                 Log.e(TAG, switchDate.toString());
@@ -737,16 +610,12 @@ public class Lockscreen extends AppCompatActivity {
                     SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_A );
                     contextIcon.setVisibility(View.INVISIBLE);
                     pinTitle.setText(getString(R.string.pinlock_title));
-
-                    //setNonContextNotification();
                 }
                 else {
                     // number is odd
                     Log.e(TAG, "condition notification");
-
                     SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_B );
                     contextIcon.setVisibility(View.VISIBLE);
-                    //setContextNotification();
                 }
             }
             if(current.equals(switchDate) || current.after(switchDate)) {
@@ -754,22 +623,18 @@ public class Lockscreen extends AppCompatActivity {
                     // number is even
                     SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_B );
                     contextIcon.setVisibility(View.VISIBLE);
-                    //setContextNotification();
                 }else {
                     // number is odd
                     SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY, Constants.VERSION_A );
                     contextIcon.setVisibility(View.INVISIBLE);
                     pinTitle.setText(R.string.pinlock_title);
-                    //setNonContextNotification();
                 }
             }
         } catch (ParseException e) {
             e.printStackTrace();
             Log.e(TAG, "error parse date");
         }
-        //openSurvey();
     }
-
 
 
     private String getPinFromSharedPreferences() {
@@ -783,7 +648,6 @@ public class Lockscreen extends AppCompatActivity {
         mTextAttempts.setVisibility(View.GONE);
         mTextTitle.setText(getString(R.string.pinlock_settitle));
         mContextIcon.setVisibility(View.GONE);
-        //mTextTitle.setText(getString(com.amirarcane.lockscreen.R.string.pinlock_settitle));
     }
 
     private void writePinToSharedPreferences(String pin) {
@@ -794,7 +658,6 @@ public class Lockscreen extends AppCompatActivity {
     private void setPin(String pin) {
         if (mFirstPin.equals("")) {
             mFirstPin = pin;
-            //mTextTitle.setText(getString(com.amirarcane.lockscreen.R.string.pinlock_secondPin));
             mTextTitle.setText(getString(R.string.pinlock_secondPin));
             mPinLockView.resetPinLockView();
         } else {
@@ -811,7 +674,6 @@ public class Lockscreen extends AppCompatActivity {
                 //finish();
             } else {
                 shake();
-                //mTextTitle.setText(getString(com.amirarcane.lockscreen.R.string.pinlock_tryagain));
                 mTextTitle.setText(getString(R.string.pinlock_tryagain));
                 mPinLockView.resetPinLockView();
                 mFirstPin = "";
@@ -829,16 +691,6 @@ public class Lockscreen extends AppCompatActivity {
         return prefs.getString(COOLDOWN_KEY, "false");
     }
 
-    private void writeSurveyOpenCountertoSharedPreferences(int opencounter) {
-        SharedPreferences prefs = this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        prefs.edit().putString(COUNTER_KEY, String.valueOf(cooldown));
-    }
-
-    public String getSurveyOpenCounterfromSharedPreferences(){
-        SharedPreferences prefs = this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        return prefs.getString(COUNTER_KEY, "0");
-    }
-
     private void openExperienceSampling() {
         Random generator = new Random();
         int randomInt = generator.nextInt(Constants.SURVEY_COOLDOWN-0) + 0;
@@ -851,7 +703,6 @@ public class Lockscreen extends AppCompatActivity {
                 opensurveycounter++;
                 SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
                 SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "true");
-
                 Log.e(TAG, "startActivity");
                 Intent intent = new Intent(this, ExperienceSamplingActivity.class);
                 //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -863,17 +714,13 @@ public class Lockscreen extends AppCompatActivity {
             Log.e(TAG, "finish");
             setResult(RESULT_CANCELED);
             finishAffinity();
-            //finishAndRemoveTask();
-            //finish();
         }
     }
 
     private void checkPin(String pin) {
         if (Utils.sha256(pin).equals(getPinFromSharedPreferences())) {
             setResult(RESULT_OK);
-            pinUsed = true;
-            writeLockscreenDataToFirebase();
-            //writeLogEventsToDB();
+            writeLockscreenDataToFirebase(true);
             openExperienceSampling();
             finish();
         } else {
@@ -985,11 +832,12 @@ public class Lockscreen extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        pinUsed = false;
+                        //pinUsed = false;
                         //writeLogEventsToDB();
-                        writeLockscreenDataToFirebase();
-                        finish();
+                        writeLockscreenDataToFirebase(false);
                         openExperienceSampling();
+                        finish();
+
                     }
                 }, 750);
 
@@ -1011,13 +859,17 @@ public class Lockscreen extends AppCompatActivity {
             }
 
             @Override
-            public void onError(CharSequence errorString) {
+            public void onError(CharSequence errorString, int errMsgId) {
                /* Bundle bundle = new Bundle();
                 bundle.putString("fingerprint_error", errorString.toString());
                 mFirebaseAnalytics.logEvent("fingerprint_error", bundle);*/
                 Log.e(TAG, "fingerprint error");
-
-                Toast.makeText(Lockscreen.this, errorString, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, errorString.toString());
+                if (errMsgId == FingerprintManager.FINGERPRINT_ERROR_CANCELED) {
+                    Log.e(TAG,  errorString.toString());
+                }else {
+                    Toast.makeText(Lockscreen.this, errorString, Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -1044,27 +896,17 @@ public class Lockscreen extends AppCompatActivity {
                     // If your app doesn't have this permission, then display the following text//
 //                Toast.makeText(EnterPinActivity.this, "Please enable the fingerprint permission", Toast.LENGTH_LONG).show();
                     mImageViewFingerView.setVisibility(View.GONE);
-//                    mTextFingerText.setVisibility(View.GONE);
                     return;
                 }
 
                 //Check that the user has registered at least one fingerprint//
                 if (!mFingerprintManager.hasEnrolledFingerprints()) {
-                    // If the user hasn’t configured any fingerprints, then display the following message//
-//                Toast.makeText(EnterPinActivity.this,
-//                        "No fingerprint configured. Please register at least one fingerprint in your device's Settings",
-//                        Toast.LENGTH_LONG).show();
                     mImageViewFingerView.setVisibility(View.GONE);
-//                    mTextFingerText.setVisibility(View.GONE);
                     return;
                 }
-
                 //Check that the lockscreen is secured//
                 if (!mKeyguardManager.isKeyguardSecure()) {
-                    // If the user hasn’t secured their lockscreen with a PIN password or pattern, then display the following text//
-//                Toast.makeText(EnterPinActivity.this, "Please enable lockscreen security in your device's Settings", Toast.LENGTH_LONG).show();
                     mImageViewFingerView.setVisibility(View.GONE);
-//                    mTextFingerText.setVisibility(View.GONE);
                     return;
                 } else {
                     try {
@@ -1085,11 +927,9 @@ public class Lockscreen extends AppCompatActivity {
                 }
             } else {
                 mImageViewFingerView.setVisibility(View.GONE);
-//                mTextFingerText.setVisibility(View.GONE);
             }
         } else {
             mImageViewFingerView.setVisibility(View.GONE);
-//            mTextFingerText.setVisibility(View.GONE);
         }
     }
 
@@ -1109,34 +949,9 @@ public class Lockscreen extends AppCompatActivity {
         if(helper != null) {
             helper.stopListening();
         }
-
-
-
     }
 
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        active = true;
-        /*KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-
-        if(!keyguardManager.isDeviceLocked()){
-            vibrate();
-        }
-
-        Log.e("Lockscreen", "lockscreen active");*/
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        active = false;
-    }
-
-
-    //disable back button
+    //disable back button of lock screen
     @Override
     public void onBackPressed() {
         if (!mSetPin) {

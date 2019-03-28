@@ -50,14 +50,15 @@
 
     //survey header
     <dimen name="header_padding">8dp</dimen>
-    <dimen name="header_text_size">13sp</dimen>
+    <dimen name="header_text_size">14sp</dimen>
 
     //ratings
-    <dimen name="rating_label">10sp</dimen>
+    <dimen name="rating_label">11sp</dimen>
     <dimen name="rating_container_margin_bottom">20dp</dimen>
 
     //radio button
-    <dimen name="radio_button_textsize">10sp</dimen>
+    <dimen name="radio_button_textsize">17sp</dimen>
+    <dimen name="radio_button_margin">15dp</dimen>
 
     //onside border
     <dimen name="onside_border_width">4dp</dimen>
@@ -84,5 +85,11 @@
     <dimen name="checkmark_size">20dp</dimen>
     <dimen name="init_survey_header_padding">20dp</dimen>
     <dimen name="init_survey_header_margin_top">30dp</dimen>
+
+    //checkbox
+    <dimen name="checkbox_text_size">17sp</dimen>
+
+    //seekbar
+    <dimen name="seekbar_height">4dp</dimen>
 
 </resources>

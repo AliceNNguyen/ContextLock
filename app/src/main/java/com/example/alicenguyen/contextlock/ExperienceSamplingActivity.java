@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -90,11 +89,6 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
         setReasonableSeekbarListener();
 
         initNextButton();
-    }
-
-    //TODO
-    private void getReasonEditText() {
-
     }
 
     private void initNextButton() {
@@ -368,56 +362,6 @@ public class ExperienceSamplingActivity extends AppCompatActivity {
             }
         });
     }
-
-
-   /* public void onSwitchButtonClicked(View view) {
-        boolean checked = ((RadioButton) view).isChecked();
-
-        RadioButton trueRadioButton = findViewById(R.id.lockswitch_true);
-        RadioButton falseRadioButton = findViewById(R.id.lockswitch_false);
-        RadioButton dontRememberRadioButton = findViewById(R.id.lockswitch_dontremember);
-        // Check which radio button was clicked
-        switch (view.getId()) {
-            case R.id.lockswitch_true:
-                if (checked)
-                    switchValue = trueRadioButton.getText().toString();
-                break;
-            case R.id.lockswitch_false:
-                if (checked)
-                    switchValue = falseRadioButton.getText().toString();
-                break;
-            case R.id.lockswitch_dontremember:
-                if (checked)
-                    switchValue = dontRememberRadioButton.getText().toString();
-        }
-    }*/
-
-   /*
-    public void onFingerErrorRadioButtonClicked(View view) {
-        boolean checked = ((RadioButton) view).isChecked();
-
-        RadioButton trueRadioButton = findViewById(R.id.fingerprint_error_true);
-        RadioButton falseRadioButton = findViewById(R.id.fingerprint_error_false);
-        RadioButton notSureRadioButton = findViewById(R.id.fingerprint_error_not_sure);
-
-
-        // Check which radio button was clicked
-        switch (view.getId()) {
-            case R.id.fingerprint_error_true:
-                if (checked)
-                    fingerErrorValue = trueRadioButton.getText().toString();
-
-                break;
-            case R.id.fingerprint_error_false:
-                if (checked)
-                    fingerErrorValue = falseRadioButton.getText().toString();
-                break;
-            case R.id.fingerprint_error_not_sure:
-                if (checked)
-                    fingerErrorValue = notSureRadioButton.getText().toString();
-                break;
-        }
-    }*/
 
     public void onCheckboxClicked(View view) {
         boolean checked = ((CheckBox) view).isChecked();

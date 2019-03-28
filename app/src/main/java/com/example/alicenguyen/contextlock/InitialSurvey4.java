@@ -21,7 +21,8 @@ public class InitialSurvey4 extends AppCompatActivity {
     private static final String ERROR_HANDLING_FREE_KEY = "error_handling_free_id_key";
     private TextView ignore, switchAfterFirstAttempt, switchAfterMultipleAttempt, tryLater, notSure;
     private DatabaseReference mDatabaseReference;
-    private String value, freeTextValue;
+    private String value = "";
+    private String freeTextValue;
 
 
     @Override

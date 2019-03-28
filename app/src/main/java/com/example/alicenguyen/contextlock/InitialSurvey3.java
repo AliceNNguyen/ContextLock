@@ -15,7 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class InitialSurvey3 extends AppCompatActivity {
     private static final String LOCKOUT_FREQUENCY_KEY = "lockout_frequency_id_key";
     private TextView never, onceADay, onceAWeek, onceAMonth, multipeADay, mulipleAWeek, lessAMonth;
-    private String value;
+    private String value = "";
 
 
     @Override

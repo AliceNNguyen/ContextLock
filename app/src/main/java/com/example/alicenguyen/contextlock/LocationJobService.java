@@ -51,9 +51,8 @@ public class LocationJobService extends JobService {
     private String mainWeather = "";
     private Number temperature = 0;
     private int humidity = 0;
-    private String provider, latitude, longitude;
+    private String latitude, longitude;
     private boolean isLocked = false;
-    //private int opensurveycounter;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
     private String currentDate, switchVersionDate;
     //private String cooldown;
@@ -336,7 +335,6 @@ public class LocationJobService extends JobService {
             public void onLocationChanged(Location location) {
                 longitude = "" + location.getLongitude();
                 latitude = "" + location.getLatitude();
-                provider = location.getProvider();
                 getWeatherData();
                 Log.e("gps provider gps", location.getProvider());
                 Log.e(TAG, longitude + " " + latitude);

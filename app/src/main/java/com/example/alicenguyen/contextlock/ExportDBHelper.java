@@ -63,18 +63,11 @@ public class ExportDBHelper extends BroadcastReceiver {
 
     private void exportDataToFirebase(String version, String userid, String timestamp, String reason, String pinUsed){
         if(cursor.getCount() > 0) {
-            Log.e(TAG, userid);
-            Log.e(TAG, version);
-            Log.e(TAG, timestamp);
-            Log.e(TAG, pinUsed);
-            Log.e(TAG, reason);
             //export sql lite database to firebase when there is data in the table
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("logEvents").child(version).child(userid);
             ref.child(timestamp).child("reason").setValue(reason);
             ref.child(timestamp).child("pin_used").setValue(pinUsed);
             Log.e(TAG, "exported");
-            //TODO
-            //delete database entries after exported?
             //db.deleteAllData();
         } else {
             Log.e(TAG, "database empty");

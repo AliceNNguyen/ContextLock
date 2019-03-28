@@ -6,24 +6,45 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.admin.DeviceAdminReceiver;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
-import static android.app.Service.START_NOT_STICKY;
 
+/*starts foreground service to track user's lock screen*/
 public class LockscreenService extends Service {
+    private static final String TAG = "LockscreenService";
     public static final String CHANNEL_ID = "channelID";
     private LockScreenReceiver lockScreenReceiver;
+    private AdminReceiver adminReceiver;
 
     @Override
     public void onCreate() {
         super.onCreate();
         registerLockscreenReceiver();
+        //registerAdmin();
+    }
 
+    private void registerAdmin() {
+        DevicePolicyManager mgr = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName cn = new ComponentName(this, AdminReceiver.class);
+        if ( !mgr.isAdminActive(cn)) {
+            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, cn);
+            //intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, getString(R.string.admin_explanation));
+            //startActivity(intent);
+            //startActivityForResult(intent, RESULT_OK);
+        }else {
+            Log.e(TAG, "admin is active");
+        }
     }
 
     private void registerLockscreenReceiver() {
@@ -50,7 +71,6 @@ public class LockscreenService extends Service {
                     "LockScreen Service Channel",
                     NotificationManager.IMPORTANCE_DEFAULT
             );
-
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(serviceChannel);
         }
@@ -63,13 +83,7 @@ public class LockscreenService extends Service {
                 .setContentIntent(pendingIntent)
                 .build();
 
-
-
         startForeground(1, notification);
-
-        //do heavy work on a background thread
-        //stopSelf();
-
         return START_NOT_STICKY;
     }
 

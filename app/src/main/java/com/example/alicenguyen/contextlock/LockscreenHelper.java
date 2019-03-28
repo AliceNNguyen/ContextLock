@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+//set value to trigger lock screen
 public class LockscreenHelper extends BroadcastReceiver {
     private static final String TAG ="LockscreenHelper";
     @Override

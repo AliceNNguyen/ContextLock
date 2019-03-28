@@ -171,13 +171,14 @@ public class SetupActivity extends AppCompatActivity {
                                 writeIDtoSharedPreferences(userId);
                                 SharedPreferences.Editor edit = prefs.edit();
                                 edit.putBoolean(Constants.FIRST_SETUP, Boolean.TRUE);
-                                edit.commit();
+                                edit.apply();
                                 Log.e(TAG, String.valueOf(prefs.getBoolean(Constants.FIRST_SETUP, false)));
                                 Toast.makeText(SetupActivity.this, "ID set", Toast.LENGTH_LONG).show();
                                 setSwitchVersionDate();
                                 setStudyEndDate();
                                 startService();
-                                setRandomAlarmReceiver(); //TODO wieder rein
+                                //setRandomAlarmReceiver(); //TODO wieder rein
+                                setRepeatingSync(SetupActivity.this);
                                 dialog.dismiss();
                                 //setPin();
                                 openInitialSurvey();
@@ -254,7 +255,7 @@ public class SetupActivity extends AppCompatActivity {
             startActivity(i);
             SharedPreferences.Editor edit = prefs.edit();
             edit.putBoolean(Constants.FIRST_OPEN_SURVEY, Boolean.TRUE);
-            edit.commit();
+            edit.apply();
         //}
     }
 
@@ -325,10 +326,10 @@ public class SetupActivity extends AppCompatActivity {
         mDialogBuilder.setCancelable(false);
 
         View mDialogView = getLayoutInflater().inflate(R.layout.permission_dialog, null);
-        TextView permissionTitle = (TextView) mDialogView.findViewById(R.id.permission_title);
-        final CheckBox permissionCheckbox = (CheckBox) mDialogView.findViewById(R.id.checkbox_permission_agree);
-        Button mAgreeButton = (Button) mDialogView.findViewById(R.id.agree_permission_button);
-        Button mCancelButton = (Button) mDialogView.findViewById(R.id.cancel_permission_button);
+        TextView permissionTitle = mDialogView.findViewById(R.id.permission_title);
+        final CheckBox permissionCheckbox =  mDialogView.findViewById(R.id.checkbox_permission_agree);
+        Button mAgreeButton = mDialogView.findViewById(R.id.agree_permission_button);
+        Button mCancelButton = mDialogView.findViewById(R.id.cancel_permission_button);
         mDialogBuilder.setView(mDialogView);
         final AlertDialog dialog = mDialogBuilder.create();
         //set opacity of dialog
@@ -412,6 +413,21 @@ public class SetupActivity extends AppCompatActivity {
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
+    public static void setRepeatingSync(Context context) {
+        try {
+
+            AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(context, RandomAlarmReceiver.class);
+            Calendar c = Calendar.getInstance();
+            c.set(Calendar.HOUR_OF_DAY, 1);
+            PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
+                    c.getTimeInMillis(), (24 * 1000 * 60 * 60), alarmIntent); //every 24 hours
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setRandomAlarmReceiver() {
         Log.e(TAG, "startAlarm");
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -428,22 +444,15 @@ public class SetupActivity extends AppCompatActivity {
 
 
     private void setupDeviceAdministratorPermissions(SharedPreferences sharedPreferences) {
-        //if (!isAdded() ) return;
-        boolean on = sharedPreferences.getBoolean("useDeviceLock", false);
-        //if (on) {
-            DevicePolicyManager mgr = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-            ComponentName cn = new ComponentName(this, AdminReceiver.class);
-            if ( !mgr.isAdminActive(cn)) {
-                Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-                intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, cn);
-                intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, getString(R.string.admin_explanation));
-                //startActivity(intent);
-                startActivityForResult(intent, RESULT_OK);
-
-            }
-        //} else {
-            //removeActiveAdmin();
-        //}
+        DevicePolicyManager mgr = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName cn = new ComponentName(this, AdminReceiver.class);
+        if ( !mgr.isAdminActive(cn)) {
+            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, cn);
+            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, getString(R.string.admin_explanation));
+            //startActivity(intent);
+            startActivityForResult(intent, RESULT_OK);
+        }
     }
     /*private void setupDeviceAdministratorPermissions(SharedPreferences sharedPreferences) {
         //if (!isAdded() ) return;
@@ -467,21 +476,17 @@ public class SetupActivity extends AppCompatActivity {
     }*/
 
     public void openSettings(View view) {
-        //setPin();
-
         AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(SetupActivity.this);
         mDialogBuilder.setCancelable(false);
         View mDialogView = getLayoutInflater().inflate(R.layout.settings_dialog, null);
 
-        Button mSetPIN = (Button) mDialogView.findViewById(R.id.setPin);
-        Button mCancelDialogButton = (Button) mDialogView.findViewById(R.id.cancel_dialog);
-        Button mstopTrackingButton = (Button) mDialogView.findViewById(R.id.stop_tracking);
-        Button mstartTrackingButton = (Button) mDialogView.findViewById(R.id.start_tracking);
+        Button mSetPIN = mDialogView.findViewById(R.id.setPin);
+        Button mCancelDialogButton = mDialogView.findViewById(R.id.cancel_dialog);
+        Button mstopTrackingButton = mDialogView.findViewById(R.id.stop_tracking);
+        Button mstartTrackingButton = mDialogView.findViewById(R.id.start_tracking);
 
         mDialogBuilder.setView(mDialogView);
         final AlertDialog dialog = mDialogBuilder.create();
-        //set opacity of dialog
-        //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.white)));
         dialog.show();
 
         mCancelDialogButton.setOnClickListener(new View.OnClickListener() {
@@ -526,15 +531,6 @@ public class SetupActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //stopService();
-        /*if (isRegistered) {
-            unregisterReceiver(mLockScreenReceiver);
-        }*/
-        /*try {
-            unregisterReceiver(mLockScreenReceiver);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
     }
 
     public void startService() {

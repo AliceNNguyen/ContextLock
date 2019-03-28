@@ -43,7 +43,7 @@ public class Constants {
     public static final String LOCKSCREEN_SHOW_KEY = "lockscreen_show_key";
 
     public static final String LOCKSCREEN_STORED_KEY = "lockscreen_stored_key";
-    public static final int LOCKSCREEN_SHOW_COUNTER = 15; //TODO to set
+    public static final int LOCKSCREEN_SHOW_COUNTER = 50; //TODO to set
     public static final String UNLOCK_FAILURE_COUNTER = "unlock_failure_counter";
 
     public static final int SURVEY_COOLDOWN = 2; //possibility that survey opens, here 50% chance TODO to set
@@ -59,6 +59,8 @@ public class Constants {
 
     public static final int NOTIFICATION_ID = 1;
     public static final String UNLOCK_METHOD_KEY = "unlock_method_key";
+
+    public static final int CHECK_FINGERPRINT_TIMEOUT = 3000;
 
 
 }
