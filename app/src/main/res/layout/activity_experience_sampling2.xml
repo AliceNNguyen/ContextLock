@@ -21,7 +21,9 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/round_border"
                 android:orientation="vertical"
-                android:padding="15dp">
+                android:padding="15dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
 
                 <!--<TextView
                     android:id="@+id/reasonableSwitch"
@@ -191,10 +193,7 @@
                         android:textColor="@color/dark_grey"
                         android:textSize="@dimen/radio_button_textsize" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+
 
                         <RadioButton
                             android:id="@+id/something_else__radio_button"
@@ -207,19 +206,16 @@
                             android:layout_marginTop="@dimen/radio_button_margin"
                             android:textColor="@color/dark_grey"
                             android:textSize="@dimen/radio_button_textsize" />
-
-                        <EditText
-                            android:id="@+id/location_freetext"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:backgroundTint="@color/dark_grey"
-                            android:hint="@string/some_examples"
-                            android:textColor="@color/dark_grey"
-                            android:layout_marginTop="@dimen/radio_button_margin"
-                            android:textSize="@dimen/radio_button_textsize" />
-
-                    </LinearLayout>
                 </RadioGroup>
+                <EditText
+                    android:id="@+id/location_freetext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/dark_grey"
+                    android:hint="@string/some_examples"
+                    android:textColor="@color/dark_grey"
+                    android:layout_marginBottom="@dimen/radio_button_margin"
+                    android:textSize="@dimen/radio_button_textsize" />
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

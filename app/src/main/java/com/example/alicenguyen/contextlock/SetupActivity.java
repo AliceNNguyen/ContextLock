@@ -86,6 +86,7 @@ public class SetupActivity extends AppCompatActivity {
         setFinished();
         //setUserId();
         //setRandomAlarmReceiver(); //TODO nach testen wieder
+        //setRepeatingSync(this);
         setAlarmForLogEventsExport();
 
         //initTrackingButtons();

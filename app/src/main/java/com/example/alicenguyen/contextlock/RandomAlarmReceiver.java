@@ -34,52 +34,53 @@ public class RandomAlarmReceiver extends BroadcastReceiver {
         Intent i = new Intent(context, LockscreenHelper.class);
         Random random = new Random();
 
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, random.nextInt(11-8) + 8); //16
+        //c.set(Calendar.HOUR_OF_DAY, 12); //16
+        //c.set(Calendar.MINUTE, 20); //30
+        //c.set(Calendar.SECOND, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, i, 0);
+
         Calendar c1 = Calendar.getInstance();
-        c1.set(Calendar.HOUR_OF_DAY, random.nextInt(11-8) + 8);
-        PendingIntent pendingIntent1 = PendingIntent.getBroadcast(context, 1, i, 0); //flags 0
+        c1.set(Calendar.HOUR_OF_DAY, random.nextInt(14-11) + 11);
+        PendingIntent pendingIntent1 = PendingIntent.getBroadcast(context, 2, i, 0); //flags 0
 
 
         Calendar c2 = Calendar.getInstance();
-        c2.set(Calendar.HOUR_OF_DAY, random.nextInt(14-11) + 11);
-        PendingIntent pendingIntent2 = PendingIntent.getBroadcast(context, 2, i, 0);
+        c2.set(Calendar.HOUR_OF_DAY, random.nextInt(17-14) + 14);
+        PendingIntent pendingIntent2 = PendingIntent.getBroadcast(context, 3, i, 0);
 
 
         Calendar c3= Calendar.getInstance();
-        c3.set(Calendar.HOUR_OF_DAY, random.nextInt(17-14) + 14);
-        PendingIntent pendingIntent3 = PendingIntent.getBroadcast(context, 3, i, 0);
+        c3.set(Calendar.HOUR_OF_DAY, random.nextInt(20-17) + 17);
+        PendingIntent pendingIntent3 = PendingIntent.getBroadcast(context, 4, i, 0);
 
-
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, random.nextInt(20-17) + 17); //16
-        c.set(Calendar.MINUTE, 30); //30
-        c.set(Calendar.SECOND, 0);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 4, i, 0);
 
         Calendar c4 = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, random.nextInt(23-20) + 10); //16
-        c.set(Calendar.MINUTE, 30); //30
-        c.set(Calendar.SECOND, 0);
-        PendingIntent pendingIntent5 = PendingIntent.getBroadcast(context, 5, i, 0);
+        c.set(Calendar.HOUR_OF_DAY, random.nextInt(23-20) + 20); //16
+        /*c4.set(Calendar.HOUR_OF_DAY,12); //16
+        c4.set(Calendar.MINUTE, 30);*/
+        PendingIntent pendingIntent4 = PendingIntent.getBroadcast(context, 5, i, 0);
 
 
         Log.e(TAG, c1.toString());
         Log.e(TAG, c2.toString());
         Log.e(TAG, c3.toString());
 
-        Log.e(TAG, c.toString());
+        Log.e(TAG, c.getTime().toString());
         Log.e(TAG, c4.toString());
 
-        mDatabaseReference.child("1").setValue(c.toString());
-        mDatabaseReference.child("2").setValue(c1.toString());
-        mDatabaseReference.child("3").setValue(c2.toString());
-        mDatabaseReference.child("4").setValue(c3.toString());
-        mDatabaseReference.child("5").setValue(c4.toString());
+        mDatabaseReference.child("1").setValue(c.getTime().toString());
+        mDatabaseReference.child("2").setValue(c1.getTime().toString());
+        mDatabaseReference.child("3").setValue(c2.getTime().toString());
+        mDatabaseReference.child("4").setValue(c3.getTime().toString());
+        mDatabaseReference.child("5").setValue(c4.getTime().toString());
 
         alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
         alarmManager.set(AlarmManager.RTC_WAKEUP, c1.getTimeInMillis(), pendingIntent1);
         alarmManager.set(AlarmManager.RTC_WAKEUP, c2.getTimeInMillis(),  pendingIntent2);
         alarmManager.set(AlarmManager.RTC_WAKEUP, c3.getTimeInMillis(),  pendingIntent3);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, c4.getTimeInMillis(), pendingIntent5);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, c4.getTimeInMillis(), pendingIntent4);
 
     }
 }

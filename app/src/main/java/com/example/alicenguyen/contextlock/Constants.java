@@ -61,6 +61,7 @@ public class Constants {
     public static final String UNLOCK_METHOD_KEY = "unlock_method_key";
 
     public static final int CHECK_FINGERPRINT_TIMEOUT = 3000;
+    public static final String PASSWORD_USED_KEY = "password_used_key";
 
 
 }

@@ -31,14 +31,18 @@ public class LockScreenReceiver extends BroadcastReceiver {
             Log.e(TAG, "received alarm");
             int failCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.UNLOCK_FAILURE_COUNTER));
             String storedLockscreen = SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_STORED_KEY);
+            String storedPasswordUsed = SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.PASSWORD_USED_KEY);
             Log.e(TAG, storedLockscreen);
             Log.e(TAG, String.valueOf(failCounter));
-            if(storedLockscreen.equals("true") && failCounter < 1) {
+            Log.e(TAG, storedPasswordUsed);
+            if((storedLockscreen.equals("true") && failCounter < 2) || (storedLockscreen.equals("true ") && !storedPasswordUsed.equals("true"))) {
                 Log.e(TAG, "lockscreen open");
                 //vibrate(context);
                 setLockscreen(context);
             }
             context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.UNLOCK_FAILURE_COUNTER).apply();
+            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.PASSWORD_USED_KEY).apply();
+
         }
         if(!myKM.isDeviceLocked() && intent.getAction().equals(Intent.ACTION_USER_PRESENT)){
             writeUnlockEventsToDB(context);

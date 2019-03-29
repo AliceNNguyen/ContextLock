@@ -78,6 +78,7 @@ public class AdminReceiver extends DeviceAdminReceiver {
         DevicePolicyManager devicePolicyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
         Log.e(TAG, "success");
         Log.e(TAG, String.valueOf(fail_count));
+        SharedPreferencesStorage.writeSharedPreference(context, Constants.PREFERENCES, Constants.PASSWORD_USED_KEY, "true");
         writeUnlockEventsToDB(context);
     }
 }
