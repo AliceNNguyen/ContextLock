@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ExperienceSamplingActivity">
+    tools:context=".experience_sampling.ExperienceSamplingActivity">
 
     <Button
         android:id="@+id/not_now_button"

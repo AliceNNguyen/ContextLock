@@ -40,8 +40,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.alicenguyen.contextlock.andrognito.pinlockview.IndicatorDots;
-import com.example.alicenguyen.contextlock.andrognito.pinlockview.PinLockView;
+import com.example.alicenguyen.contextlock.experience_sampling.ExperienceSamplingActivity;
 import com.example.alicenguyen.contextlock.fingerprint.FingerPrintListener;
 import com.example.alicenguyen.contextlock.fingerprint.FingerprintHandler;
 import com.example.alicenguyen.contextlock.util.Animate;
@@ -74,9 +73,11 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
+
+/*pattern lock screen
+ *main pattern logic are from aritratroy (https://github.com/aritraroy/PatternLockView)
+ *and fingerprint functionality are from amirarcane (https://github.com/amirarcane/lock-screen)*/
 public class PatternLockScreen extends AppCompatActivity {
-
-
     private PatternLockView mPatternLockView;
 
     public static final String TAG = "PatternLockscreen";
@@ -108,8 +109,6 @@ public class PatternLockScreen extends AppCompatActivity {
     private boolean mSetPattern = false;
     private String mFirstPattern = "";
     private int mPatternTryCount = 0;
-    private int mFingerprintTryCount = 0;
-
 
     private TextView mTextTitle;
     private TextView mTextAttempts;
@@ -133,17 +132,11 @@ public class PatternLockScreen extends AppCompatActivity {
 
     private String OPEN_WEATHER_API_KEY = "18d997dfe947e33eb626ce588b9c7510";
     private String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?units=metric&lat="; //{lat}&lon={lon}"
-    private String testURL= "http://api.openweathermap.org/data/2.5/weather?lat=48.366512&lon=10.894446&units=metric&appid=18d997dfe947e33eb626ce588b9c7510";
 
-    private int LOCATION_ACCURACY = 20;
     private ImageView contextIcon;
     private ImageView fingerprintIcon;
     private TextView patternTitle;
     private TextView methodTitle;
-
-    private float gpsAccuracy;
-    private static final int LOCATION_INTERVAL = 10* 1000 * 60; // 1000 * 60 * 1; --> 1 minute// 5*60*1000
-    private static final float LOCATION_DISTANCE = 10f; //10 meters
 
     //flag for gps status
     boolean isGPSEnabled = false;
@@ -155,8 +148,6 @@ public class PatternLockScreen extends AppCompatActivity {
     private ActivityBroadcastReceiver mActivityBroadcastReceiver;
     private PendingIntent mPendingIntent;
     BroadcastReceiver broadcastReceiver;
-    private boolean active;
-    //private boolean patternUsed;
 
 
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -237,11 +228,11 @@ public class PatternLockScreen extends AppCompatActivity {
     }
 
 
+    /*handles pattern input*/
     private void checkPattern(String pattern) {
         Log.e(TAG, "checkPattern");
         if (Utils.sha256(pattern).equals(getPatternFromSharedPreferences())) {
             setResult(RESULT_OK);
-            //patternUsed = true;
             writeLockscreenDataToFirebase(true);
             openExperienceSampling();
             finish();
@@ -258,11 +249,11 @@ public class PatternLockScreen extends AppCompatActivity {
                 setResult(RESULT_TOO_MANY_TRIES);
                 mPatternTryCount = 0;
                 mTextAttempts.setText("");
-                //finish();
             }
         }
     }
 
+    /*hide in screen buttons, so that user cannot leave app that easy*/
     private void hideOnScreenButton() {
         if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT )
         {
@@ -275,36 +266,31 @@ public class PatternLockScreen extends AppCompatActivity {
         }
     }
 
+    /*get user current location to retrieve weather data*/
     private void getUserLocation() {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 String lon = "" + location.getLongitude();
                 String lat = "" + location.getLatitude();
-                gpsAccuracy = location.getAccuracy();
                 Log.e(TAG, lon);
                 Log.e(TAG, lat);
                 getWeatherData(lon, lat);
             }
-
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-
             }
 
             @Override
             public void onProviderDisabled(String provider) {
-
             }
         };
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
         // getting GPS status
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         // getting network status
@@ -333,6 +319,7 @@ public class PatternLockScreen extends AppCompatActivity {
         }
     }
 
+    /*get weather data from OpenWeatherMap API*/
     private void getWeatherData(String longitude, String latitude) {
         RequestQueue queue = Volley.newRequestQueue(PatternLockScreen.this);
         String url = WEATHER_URL + latitude + "&lon=" + longitude + "&appid=" + OPEN_WEATHER_API_KEY;
@@ -342,10 +329,7 @@ public class PatternLockScreen extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         Log.e(TAG, response.toString());
                         try {
-                            //Log.d("json humidity", response.getJSONObject("weather").toString());
                             JSONArray mainWeatherArray = response.getJSONArray("weather");
-                            //JSONObject mainWeather = mainWeatherArray.getJSONObject(0);
-                            //String main = mainWeather.getString("main");
                             Log.d(TAG, mainWeatherArray.getJSONObject(0).get("main").toString());
                             mainWeather = mainWeatherArray.getJSONObject(0).get("main").toString();
                             humidity = (int)response.getJSONObject("main").get("humidity");
@@ -365,19 +349,14 @@ public class PatternLockScreen extends AppCompatActivity {
         queue.add(jsonObjectRequest);
     }
 
+    /*set context based icon and text based on retrieve data otherwise randomly*/
     private void setContextIcon() {
-
         if(mSetPattern){
             return;
         }
-        Log.e(TAG, "set icon");
-        Log.e(TAG, mainWeather);
-        Log.d("user context icon hum", String.valueOf(humidity));
-        Log.e(TAG,"activity " + userActivity);
-
         contextIcon.setVisibility(View.VISIBLE);
 
-        if(userActivity.equals("still") && mainWeather.contains("Drizzle")){
+        if(userActivity.equals("walking") && mainWeather.contains("Drizzle")){
             Log.e(TAG, "tada");
             //contextIcon.setImageResource(R.drawable.running);
             //patternTitle.setText(getString(R.string.running) + " " + getString(R.string.pinlock_title));
@@ -405,23 +384,22 @@ public class PatternLockScreen extends AppCompatActivity {
         locationManager.removeUpdates(locationListener);
     }
 
-    //TODO
     private void setRandomIcon() {
         Random generator = new Random();
         int number = generator.nextInt(2) + 1;
         switch (number) {
             case 1: //humdidity
                 contextIcon.setImageResource(R.drawable.humidity_white);
-                patternTitle.setText(getString(R.string.default_humidity) + " " + getString(R.string.pinlock_title));
+                patternTitle.setText(getString(R.string.default_humidity) + " " + getString(R.string.patternlock_title));
                 break;
             default: //movement
                 contextIcon.setImageResource(R.drawable.running);
-                patternTitle.setText(getString(R.string.default_movement) + " " + getString(R.string.pinlock_title));
+                patternTitle.setText(getString(R.string.default_movement) + " " + getString(R.string.patternlock_title));
                 break;
         }
     }
 
-    /*handle notification version based on user id*/
+    /*handle lock screen version based on user id and switch date*/
     private void setNotificationVersion() {
         Log.e(TAG, "set version");
         SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE);
@@ -477,36 +455,9 @@ public class PatternLockScreen extends AppCompatActivity {
     }
 
 
-
     private String getPatternFromSharedPreferences() {
         SharedPreferences prefs = this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
         return prefs.getString(KEY_PATTERN, "");
-    }
-
-    private void writeLockscreenDataToFirebase(boolean patternUsed) {
-        Log.e(TAG, "write to firebase");
-        Date currenttime = Calendar.getInstance().getTime();
-        String version = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY);
-
-        SharedPreferences pref = this.getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE);
-        String id = pref.getString(Constants.KEY_ID, "0");
-        Log.e(TAG, userid);
-        Log.e(TAG, currenttime.toString());
-        Log.e(TAG, version);
-        Log.e(TAG, patternTitle.getText().toString());
-        Log.e(TAG, String.valueOf(patternUsed));
-
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("logEvents").child(version).child(id);
-        ref.child(currenttime.toString()).child("reason").setValue(patternTitle.getText().toString());
-        ref.child(currenttime.toString()).child("pattern_used").setValue(patternUsed);
-    }
-
-    private void changeLayoutForSetPattern() {
-        mImageViewFingerView.setVisibility(View.GONE);
-        mTextFingerText.setVisibility(View.GONE);
-        //mTextAttempts.setVisibility(View.GONE);
-        mTextTitle.setText(getString(R.string.patternlock_settitle));
-        mContextIcon.setVisibility(View.GONE);
     }
 
     private void writePatternToSharedPreferences(String pattern) {
@@ -514,6 +465,27 @@ public class PatternLockScreen extends AppCompatActivity {
         prefs.edit().putString(KEY_PATTERN, Utils.sha256(pattern)).apply();
     }
 
+    /*write displayed lock screen data to firebase db*/
+    private void writeLockscreenDataToFirebase(boolean patternUsed) {
+        Log.e(TAG, "write to firebase");
+        Date currenttime = Calendar.getInstance().getTime();
+        String version = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY);
+        SharedPreferences pref = this.getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE);
+        String id = pref.getString(Constants.KEY_ID, "0");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("logEvents").child(version).child(id);
+        ref.child(currenttime.toString()).child("reason").setValue(patternTitle.getText().toString());
+        ref.child(currenttime.toString()).child("pattern_used").setValue(patternUsed);
+    }
+
+    /*change lock screen layout when pattern is set*/
+    private void changeLayoutForSetPattern() {
+        mImageViewFingerView.setVisibility(View.GONE);
+        mTextFingerText.setVisibility(View.GONE);
+        mTextTitle.setText(getString(R.string.patternlock_settitle));
+        mContextIcon.setVisibility(View.GONE);
+    }
+
+    /*open experience sampling based on random number (likelihood based on participation survey)*/
     private void openExperienceSampling() {
         Random generator = new Random();
         int randomInt = generator.nextInt(Constants.SURVEY_COOLDOWN-0) + 0;
@@ -529,21 +501,15 @@ public class PatternLockScreen extends AppCompatActivity {
 
             Log.e(TAG, "startActivity");
             Intent intent = new Intent(this, ExperienceSamplingActivity.class);
-            //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            //finish();
 
             //}
         }
         if(randomInt == 0 /*&& cooldown.equals("true")*/) {
             SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
             Log.e(TAG, "finish");
-            //setResult(Activity.RESULT_CANCELED);
             setResult(RESULT_CANCELED);
             finishAffinity();
-
-            //finishAffinity();
-            //finish();
         }
     }
 
@@ -551,7 +517,6 @@ public class PatternLockScreen extends AppCompatActivity {
         Log.e(TAG, "setPattern");
         if (mFirstPattern.equals("")) {
             mFirstPattern= pattern;
-            //mTextTitle.setText(getString(com.amirarcane.lockscreen.R.string.pinlock_secondPin));
             mTextTitle.setText(getString(R.string.patternlock_secondPin));
             mPatternLockView.clearPattern();
             //mPatternLockView.resetPinLockView();
@@ -586,7 +551,6 @@ public class PatternLockScreen extends AppCompatActivity {
 
 
     private void initElements() {
-
         mTextAttempts =  findViewById(R.id.attempts);
         mTextTitle = findViewById(R.id.title);
         mImageViewFingerView = findViewById(R.id.fingerView);
@@ -614,7 +578,6 @@ public class PatternLockScreen extends AppCompatActivity {
             //Initialize the KeyGenerator//
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mKeyGenerator.init(new
-
                         //Specify the operation(s) this key can be used for//
                         KeyGenParameterSpec.Builder(FINGER_PRINT_KEY,
                         KeyProperties.PURPOSE_ENCRYPT |
@@ -672,7 +635,6 @@ public class PatternLockScreen extends AppCompatActivity {
     private void checkForFingerPrint() {
         Log.e(TAG, "checkForFingerprint");
         final FingerPrintListener fingerPrintListener = new FingerPrintListener() {
-
             @Override
             public void onSuccess() {
                 Log.e(TAG, "fingerprint success");
@@ -682,20 +644,15 @@ public class PatternLockScreen extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        //patternUsed = false;
-                        //writeLogEventsToDB();
                         writeLockscreenDataToFirebase(false);
                         openExperienceSampling();
                         finish();
                     }
                 }, 750);
-
             }
 
             @Override
             public void onFailed() {
-
-                //mFingerprintTryCount++;
                 Log.e(TAG, "fingerprint failed");
                 Animate.animate(mImageViewFingerView, fingerprintToCross);
                 final Handler handler = new Handler();
@@ -715,19 +672,18 @@ public class PatternLockScreen extends AppCompatActivity {
                 }else {
                     Toast.makeText(PatternLockScreen.this, errorString, Toast.LENGTH_SHORT).show();
                 }
-                //Toast.makeText(PatternLockScreen.this, errorString, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onHelp(CharSequence helpString) {
                 Toast.makeText(PatternLockScreen.this, helpString, Toast.LENGTH_SHORT).show();
             }
-
         };
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(Context.FINGERPRINT_SERVICE);
             if (fingerprintManager.isHardwareDetected()) {
+
                 //Get an instance of KeyguardManager and FingerprintManager//
                 mKeyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
                 mFingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
@@ -735,8 +691,6 @@ public class PatternLockScreen extends AppCompatActivity {
                 //Check whether the user has granted your app the USE_FINGERPRINT permission//
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.USE_FINGERPRINT)
                         != PackageManager.PERMISSION_GRANTED) {
-                    // If your app doesn't have this permission, then display the following text//
-//                Toast.makeText(EnterPinActivity.this, "Please enable the fingerprint permission", Toast.LENGTH_LONG).show();
                     mImageViewFingerView.setVisibility(View.GONE);
 //                    mTextFingerText.setVisibility(View.GONE);
                     return;
@@ -744,21 +698,13 @@ public class PatternLockScreen extends AppCompatActivity {
 
                 //Check that the user has registered at least one fingerprint//
                 if (!mFingerprintManager.hasEnrolledFingerprints()) {
-                    // If the user hasn’t configured any fingerprints, then display the following message//
-//                Toast.makeText(EnterPinActivity.this,
-//                        "No fingerprint configured. Please register at least one fingerprint in your device's Settings",
-//                        Toast.LENGTH_LONG).show();
                     mImageViewFingerView.setVisibility(View.GONE);
-//                    mTextFingerText.setVisibility(View.GONE);
                     return;
                 }
 
                 //Check that the lockscreen is secured//
                 if (!mKeyguardManager.isKeyguardSecure()) {
-                    // If the user hasn’t secured their lockscreen with a PIN password or pattern, then display the following text//
-//                Toast.makeText(EnterPinActivity.this, "Please enable lockscreen security in your device's Settings", Toast.LENGTH_LONG).show();
                     mImageViewFingerView.setVisibility(View.GONE);
-//                    mTextFingerText.setVisibility(View.GONE);
                     return;
                 } else {
                     try {
@@ -766,10 +712,9 @@ public class PatternLockScreen extends AppCompatActivity {
                         if (initCipher()) {
                             //If the mCipher is initialized successfully, then create a CryptoObject instance//
                             mCryptoObject = new FingerprintManager.CryptoObject(mCipher);
-
                             // Here, I’m referencing the FingerprintHandler class that we’ll create in the next section. This class will be responsible
                             // for starting the authentication process (via the startAuth method) and processing the authentication process events//
-                            /*FingerprintHandler*/ helper = new FingerprintHandler(this);
+                            helper = new FingerprintHandler(this);
                             helper.startAuth(mFingerprintManager, mCryptoObject);
                             helper.setFingerPrintListener(fingerPrintListener);
                         }
@@ -785,8 +730,6 @@ public class PatternLockScreen extends AppCompatActivity {
         }
     }
 
-
-
     private class FingerprintException extends Exception {
         public FingerprintException(Exception e) {
             super(e);
@@ -798,7 +741,7 @@ public class PatternLockScreen extends AppCompatActivity {
         Log.e(TAG, "vibrate");
         if(!mSetPattern){
             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            // Vibrate for 500 milliseconds
+            // Vibrate for 100 milliseconds
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
             } else {
@@ -807,8 +750,6 @@ public class PatternLockScreen extends AppCompatActivity {
             }
         }
     }
-
-
 
     @Override
     protected void onPause() {
@@ -820,11 +761,11 @@ public class PatternLockScreen extends AppCompatActivity {
         }
     }
 
+    /*set vibration when lock screen is shown*/
     @Override
     protected void onResume() {
         super.onResume();
         Log.e(TAG, "onResume");
-        //vibrate();
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         if(pm.isInteractive()) {
             Log.e(TAG, "isInteractive");

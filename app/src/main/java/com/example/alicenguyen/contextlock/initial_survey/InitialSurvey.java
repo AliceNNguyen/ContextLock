@@ -1,4 +1,4 @@
-package com.example.alicenguyen.contextlock;
+package com.example.alicenguyen.contextlock.initial_survey;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,20 +7,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.FirebaseApp;
+import com.example.alicenguyen.contextlock.Constants;
+import com.example.alicenguyen.contextlock.R;
+import com.example.alicenguyen.contextlock.SharedPreferencesStorage;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import org.w3c.dom.Text;
 
 public class InitialSurvey extends AppCompatActivity {
 
@@ -32,7 +28,6 @@ public class InitialSurvey extends AppCompatActivity {
     private static final String FALLBACK_OTHER_ID_KEY = "fallbackOtherId";
     private boolean checkedSex, checkedProfession, checkedFallback;
     private String sex, profession, age, fallbackUnlock, fallbackUnlockOther;
-    private RadioGroup radioGroupProfession, radioGroupSex, radioGroupFallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,15 +152,15 @@ public class InitialSurvey extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        radioGroupProfession = findViewById(R.id.radioGroupProfession);
+         RadioGroup radioGroupProfession = findViewById(R.id.radioGroupProfession);
         int idProfession = radioGroupProfession.getCheckedRadioButtonId();
         SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, PROFESSION_ID_KEY, String.valueOf(idProfession));
 
-        radioGroupSex = findViewById(R.id.sexRadioButtonGroup);
+        RadioGroup radioGroupSex = findViewById(R.id.sexRadioButtonGroup);
         int idSex = radioGroupSex.getCheckedRadioButtonId();
         SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, SEX_ID_KEY, String.valueOf(idSex));
 
-        radioGroupFallback = findViewById(R.id.radioGroupFallback);
+        RadioGroup radioGroupFallback = findViewById(R.id.radioGroupFallback);
         int idFallback = radioGroupFallback.getCheckedRadioButtonId();
         SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, FALLBACK_ID_KEY, String.valueOf(idFallback));
 

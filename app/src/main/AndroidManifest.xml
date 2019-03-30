@@ -42,12 +42,12 @@
             -->
         </activity>
         <activity
-            android:name=".ExperienceSamplingActivity"
+            android:name=".experience_sampling.ExperienceSamplingActivity"
             android:exported="true"
             android:label="@string/feedback_survey"
             android:theme="@style/LightTheme" />
         <activity
-            android:name=".ExperienceSamplingActivity2"
+            android:name=".experience_sampling.ExperienceSamplingActivity2"
             android:label="@string/feedback_survey"
             android:theme="@style/LightTheme" />
 
@@ -108,11 +108,11 @@
         </receiver>
 
         <activity
-            android:name=".InitialSurvey"
+            android:name=".initial_survey.InitialSurvey"
             android:exported="true" />
-        <activity android:name=".InitialSurvey2" />
-        <activity android:name=".InitialSurvey3" />
-        <activity android:name=".InitialSurvey4" />
+        <activity android:name=".initial_survey.InitialSurvey2" />
+        <activity android:name=".initial_survey.InitialSurvey3" />
+        <activity android:name=".initial_survey.InitialSurvey4" />
         <activity
             android:name=".Lockscreen"
             android:exported="true"

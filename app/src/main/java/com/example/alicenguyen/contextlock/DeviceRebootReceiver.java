@@ -14,7 +14,6 @@ public class DeviceRebootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             try {
-
                 AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                 Intent alarmIntent = new Intent(context, RandomAlarmReceiver.class);
                 Calendar c = Calendar.getInstance();
@@ -24,11 +23,6 @@ public class DeviceRebootReceiver extends BroadcastReceiver {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            /*Intent alarmIntent = new Intent(context, RandomAlarmReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
-            AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-            Toast.makeText(context, "Alarm Set", Toast.LENGTH_SHORT).show();*/
         }
     }
 }

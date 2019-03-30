@@ -16,7 +16,7 @@ import java.util.Random;
 
 import static android.content.Context.MODE_PRIVATE;
 
-/*set random alarm to trigger lock screen*/
+/*set random alarms to trigger lock screen*/
 public class RandomAlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "RandomAlarmReceiver";
     private static final int REQUEST_CODE = 1;
@@ -36,9 +36,6 @@ public class RandomAlarmReceiver extends BroadcastReceiver {
 
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR_OF_DAY, random.nextInt(11-8) + 8); //16
-        //c.set(Calendar.HOUR_OF_DAY, 12); //16
-        //c.set(Calendar.MINUTE, 20); //30
-        //c.set(Calendar.SECOND, 0);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, i, 0);
 
         Calendar c1 = Calendar.getInstance();
@@ -58,8 +55,6 @@ public class RandomAlarmReceiver extends BroadcastReceiver {
 
         Calendar c4 = Calendar.getInstance();
         c4.set(Calendar.HOUR_OF_DAY, random.nextInt(23-20) + 20); //16
-        /*c4.set(Calendar.HOUR_OF_DAY,12); //16
-        c4.set(Calendar.MINUTE, 30);*/
         PendingIntent pendingIntent4 = PendingIntent.getBroadcast(context, 5, i, 0);
 
 

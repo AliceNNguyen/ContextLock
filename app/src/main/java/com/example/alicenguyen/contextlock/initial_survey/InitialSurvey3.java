@@ -1,14 +1,16 @@
-package com.example.alicenguyen.contextlock;
+package com.example.alicenguyen.contextlock.initial_survey;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.alicenguyen.contextlock.Constants;
+import com.example.alicenguyen.contextlock.R;
+import com.example.alicenguyen.contextlock.SharedPreferencesStorage;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 

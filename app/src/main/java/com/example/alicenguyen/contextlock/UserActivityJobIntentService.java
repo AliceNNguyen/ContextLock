@@ -9,6 +9,7 @@ import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.example.alicenguyen.contextlock.experience_sampling.ExperienceSamplingActivity;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
@@ -21,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Random;
 
 public class UserActivityJobIntentService extends JobIntentService {
     private static final String TAG = "UserActivityJobIntent";
@@ -260,29 +260,6 @@ public class UserActivityJobIntentService extends JobIntentService {
             //it is not locked
         }
     }
-
-    /*private void openExperienceSampling() {
-        Random generator = new Random();
-        int randomInt = generator.nextInt(2-0) + 0;
-        Log.d("random", String.valueOf(randomInt));
-        cooldown = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY);
-        Log.e("cooldown", String.valueOf(cooldown));
-        //survey_open_counter = Integer.parseInt(getSurveyOpenCounterfromSharedPreferences());
-        if(randomInt == 1) {
-            if(!cooldown.equals("true")) {
-                opensurveycounter++;
-                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COUNTER_KEY, String.valueOf(opensurveycounter));
-                SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "true");
-
-                Intent intent = new Intent(this, ExperienceSamplingActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        }
-        if(randomInt == 0 && cooldown.equals("true")) {
-            SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "false");
-        }
-    }*/
 
     @Override
     public void onDestroy() {

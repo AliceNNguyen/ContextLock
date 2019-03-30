@@ -42,11 +42,14 @@ import com.android.volley.toolbox.Volley;
 import com.example.alicenguyen.contextlock.andrognito.pinlockview.IndicatorDots;
 import com.example.alicenguyen.contextlock.andrognito.pinlockview.PinLockListener;
 import com.example.alicenguyen.contextlock.andrognito.pinlockview.PinLockView;
+import com.example.alicenguyen.contextlock.experience_sampling.ExperienceSamplingActivity;
 import com.example.alicenguyen.contextlock.fingerprint.FingerPrintListener;
 import com.example.alicenguyen.contextlock.fingerprint.FingerprintHandler;
 import com.example.alicenguyen.contextlock.util.Animate;
 import com.example.alicenguyen.contextlock.util.Utils;
+import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
+import com.google.android.gms.location.ActivityTransitionRequest;
 import com.google.android.gms.location.DetectedActivity;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DatabaseReference;
@@ -74,6 +77,10 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
+/*pin lock screen
+ * it also handles the lock screen version
+ * main logic for pin and fingerprint functionality based on amirarcane (https://github.com/amirarcane/lock-screen) and are partly
+ * modified for own purpose */
 public class Lockscreen extends AppCompatActivity {
 
     public static final String TAG = "Lockscreen";
@@ -90,12 +97,10 @@ public class Lockscreen extends AppCompatActivity {
     private String cooldown;
     private int opensurveycounter;
 
-
     private String userid;
     private Date current, switchDate;
     private String currentDate, switchVersionDate;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-
 
     private Cipher mCipher;
     private KeyStore mKeyStore;
@@ -107,9 +112,6 @@ public class Lockscreen extends AppCompatActivity {
     private boolean mSetPin = false;
     private String mFirstPin = "";
     private int mPinTryCount = 0;
-    private int mFingerprintTryCount = 0;
-
-
     private TextView mTextTitle;
     private TextView mTextAttempts;
     private TextView mTextFingerText;
@@ -133,16 +135,13 @@ public class Lockscreen extends AppCompatActivity {
     protected LocationManager locationManager;
     protected LocationListener locationListener;
 
+    /*credentials for OpenWeatherMap API*/
     private String OPEN_WEATHER_API_KEY = "18d997dfe947e33eb626ce588b9c7510";
     private String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?units=metric&lat="; //{lat}&lon={lon}"
-    private String testURL= "http://api.openweathermap.org/data/2.5/weather?lat=48.366512&lon=10.894446&units=metric&appid=18d997dfe947e33eb626ce588b9c7510";
 
-    private int LOCATION_ACCURACY = 20;
     private ImageView contextIcon;
-    private ImageView fingerprintIcon;
     private PinLockView pinLockView;
     private TextView pinTitle;
-    private float gpsAccuracy;
 
     //flag for gps status
     boolean isGPSEnabled = false;
@@ -154,9 +153,6 @@ public class Lockscreen extends AppCompatActivity {
     private ActivityBroadcastReceiver mActivityBroadcastReceiver;
     private PendingIntent mPendingIntent;
     BroadcastReceiver broadcastReceiver;
-    private boolean active;
-    //private boolean pinUsed;
-
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FingerprintHandler helper;
@@ -219,8 +215,8 @@ public class Lockscreen extends AppCompatActivity {
             }
         }
 
+        /*handles pin input: handles or check it*/
         final PinLockListener pinLockListener = new PinLockListener() {
-
             @Override
             public void onComplete(String pin) {
                 if (mSetPin) {
@@ -247,46 +243,37 @@ public class Lockscreen extends AppCompatActivity {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
+    /*get layout elements*/
     private void getPinlockViews() {
         mTextAttempts =  findViewById(R.id.attempts);
         mTextTitle =  findViewById(R.id.title);
         mIndicatorDots = findViewById(R.id.indicator_dots);
         mImageViewFingerView = findViewById(R.id.fingerView);
         mTextFingerText = findViewById(R.id.fingerText);
-        mContextIcon = findViewById(R.id.context_icon);
-        //settings = (ImageView) findViewById(R.id.settings);
-        mPinLockView   = findViewById(R.id.pinlockView);
+        mContextIcon = findViewById(R.id.context_icon);mPinLockView   = findViewById(R.id.pinlockView);
         mIndicatorDots = findViewById(R.id.indicator_dots);
         contextIcon = findViewById(R.id.context_icon);
-        fingerprintIcon = findViewById(R.id.fingerView);
         pinLockView = findViewById(R.id.pinlockView);
         pinTitle = findViewById(R.id.title);
-
-
-        //showpinButton = findViewById(R.id.show_pin);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 1: {
+                //permission granted
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
                 } else {
-                    // permission denied, boo! Disable the
+                    // permission denied
                     // functionality that depends on this permission.
                     Toast.makeText(Lockscreen.this, "Permission denied to read your GPS location", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
     }
-
 
     private void getUserActivity(){
         broadcastReceiver = new BroadcastReceiver() {
@@ -300,6 +287,15 @@ public class Lockscreen extends AppCompatActivity {
             }
         };
         startTracking();
+    }
+
+    private void startTracking() {
+        Intent intent1 = new Intent(Lockscreen.this, BackgroundDetectedActivitiesService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //startForegroundService(intent1);
+        }else {
+            startService(intent1);
+        }
     }
 
     private void handleUserActivity(int type, int confidence) {
@@ -362,59 +358,41 @@ public class Lockscreen extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         registerReceiver(mActivityBroadcastReceiver,  new IntentFilter(Constants.BROADCAST_DETECTED_ACTIVITY));
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
+                new IntentFilter(Constants.BROADCAST_DETECTED_ACTIVITY));
+
+        /*set vibration is lock screen is visible*/
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         if(pm.isInteractive()) {
             Log.e(TAG, "isInteractive");
-         vibrate();
-        }
-        Log.e("Lockscreen", "lockscreen active");
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter(Constants.BROADCAST_DETECTED_ACTIVITY));
-    }
-
-
-
-    private void startTracking() {
-        Intent intent1 = new Intent(Lockscreen.this, BackgroundDetectedActivitiesService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //startForegroundService(intent1);
-        }else {
-            startService(intent1);
+            vibrate();
         }
     }
 
+
+
+
+    /*get current user's position to retrieve weather data*/
     private void getUserLocation() {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 String lon = "" + location.getLongitude();
                 String lat = "" + location.getLatitude();
-
-                gpsAccuracy = location.getAccuracy();
-
-                Log.d("gps provider gps", location.getProvider());
                 Log.e(TAG, lon);
                 Log.e(TAG, lat);
                 getWeatherData(lon, lat);
-
             }
-
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-
             }
-
             @Override
             public void onProviderDisabled(String provider) {
-
             }
         };
 
@@ -455,21 +433,17 @@ public class Lockscreen extends AppCompatActivity {
         }
     }
 
+    /*retrieve weather data from OpenWeatherMap API*/
     private void getWeatherData(String longitude, String latitude) {
         RequestQueue queue = Volley.newRequestQueue(Lockscreen.this);
         String url = WEATHER_URL + latitude + "&lon=" + longitude + "&appid=" + OPEN_WEATHER_API_KEY;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.e(TAG, response.toString());
                         try {
-                            //Log.d("json humidity", response.getJSONObject("weather").toString());
                             JSONArray mainWeatherArray = response.getJSONArray("weather");
-                            //JSONObject mainWeather = mainWeatherArray.getJSONObject(0);
-                            //String main = mainWeather.getString("main");
-                            Log.d(TAG, mainWeatherArray.getJSONObject(0).get("main").toString());
                             mainWeather = mainWeatherArray.getJSONObject(0).get("main").toString();
                             humidity = (int)response.getJSONObject("main").get("humidity");
                             temperature = (Number)response.getJSONObject("main").get("temp");
@@ -480,19 +454,15 @@ public class Lockscreen extends AppCompatActivity {
                         }
                     }
                 }, new Response.ErrorListener() {
-
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-                        //Toast toast = Toast.makeText(MainActivity.this, "no response", Toast.LENGTH_LONG);
-                        //toast.show();
                     }
                 });
         queue.add(jsonObjectRequest);
     }
 
+    /*set context based icon and text based on retrieved data or random data*/
     private void setContextIcon() {
-
         if(mSetPin){
             return;
         }
@@ -504,18 +474,17 @@ public class Lockscreen extends AppCompatActivity {
         contextIcon.setVisibility(View.VISIBLE);
         pinLockView.setVisibility(View.VISIBLE);
 
-       if(userActivity.equals("still") && mainWeather.contains("Drizzle")){
+       if(userActivity.equals("walking") && mainWeather.contains("Drizzle")){
            Log.e(TAG, "tada");
-            contextIcon.setImageResource(R.drawable.running);
-            pinTitle.setText(getString(R.string.running) + " " + getString(R.string.pinlock_title));
-
+            contextIcon.setImageResource(R.drawable.raindrop);
+            pinTitle.setText(getString(R.string.rain) + " " + getString(R.string.pinlock_title));
        } else if(mainWeather.contains("Rain") && userActivity.equals(R.string.activity_walking)) {
             contextIcon.setImageResource(R.drawable.raindrop);
            pinTitle.setText(getString(R.string.rain) + " " + getString(R.string.pinlock_title));
             Log.d("mist", "it's wet outside!");
         }else if(mainWeather.contains("Drizzle")){ //Drizzle
            contextIcon.setImageResource(R.drawable.raindrop);
-           pinTitle.setText(getString(R.string.running) + " " + getString(R.string.pinlock_title));
+           pinTitle.setText(getString(R.string.rain) + " " + getString(R.string.pinlock_title));
         }
         else if(mainWeather.contains("Snow")) { //compareAccuracy >= 0
            contextIcon.setImageResource(R.drawable.snowflake_white);
@@ -547,43 +516,27 @@ public class Lockscreen extends AppCompatActivity {
                 pinTitle.setText(getString(R.string.default_movement) + " " + getString(R.string.pinlock_title));
                 break;
         }
-
     }
 
+    /*write lock screen data to firebase
+    * parameters are: if user used pin and displayed text*/
     private void writeLockscreenDataToFirebase(boolean pinUsed) {
         Log.e(TAG, "write to firebase");
         Date currenttime = Calendar.getInstance().getTime();
         String version = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.VERSION_KEY);
-
         SharedPreferences pref = this.getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE);
         String id = pref.getString(Constants.KEY_ID, "0");
-        Log.e(TAG, userid);
-        Log.e(TAG, currenttime.toString());
-        Log.e(TAG, version);
-        Log.e(TAG, pinTitle.getText().toString());
-        Log.e(TAG, String.valueOf(pinUsed));
-
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("logEvents").child(version).child(id);
         ref.child(currenttime.toString()).child("reason").setValue(pinTitle.getText().toString());
         ref.child(currenttime.toString()).child("pin_used").setValue(pinUsed);
     }
 
-    /*write weather data to local database*/
-    private void writeLogEventsToDB() {
-        /*SQLiteDB mDB = new SQLiteDB(this);
-        Date currenttime = Calendar.getInstance().getTime();
-        boolean isInserted = mDB.saveToDB(userid, currenttime.toString(), String.valueOf(pinUsed), pinTitle.getText().toString());
-        if(isInserted == true) {
-            Log.e(TAG, "insertedToDB");
-        }else{
-            Log.e(TAG, "failed to insert DB");
-            //TODO send failed log to firebase
-
-        }*/
-    }
 
 
-    /*handle lock screen version based on user id*/
+    /*handle lock screen version based on user id and version switch date
+    * user with even id number starts with non-context version
+    * user with uneven id number starts with context version
+    * after first half of study, versions are vice versa*/
     private void setNotificationVersion() {
         Log.e(TAG, "set version");
         SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.PREFERENCES, MODE_PRIVATE);
@@ -591,9 +544,6 @@ public class Lockscreen extends AppCompatActivity {
         Date date = Calendar.getInstance().getTime();
         currentDate = simpleDateFormat.format(date);
         switchVersionDate = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.SWITCH_VERSION_KEY);
-        Log.e(TAG, "version, userid");
-        Log.e(TAG, userid);
-
         int id = Integer.parseInt(userid);
         try {
             current= simpleDateFormat.parse(currentDate);
@@ -642,6 +592,12 @@ public class Lockscreen extends AppCompatActivity {
         return prefs.getString(KEY_PIN, "");
     }
 
+    private void writePinToSharedPreferences(String pin) {
+        SharedPreferences prefs = this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
+        prefs.edit().putString(KEY_PIN, Utils.sha256(pin)).apply();
+    }
+
+    /*change the lock screen layout if pin is set*/
     private void changeLayoutForSetPin() {
         mImageViewFingerView.setVisibility(View.GONE);
         mTextFingerText.setVisibility(View.GONE);
@@ -650,11 +606,7 @@ public class Lockscreen extends AppCompatActivity {
         mContextIcon.setVisibility(View.GONE);
     }
 
-    private void writePinToSharedPreferences(String pin) {
-        SharedPreferences prefs = this.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE);
-        prefs.edit().putString(KEY_PIN, Utils.sha256(pin)).apply();
-    }
-
+    /*set pin and check if second input is correct*/
     private void setPin(String pin) {
         if (mFirstPin.equals("")) {
             mFirstPin = pin;
@@ -691,13 +643,13 @@ public class Lockscreen extends AppCompatActivity {
         return prefs.getString(COOLDOWN_KEY, "false");
     }
 
+    /*open experience sampling based on random number (likelihood based on participation survey)*/
     private void openExperienceSampling() {
         Random generator = new Random();
         int randomInt = generator.nextInt(Constants.SURVEY_COOLDOWN-0) + 0;
         Log.e("random", String.valueOf(randomInt));
         cooldown = SharedPreferencesStorage.readSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY);
         Log.e("cooldown", String.valueOf(cooldown));
-        //survey_open_counter = Integer.parseInt(getSurveyOpenCounterfromSharedPreferences());
         if(randomInt == 1) {
             //if(!cooldown.equals("true")) {
                 opensurveycounter++;
@@ -705,7 +657,6 @@ public class Lockscreen extends AppCompatActivity {
                 SharedPreferencesStorage.writeSharedPreference(this, Constants.PREFERENCES, Constants.COOLDOWN_KEY, "true");
                 Log.e(TAG, "startActivity");
                 Intent intent = new Intent(this, ExperienceSamplingActivity.class);
-                //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             //}
         }
@@ -717,6 +668,7 @@ public class Lockscreen extends AppCompatActivity {
         }
     }
 
+    /*check if entered pin is correct with deposited pin*/
     private void checkPin(String pin) {
         if (Utils.sha256(pin).equals(getPinFromSharedPreferences())) {
             setResult(RESULT_OK);
@@ -728,7 +680,6 @@ public class Lockscreen extends AppCompatActivity {
             mPinTryCount++;
             mTextAttempts.setText(getString(R.string.pinlock_wrongpin));
             mPinLockView.resetPinLockView();
-
             if (mPinTryCount == 1) {
                 mTextAttempts.setText(getString(R.string.pinlock_wrongpin));
                 mPinLockView.resetPinLockView();
@@ -739,7 +690,6 @@ public class Lockscreen extends AppCompatActivity {
                 setResult(RESULT_TOO_MANY_TRIES);
                 mPinTryCount = 0;
                 mTextAttempts.setText("");
-                //finish();
             }
         }
     }
@@ -749,6 +699,7 @@ public class Lockscreen extends AppCompatActivity {
                 0, 25, -25, 25, -25, 15, -15, 6, -6, 0).setDuration(1000);
         objectAnimator.start();
     }
+
     //Create the generateKey method that we’ll use to gain access to the Android keystore and generate the encryption key//
     private void generateKey() throws FingerprintException {
         try {
@@ -832,21 +783,15 @@ public class Lockscreen extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        //pinUsed = false;
-                        //writeLogEventsToDB();
                         writeLockscreenDataToFirebase(false);
                         openExperienceSampling();
                         finish();
-
                     }
                 }, 750);
-
             }
 
             @Override
             public void onFailed() {
-
-                //mFingerprintTryCount++;
                 Log.e(TAG, "fingerprint failed");
                 Animate.animate(mImageViewFingerView, fingerprintToCross);
                 final Handler handler = new Handler();
@@ -860,11 +805,6 @@ public class Lockscreen extends AppCompatActivity {
 
             @Override
             public void onError(CharSequence errorString, int errMsgId) {
-               /* Bundle bundle = new Bundle();
-                bundle.putString("fingerprint_error", errorString.toString());
-                mFirebaseAnalytics.logEvent("fingerprint_error", bundle);*/
-                Log.e(TAG, "fingerprint error");
-                Log.e(TAG, errorString.toString());
                 if (errMsgId == FingerprintManager.FINGERPRINT_ERROR_CANCELED) {
                     Log.e(TAG,  errorString.toString());
                 }else {
@@ -880,7 +820,6 @@ public class Lockscreen extends AppCompatActivity {
                 Log.e(TAG, "fingerprint help");
                 Toast.makeText(Lockscreen.this, helpString, Toast.LENGTH_SHORT).show();
             }
-
         };
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -889,16 +828,12 @@ public class Lockscreen extends AppCompatActivity {
                 //Get an instance of KeyguardManager and FingerprintManager//
                 mKeyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
                 mFingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
-
                 //Check whether the user has granted your app the USE_FINGERPRINT permission//
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.USE_FINGERPRINT)
                         != PackageManager.PERMISSION_GRANTED) {
-                    // If your app doesn't have this permission, then display the following text//
-//                Toast.makeText(EnterPinActivity.this, "Please enable the fingerprint permission", Toast.LENGTH_LONG).show();
                     mImageViewFingerView.setVisibility(View.GONE);
                     return;
                 }
-
                 //Check that the user has registered at least one fingerprint//
                 if (!mFingerprintManager.hasEnrolledFingerprints()) {
                     mImageViewFingerView.setVisibility(View.GONE);
@@ -914,7 +849,6 @@ public class Lockscreen extends AppCompatActivity {
                         if (initCipher()) {
                             //If the mCipher is initialized successfully, then create a CryptoObject instance//
                             mCryptoObject = new FingerprintManager.CryptoObject(mCipher);
-
                             // Here, I’m referencing the FingerprintHandler class that we’ll create in the next section. This class will be responsible
                             // for starting the authentication process (via the startAuth method) and processing the authentication process events//
                             helper = new FingerprintHandler(this);

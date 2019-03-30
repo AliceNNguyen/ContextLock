@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.example.alicenguyen.contextlock.experience_sampling.ExperienceSamplingActivity;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -188,14 +190,16 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     private void checkIfScreenLocked() {
         KeyguardManager myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
-        if (myKM.isKeyguardLocked()) {
-            isLocked = true;
-            Log.e(TAG, "device is locked");
-            //it is locked
-        } else {
-            isLocked = false;
-            Log.e(TAG, "device not locked");
-            //it is not locked
+        if(myKM != null) {
+            if (myKM.isKeyguardLocked()) {
+                isLocked = true;
+                Log.e(TAG, "device is locked");
+                //it is locked
+            } else {
+                isLocked = false;
+                Log.e(TAG, "device not locked");
+                //it is not locked
+            }
         }
     }
 
