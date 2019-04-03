@@ -3,10 +3,10 @@ package com.example.alicenguyen.contextlock;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.KeyguardManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.AnimatedVectorDrawable;
@@ -22,6 +22,7 @@ import android.os.Vibrator;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageView;
@@ -45,8 +46,7 @@ import com.example.alicenguyen.contextlock.fingerprint.FingerPrintListener;
 import com.example.alicenguyen.contextlock.fingerprint.FingerprintHandler;
 import com.example.alicenguyen.contextlock.util.Animate;
 import com.example.alicenguyen.contextlock.util.Utils;
-import com.google.android.gms.location.ActivityRecognitionClient;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.android.gms.location.DetectedActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -110,13 +110,12 @@ public class PatternLockScreen extends AppCompatActivity {
     private String mFirstPattern = "";
     private int mPatternTryCount = 0;
 
-    private TextView mTextTitle;
     private TextView mTextAttempts;
     private TextView mTextFingerText;
     private AppCompatImageView mImageViewFingerView;
 
 
-    private ImageView mContextIcon;
+
     private AnimatedVectorDrawable showFingerprint;
     private AnimatedVectorDrawable fingerprintToTick;
     private AnimatedVectorDrawable fingerprintToCross;
@@ -130,27 +129,20 @@ public class PatternLockScreen extends AppCompatActivity {
     protected LocationManager locationManager;
     protected LocationListener locationListener;
 
-    private String OPEN_WEATHER_API_KEY = "18d997dfe947e33eb626ce588b9c7510";
+    private static final String OPEN_WEATHER_API_KEY = "18d997dfe947e33eb626ce588b9c7510";
     private String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?units=metric&lat="; //{lat}&lon={lon}"
 
     private ImageView contextIcon;
-    private ImageView fingerprintIcon;
     private TextView patternTitle;
-    private TextView methodTitle;
 
     //flag for gps status
     boolean isGPSEnabled = false;
     // flag for network status
     boolean isNetworkEnabled = false;
 
-
-    private ActivityRecognitionClient mActivityRecognitionClient;
-    private ActivityBroadcastReceiver mActivityBroadcastReceiver;
-    private PendingIntent mPendingIntent;
     BroadcastReceiver broadcastReceiver;
 
 
-    private FirebaseAnalytics mFirebaseAnalytics;
     private FingerprintHandler helper;
 
     private PatternLockViewListener mPatternLockViewListener = new PatternLockViewListener() {
@@ -197,6 +189,7 @@ public class PatternLockScreen extends AppCompatActivity {
         hideOnScreenButton();
         initElements();
         getUserLocation();
+        getUserActivity();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             showFingerprint = (AnimatedVectorDrawable) getDrawable(R.drawable.show_fingerprint);
@@ -223,7 +216,7 @@ public class PatternLockScreen extends AppCompatActivity {
                         Constants.CHECK_FINGERPRINT_TIMEOUT);
             }
         }
-        mPatternLockView = (PatternLockView) findViewById(R.id.pattern_lock_view);
+        mPatternLockView = findViewById(R.id.pattern_lock_view);
         mPatternLockView.addPatternLockListener(mPatternLockViewListener);
     }
 
@@ -255,15 +248,13 @@ public class PatternLockScreen extends AppCompatActivity {
 
     /*hide in screen buttons, so that user cannot leave app that easy*/
     private void hideOnScreenButton() {
-        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT )
-        {
-            getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY );
-        }
+        getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY );
+
     }
 
     /*get user current location to retrieve weather data*/
@@ -349,6 +340,80 @@ public class PatternLockScreen extends AppCompatActivity {
         queue.add(jsonObjectRequest);
     }
 
+    private void getUserActivity(){
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Constants.BROADCAST_DETECTED_ACTIVITY)) {
+                    int type = intent.getIntExtra("type", -1);
+                    int confidence = intent.getIntExtra("confidence", 0);
+                    handleUserActivity(type, confidence);
+                }
+            }
+        };
+        startTracking();
+    }
+
+    private void startTracking() {
+        Intent intent1 = new Intent(PatternLockScreen.this, BackgroundDetectedActivitiesService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent1);
+        }else {
+            startService(intent1);
+        }
+    }
+
+    private void stopTracking() {
+        Intent serviceIntent = new Intent(this, BackgroundDetectedActivitiesService.class);
+        stopService(serviceIntent);
+        //Toast.makeText(this, "tracking stopped", Toast.LENGTH_LONG);
+        Log.e(TAG, "stopTracking");
+    }
+
+    private void handleUserActivity(int type, int confidence) {
+        userActivity = getString(R.string.activity_unknown);
+        switch (type) {
+            case DetectedActivity.IN_VEHICLE: {
+                userActivity = getString(R.string.activity_in_vehicle);
+                break;
+            }
+            case DetectedActivity.ON_BICYCLE: {
+                userActivity = getString(R.string.activity_on_bicycle);
+                break;
+            }
+            case DetectedActivity.ON_FOOT: {
+                userActivity = getString(R.string.activity_on_foot);
+                break;
+            }
+            case DetectedActivity.RUNNING: {
+                userActivity = getString(R.string.activity_running);
+                break;
+            }
+            case DetectedActivity.STILL: {
+                userActivity = getString(R.string.activity_still);
+                break;
+            }
+            case DetectedActivity.TILTING: {
+                userActivity = getString(R.string.activity_tilting);
+                break;
+            }
+            case DetectedActivity.WALKING: {
+                userActivity = getString(R.string.activity_walking);
+                break;
+            }
+            case DetectedActivity.UNKNOWN: {
+                userActivity = getString(R.string.activity_unknown);
+                break;
+            }
+        }
+        Log.e(TAG, "User activity: " + userActivity + ", Confidence: " + confidence);
+        getUserLocation();
+        if (confidence > Constants.CONFIDENCE) {
+            setContextIcon();
+        }
+    }
+
+
     /*set context based icon and text based on retrieve data otherwise randomly*/
     private void setContextIcon() {
         if(mSetPattern){
@@ -358,8 +423,8 @@ public class PatternLockScreen extends AppCompatActivity {
 
         if(userActivity.equals("walking") && mainWeather.contains("Drizzle")){
             Log.e(TAG, "tada");
-            //contextIcon.setImageResource(R.drawable.running);
-            //patternTitle.setText(getString(R.string.running) + " " + getString(R.string.pinlock_title));
+            contextIcon.setImageResource(R.drawable.raindrop);
+            patternTitle.setText(getString(R.string.rain) + " " + getString(R.string.patternlock_title));
         } else if(mainWeather.contains("Rain") && userActivity.equals(R.string.activity_walking)) {
             contextIcon.setImageResource(R.drawable.raindrop);
             patternTitle.setText(getString(R.string.rain) + " " + getString(R.string.patternlock_title));
@@ -367,8 +432,10 @@ public class PatternLockScreen extends AppCompatActivity {
         }else if(mainWeather.contains("Drizzle")){ //Drizzle
             contextIcon.setImageResource(R.drawable.raindrop);
             patternTitle.setText(getString(R.string.running) + " " + getString(R.string.patternlock_title));
-        }
-        else if(mainWeather.contains("Snow")) { //compareAccuracy >= 0
+        }else if(userActivity.equals(getString(R.string.activity_in_vehicle))) {
+            contextIcon.setImageResource(R.drawable.public_transportation);
+            patternTitle.setText(getString(R.string.default_movement) + " " + getString(R.string.patternlock_title));
+        } else if(mainWeather.contains("Snow")) { //compareAccuracy >= 0
             contextIcon.setImageResource(R.drawable.snowflake_white);
             patternTitle.setText(getString(R.string.snow) + " " + getString(R.string.patternlock_title));
         } else if(humidity > 75 && temperature.doubleValue() > 27.0) {
@@ -381,7 +448,6 @@ public class PatternLockScreen extends AppCompatActivity {
             setRandomIcon();
         }
         setNotificationVersion();
-        locationManager.removeUpdates(locationListener);
     }
 
     private void setRandomIcon() {
@@ -481,8 +547,8 @@ public class PatternLockScreen extends AppCompatActivity {
     private void changeLayoutForSetPattern() {
         mImageViewFingerView.setVisibility(View.GONE);
         mTextFingerText.setVisibility(View.GONE);
-        mTextTitle.setText(getString(R.string.patternlock_settitle));
-        mContextIcon.setVisibility(View.GONE);
+        patternTitle.setText(getString(R.string.patternlock_settitle));
+        contextIcon.setVisibility(View.GONE);
     }
 
     /*open experience sampling based on random number (likelihood based on participation survey)*/
@@ -517,7 +583,7 @@ public class PatternLockScreen extends AppCompatActivity {
         Log.e(TAG, "setPattern");
         if (mFirstPattern.equals("")) {
             mFirstPattern= pattern;
-            mTextTitle.setText(getString(R.string.patternlock_secondPin));
+            patternTitle.setText(getString(R.string.patternlock_secondPin));
             mPatternLockView.clearPattern();
             //mPatternLockView.resetPinLockView();
         } else {
@@ -534,7 +600,7 @@ public class PatternLockScreen extends AppCompatActivity {
             } else {
                 shake();
                 //mTextTitle.setText(getString(com.amirarcane.lockscreen.R.string.pinlock_tryagain));
-                mTextTitle.setText(getString(R.string.patternlock_tryagain));
+                patternTitle.setText(getString(R.string.patternlock_tryagain));
                 mPatternLockView.clearPattern();
 
                 //mPatternLockView.resetPinLockView();
@@ -552,14 +618,10 @@ public class PatternLockScreen extends AppCompatActivity {
 
     private void initElements() {
         mTextAttempts =  findViewById(R.id.attempts);
-        mTextTitle = findViewById(R.id.title);
         mImageViewFingerView = findViewById(R.id.fingerView);
         mTextFingerText = findViewById(R.id.fingerText);
-        mContextIcon = findViewById(R.id.context_icon);
         contextIcon = findViewById(R.id.context_icon);
-        fingerprintIcon = findViewById(R.id.fingerView);
         patternTitle = findViewById(R.id.title);
-        methodTitle = findViewById(R.id.fingerText);
     }
 
 
@@ -752,11 +814,18 @@ public class PatternLockScreen extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        locationManager.removeUpdates(locationListener);
+        stopTracking(); //TODO check if this work correctly
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         Log.e(TAG, "onPause");
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         if(helper!= null) {
-            Log.e(TAG, "cancel finger");
             helper.stopListening();
         }
     }
@@ -766,6 +835,8 @@ public class PatternLockScreen extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.e(TAG, "onResume");
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
+                new IntentFilter(Constants.BROADCAST_DETECTED_ACTIVITY));
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         if(pm.isInteractive()) {
             Log.e(TAG, "isInteractive");

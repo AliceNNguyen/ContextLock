@@ -4,22 +4,16 @@ package com.example.alicenguyen.contextlock;
 public class Constants {
     /*constants for ActivityRecognitionClient*/
     public static final String BROADCAST_DETECTED_ACTIVITY = "activity_intent";
-    static final long DETECTION_INTERVAL_IN_MILLISECONDS = 60 * 1000 * 60;//30 * 1000;
+    static final long DETECTION_INTERVAL_IN_MILLISECONDS = 1 * 1000 * 60;//30 * 1000;
     public static final int CONFIDENCE = 70;
 
     /*constants for LocationListener*/
-    public static final int LOCATION_INTERVAL = 15 * 1000 * 60;
+    public static final int LOCATION_INTERVAL = 1 * 1000 * 60;
     public static final float LOCATION_DISTANCE = 10f;
     public static final String WEATHER_KEY = "weather_key";
 
-    //public static final String BROADCAST_DETECTED_LOCATION = "location_intent";
-    //public static final String BROADCAST_DETECTED_GOOGLE_LOCATION = "google_location_intent";
 
     public static final int JOB_SERVICE_INTERVAL = 60 * 60 * 1000;
-    public static final int NOTIFICATION_TIMEOUT = 120 * 60 * 1000; //2 hours
-
-    //public static final String CHANNEL_ID = "context-notification-id";
-    //public static final String CHANNEL_ID_DEFAULT = "notification-default-id";
 
     public static final String KEY_ID = "user_id";
     public static final String COUNTER_KEY = "counter_key";

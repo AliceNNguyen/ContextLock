@@ -17,7 +17,6 @@ public class ExportDBHelper extends BroadcastReceiver {
     private SQLiteDB db;
     private Cursor cursor;
     private Context ctx;
-    private String userid;
     private String exportTime;
 
 
@@ -38,7 +37,7 @@ public class ExportDBHelper extends BroadcastReceiver {
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 String version = SharedPreferencesStorage.readSharedPreference(ctx, Constants.PREFERENCES, Constants.VERSION_KEY);
-                userid = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_USERID));
+                String userid = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_USERID));
                 String failCounter = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_UNLOCK_FAILED_COUNTER));
                 String successUnlockTimestamp = cursor.getString(cursor.getColumnIndex(SQLiteDB.COLUMN_UNLOCK_SUCCESS_TIMESTAMP));
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("unlockEvents").child(version).child(userid);

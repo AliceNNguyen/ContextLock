@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.REORDER_TASKS" />
-    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <!-- GPS permission -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />

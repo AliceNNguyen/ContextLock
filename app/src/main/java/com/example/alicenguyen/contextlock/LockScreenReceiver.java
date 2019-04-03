@@ -12,15 +12,12 @@ checks each time the screen turns off if a lock screen in stored to trigger*/
 public class LockScreenReceiver extends BroadcastReceiver {
     private static final String TAG ="LockScreenReceiver";
     private Context ctx;
-    private int unlockCounter;
     private KeyguardManager myKM;
-    private int lockscreenShowCounter;
 
     /*Retrieve unlock/lock events */
     @Override
     public void onReceive(Context context, Intent intent) {
         ctx = context.getApplicationContext();
-        unlockCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.UNLOCK_COUNTER_KEY));
         myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         Log.e(TAG, "action");
         Log.e(TAG, intent.getAction());
@@ -46,7 +43,7 @@ public class LockScreenReceiver extends BroadcastReceiver {
 
     /*set lock screen if max number is not exceeded*/
     private void setLockscreen(Context context){
-        lockscreenShowCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY));
+        int lockscreenShowCounter = Integer.parseInt(SharedPreferencesStorage.readSharedPreference(context, Constants.PREFERENCES, Constants.LOCKSCREEN_SHOW_KEY));
         Log.e(TAG, String.valueOf(lockscreenShowCounter));
         if(lockscreenShowCounter < Constants.LOCKSCREEN_SHOW_COUNTER) {
             //Intent i = new Intent(context, Lockscreen.class);
@@ -68,17 +65,10 @@ public class LockScreenReceiver extends BroadcastReceiver {
         SQLiteDB mDb = new SQLiteDB(context);
         Date currenttime = Calendar.getInstance().getTime();
         boolean isInserted = mDb.saveSUnlockSuccessEventsToDB(currenttime.toString());
-        if(isInserted == true) {
+        if(isInserted) {
             Log.e(TAG, "insertedToDB");
         }else{
             Log.e(TAG, "failed to insert DB");
         }
-    }
-
-    /*reset local storage for notification after it is send*/
-    private void resetSharedPreferences() {
-        ctx.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.NOTIFICATION_MESSAGE_KEY).apply();
-        ctx.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.NOTIFICATION_ICON_KEY).apply();
-        ctx.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE).edit().remove(Constants.NOTIFICATION_STORE_KEY).apply();
     }
 }

@@ -1,6 +1,5 @@
 package com.example.alicenguyen.contextlock;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,10 +15,8 @@ import android.support.v4.app.NotificationCompat;
 
 /*starts foreground service to track user's lock screen*/
 public class LockscreenService extends Service {
-    private static final String TAG = "LockscreenService";
     public static final String CHANNEL_ID = "channelID";
     private LockScreenReceiver lockScreenReceiver;
-    private AdminReceiver adminReceiver;
 
     @Override
     public void onCreate() {
@@ -39,11 +36,11 @@ public class LockscreenService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String input = intent.getStringExtra("inputExtra");
+        //String input = intent.getStringExtra("inputExtra");
 
-        Intent notificationIntent = new Intent(this, SetupActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
+        //Intent notificationIntent = new Intent(this, SetupActivity.class);
+        /*PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0, notificationIntent, 0);*/
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(
@@ -56,14 +53,15 @@ public class LockscreenService extends Service {
         }
 
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+        /*Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Study is running")
                 .setContentText(input)
                 .setSmallIcon(R.mipmap.ic_fingerprint_white)
                 .setContentIntent(pendingIntent)
-                .build();
+                .build();*/
 
-        startForeground(1, notification);
+        //startForeground(1, notification);
+        startForeground(NotificationBuilder.getNotificationId(), NotificationBuilder.getNotification(this));
         return START_NOT_STICKY;
     }
 

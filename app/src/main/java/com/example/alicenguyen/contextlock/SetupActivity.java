@@ -9,7 +9,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -28,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.alicenguyen.contextlock.initial_survey.InitialSurvey;
-import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -41,18 +39,6 @@ public class SetupActivity extends AppCompatActivity {
     public static final String TAG = "SetupActivity";
 
     private static final String PREFERENCES = "com.example.alicenguyen.contextlock";
-
-
-    private EditText userIdInput;
-    private Button enterIDButton;
-
-
-    private ActivityRecognitionClient mActivityRecognitionClient;
-    private PendingIntent mPendingIntent;
-    private ActivityBroadcastReceiver mActivityBroadcastReceiver;
-    private LockScreenReceiver mLockScreenReceiver;
-    private IntentFilter intentFilter;
-    boolean isRegistered = false;
     private SharedPreferences prefs;
     private String userId;
     private DatabaseReference mDatabaseReference;
@@ -249,7 +235,6 @@ public class SetupActivity extends AppCompatActivity {
         mDialogBuilder.setCancelable(false);
 
         View mDialogView = getLayoutInflater().inflate(R.layout.permission_dialog, null);
-        TextView permissionTitle = mDialogView.findViewById(R.id.permission_title);
         final CheckBox permissionCheckbox =  mDialogView.findViewById(R.id.checkbox_permission_agree);
         Button mAgreeButton = mDialogView.findViewById(R.id.agree_permission_button);
         Button mCancelButton = mDialogView.findViewById(R.id.cancel_permission_button);
@@ -324,11 +309,9 @@ public class SetupActivity extends AppCompatActivity {
         c.set(Calendar.HOUR_OF_DAY, 24);
         c.set(Calendar.MINUTE, 0);
 
-        // alarm will fire the next day if alarm time is before current time
-        /*if (c.before(Calendar.getInstance())) {
-            c.add(Calendar.DATE, 1);
-        }*/
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        if(alarmManager!= null) {
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        }
     }
 
     /*set RandomAlarmReceiver to set new random lock screen triggering alarms each night*/
@@ -420,12 +403,13 @@ public class SetupActivity extends AppCompatActivity {
     public void startService() {
         Intent serviceIntent = new Intent(this, LockscreenService.class);
         ContextCompat.startForegroundService(this, serviceIntent);
-        Toast.makeText(this, "tracking started", Toast.LENGTH_LONG);
+        Toast.makeText(this, "tracking started", Toast.LENGTH_LONG).show();
+
     }
 
     public void stopService() {
         Intent serviceIntent = new Intent(this, LockscreenService.class);
         stopService(serviceIntent);
-        Toast.makeText(this, "tracking stopped", Toast.LENGTH_LONG);
+        Toast.makeText(this, "tracking stopped", Toast.LENGTH_LONG).show();
     }
 }

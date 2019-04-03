@@ -4,7 +4,6 @@ import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
 import android.app.KeyguardManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -47,10 +46,9 @@ import com.example.alicenguyen.contextlock.fingerprint.FingerPrintListener;
 import com.example.alicenguyen.contextlock.fingerprint.FingerprintHandler;
 import com.example.alicenguyen.contextlock.util.Animate;
 import com.example.alicenguyen.contextlock.util.Utils;
-import com.google.android.gms.location.ActivityRecognition;
-import com.google.android.gms.location.ActivityRecognitionClient;
-import com.google.android.gms.location.ActivityTransitionRequest;
+
 import com.google.android.gms.location.DetectedActivity;
+
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -93,7 +91,6 @@ public class Lockscreen extends AppCompatActivity {
 
     private static final int MAX_ATTEMPS = 3;
     private static final String COOLDOWN_KEY = "cooldown_key";
-    private static final String COUNTER_KEY = "counter_key";
     private String cooldown;
     private int opensurveycounter;
 
@@ -112,7 +109,6 @@ public class Lockscreen extends AppCompatActivity {
     private boolean mSetPin = false;
     private String mFirstPin = "";
     private int mPinTryCount = 0;
-    private TextView mTextTitle;
     private TextView mTextAttempts;
     private TextView mTextFingerText;
     private AppCompatImageView mImageViewFingerView;
@@ -121,7 +117,6 @@ public class Lockscreen extends AppCompatActivity {
     private IndicatorDots mIndicatorDots;
     private PinLockView mPinLockView;
 
-    private ImageView mContextIcon;
     private AnimatedVectorDrawable showFingerprint;
     private AnimatedVectorDrawable fingerprintToTick;
     private AnimatedVectorDrawable fingerprintToCross;
@@ -140,7 +135,6 @@ public class Lockscreen extends AppCompatActivity {
     private String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?units=metric&lat="; //{lat}&lon={lon}"
 
     private ImageView contextIcon;
-    private PinLockView pinLockView;
     private TextView pinTitle;
 
     //flag for gps status
@@ -148,10 +142,6 @@ public class Lockscreen extends AppCompatActivity {
     // flag for network status
     boolean isNetworkEnabled = false;
 
-
-    private ActivityRecognitionClient mActivityRecognitionClient;
-    private ActivityBroadcastReceiver mActivityBroadcastReceiver;
-    private PendingIntent mPendingIntent;
     BroadcastReceiver broadcastReceiver;
 
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -169,19 +159,10 @@ public class Lockscreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lockscreen);
 
-        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT )
-        {
-            getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY );
-        }
+        hideOnScreenButon();
         getPinlockViews();
         getUserLocation();
-        /**startservice not for higher version**/
-        //getUserActivity();
+        getUserActivity();
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mSetPin = getIntent().getBooleanExtra(EXTRA_SET_PIN, false);
@@ -243,17 +224,24 @@ public class Lockscreen extends AppCompatActivity {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
+    private void hideOnScreenButon() {
+        getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY );
+    }
+
     /*get layout elements*/
     private void getPinlockViews() {
         mTextAttempts =  findViewById(R.id.attempts);
-        mTextTitle =  findViewById(R.id.title);
         mIndicatorDots = findViewById(R.id.indicator_dots);
         mImageViewFingerView = findViewById(R.id.fingerView);
         mTextFingerText = findViewById(R.id.fingerText);
-        mContextIcon = findViewById(R.id.context_icon);mPinLockView   = findViewById(R.id.pinlockView);
+        mPinLockView   = findViewById(R.id.pinlockView);
         mIndicatorDots = findViewById(R.id.indicator_dots);
         contextIcon = findViewById(R.id.context_icon);
-        pinLockView = findViewById(R.id.pinlockView);
         pinTitle = findViewById(R.id.title);
     }
 
@@ -292,10 +280,17 @@ public class Lockscreen extends AppCompatActivity {
     private void startTracking() {
         Intent intent1 = new Intent(Lockscreen.this, BackgroundDetectedActivitiesService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //startForegroundService(intent1);
+            startForegroundService(intent1);
         }else {
             startService(intent1);
         }
+    }
+
+    private void stopTracking() {
+        Intent serviceIntent = new Intent(this, BackgroundDetectedActivitiesService.class);
+        stopService(serviceIntent);
+        //Toast.makeText(this, "tracking stopped", Toast.LENGTH_LONG);
+        Log.e(TAG, "stopTracking");
     }
 
     private void handleUserActivity(int type, int confidence) {
@@ -334,7 +329,7 @@ public class Lockscreen extends AppCompatActivity {
                 break;
             }
         }
-        Log.d(TAG, "User activity: " + userActivity + ", Confidence: " + confidence);
+        Log.e(TAG, "User activity: " + userActivity + ", Confidence: " + confidence);
         getUserLocation();
         if (confidence > Constants.CONFIDENCE) {
             setContextIcon();
@@ -358,7 +353,6 @@ public class Lockscreen extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mActivityBroadcastReceiver,  new IntentFilter(Constants.BROADCAST_DETECTED_ACTIVITY));
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter(Constants.BROADCAST_DETECTED_ACTIVITY));
 
@@ -371,8 +365,6 @@ public class Lockscreen extends AppCompatActivity {
     }
 
 
-
-
     /*get current user's position to retrieve weather data*/
     private void getUserLocation() {
         locationListener = new LocationListener() {
@@ -380,6 +372,7 @@ public class Lockscreen extends AppCompatActivity {
             public void onLocationChanged(Location location) {
                 String lon = "" + location.getLongitude();
                 String lat = "" + location.getLatitude();
+                Log.e(TAG, "onLocationChanged");
                 Log.e(TAG, lon);
                 Log.e(TAG, lat);
                 getWeatherData(lon, lat);
@@ -403,8 +396,8 @@ public class Lockscreen extends AppCompatActivity {
         // getting network status
         isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        Log.d("network enabled", String.valueOf(isNetworkEnabled));
-        Log.d("gps enabled", String.valueOf(isGPSEnabled));
+        Log.e("network enabled", String.valueOf(isNetworkEnabled));
+        Log.e("gps enabled", String.valueOf(isGPSEnabled));
 
         //check for permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -412,17 +405,11 @@ public class Lockscreen extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
-
-            // ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            // public void onRequestPermissionsResult(int requestCode, String[] permissions int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
             Toast.makeText(this, "Not Enough Permission", Toast.LENGTH_SHORT).show();
             return;
         }else{ //if permission enabled
             if(isNetworkEnabled) {
+                Log.e(TAG, "network enabled request");
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Constants.LOCATION_INTERVAL, Constants.LOCATION_DISTANCE, locationListener);
             }
             if(isGPSEnabled)  {
@@ -435,6 +422,7 @@ public class Lockscreen extends AppCompatActivity {
 
     /*retrieve weather data from OpenWeatherMap API*/
     private void getWeatherData(String longitude, String latitude) {
+        Log.e(TAG, "getWeatherdata");
         RequestQueue queue = Volley.newRequestQueue(Lockscreen.this);
         String url = WEATHER_URL + latitude + "&lon=" + longitude + "&appid=" + OPEN_WEATHER_API_KEY;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -445,6 +433,7 @@ public class Lockscreen extends AppCompatActivity {
                         try {
                             JSONArray mainWeatherArray = response.getJSONArray("weather");
                             mainWeather = mainWeatherArray.getJSONObject(0).get("main").toString();
+                            Log.e(TAG, mainWeather);
                             humidity = (int)response.getJSONObject("main").get("humidity");
                             temperature = (Number)response.getJSONObject("main").get("temp");
                             temperature = temperature.doubleValue();
@@ -467,14 +456,15 @@ public class Lockscreen extends AppCompatActivity {
             return;
         }
         Log.e(TAG, "set icon");
-        Log.e(TAG, mainWeather);
+        Log.e(TAG, "weather " + mainWeather);
         Log.d("user context icon hum", String.valueOf(humidity));
         Log.e(TAG,"activity " + userActivity);
 
-        contextIcon.setVisibility(View.VISIBLE);
-        pinLockView.setVisibility(View.VISIBLE);
 
-       if(userActivity.equals("walking") && mainWeather.contains("Drizzle")){
+        contextIcon.setVisibility(View.VISIBLE);
+        mPinLockView.setVisibility(View.VISIBLE);
+
+       if(userActivity.equals(getString(R.string.activity_walking)) && mainWeather.contains("Drizzle")){ //Drizzle
            Log.e(TAG, "tada");
             contextIcon.setImageResource(R.drawable.raindrop);
             pinTitle.setText(getString(R.string.rain) + " " + getString(R.string.pinlock_title));
@@ -489,6 +479,10 @@ public class Lockscreen extends AppCompatActivity {
         else if(mainWeather.contains("Snow")) { //compareAccuracy >= 0
            contextIcon.setImageResource(R.drawable.snowflake_white);
            pinTitle.setText(getString(R.string.snow) + " " + getString(R.string.pinlock_title));
+        }else if(userActivity.equals(getString(R.string.activity_in_vehicle))){
+           contextIcon.setImageResource(R.drawable.public_transportation);
+           pinTitle.setText(getString(R.string.default_movement) + " " + getString(R.string.pinlock_title));
+
         } else if(humidity > 75 && temperature.doubleValue() > 27.0) {
            contextIcon.setImageResource(R.drawable.raindrop);
            pinTitle.setText(getString(R.string.wet) + " " + getString(R.string.pinlock_title));
@@ -499,7 +493,7 @@ public class Lockscreen extends AppCompatActivity {
             setRandomIcon();
         }
         setNotificationVersion();
-        locationManager.removeUpdates(locationListener);
+        //locationManager.removeUpdates(locationListener);
     }
 
     //TODO
@@ -602,15 +596,15 @@ public class Lockscreen extends AppCompatActivity {
         mImageViewFingerView.setVisibility(View.GONE);
         mTextFingerText.setVisibility(View.GONE);
         mTextAttempts.setVisibility(View.GONE);
-        mTextTitle.setText(getString(R.string.pinlock_settitle));
-        mContextIcon.setVisibility(View.GONE);
+        pinTitle.setText(getString(R.string.pinlock_settitle));
+        contextIcon.setVisibility(View.GONE);
     }
 
     /*set pin and check if second input is correct*/
     private void setPin(String pin) {
         if (mFirstPin.equals("")) {
             mFirstPin = pin;
-            mTextTitle.setText(getString(R.string.pinlock_secondPin));
+            pinTitle.setText(getString(R.string.pinlock_secondPin));
             mPinLockView.resetPinLockView();
         } else {
             if (pin.equals(mFirstPin)) {
@@ -626,7 +620,7 @@ public class Lockscreen extends AppCompatActivity {
                 //finish();
             } else {
                 shake();
-                mTextTitle.setText(getString(R.string.pinlock_tryagain));
+                pinTitle.setText(getString(R.string.pinlock_tryagain));
                 mPinLockView.resetPinLockView();
                 mFirstPin = "";
             }
@@ -874,8 +868,19 @@ public class Lockscreen extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e(TAG, "onDestroy");
+        locationManager.removeUpdates(locationListener);
+        stopTracking(); //TODO check if this work
+
+
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
+        Log.e(TAG, "onPause");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
         activityManager.moveTaskToFront(getTaskId(), 0);

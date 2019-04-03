@@ -7,8 +7,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
-
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -16,10 +14,6 @@ import com.google.android.gms.tasks.Task;
 
 //runs service in the background and triggers the activities in interval basis
 public class BackgroundDetectedActivitiesService extends Service {
-
-    private static final String TAG = BackgroundDetectedActivitiesService.class.getSimpleName();
-
-    private Intent mIntentService;
     private PendingIntent mPendingIntent;
     private ActivityRecognitionClient mActivityRecognitionClient;
 
@@ -39,7 +33,7 @@ public class BackgroundDetectedActivitiesService extends Service {
     public void onCreate() {
         super.onCreate();
         mActivityRecognitionClient = new ActivityRecognitionClient(this);
-        mIntentService = new Intent(this, DetectedActivitiesIntentService.class);
+        Intent mIntentService = new Intent(this, DetectedActivitiesIntentService.class);
         mPendingIntent = PendingIntent.getService(this, 1, mIntentService, PendingIntent.FLAG_UPDATE_CURRENT);
         requestActivityUpdatesHandler();
     }
@@ -53,6 +47,7 @@ public class BackgroundDetectedActivitiesService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
+        startForeground(NotificationBuilder.getNotificationId(), NotificationBuilder.getNotification(this));
         return START_STICKY;
     }
 

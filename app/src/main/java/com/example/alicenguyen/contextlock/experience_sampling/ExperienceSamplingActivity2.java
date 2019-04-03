@@ -72,7 +72,6 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e(TAG, locationValue);
                 currenttime = Calendar.getInstance().getTime();
                 mDatabaseReference = FirebaseDatabase.getInstance().getReference().child(version).child(userid).child(currenttime.toString());
 
@@ -88,7 +87,7 @@ public class ExperienceSamplingActivity2 extends AppCompatActivity {
                 mDatabaseReference.child("reason-free-text-B").setValue(reasonFreeText);
                 mDatabaseReference.child("reason-free-text-A").setValue(reasonFreeTextVersionA);
 
-                Toast.makeText(ExperienceSamplingActivity2.this, "gesendet", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ExperienceSamplingActivity2.this, "send", Toast.LENGTH_SHORT).show();
                 //NotificationHelper.cancelNotification(ExperienceSamplingActivity2.this, Constants.NOTIFICATION_ID);
                 finishAffinity();
 
