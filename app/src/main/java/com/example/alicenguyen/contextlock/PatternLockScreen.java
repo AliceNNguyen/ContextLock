@@ -143,6 +143,7 @@ public class PatternLockScreen extends AppCompatActivity {
     BroadcastReceiver broadcastReceiver;
 
 
+
     private FingerprintHandler helper;
 
     private PatternLockViewListener mPatternLockViewListener = new PatternLockViewListener() {
@@ -198,7 +199,7 @@ public class PatternLockScreen extends AppCompatActivity {
         }
         mSetPattern = getIntent().getBooleanExtra(EXTRA_SET_PATTERN, false);
 
-        if (mSetPattern) {
+        /*if (mSetPattern) {
             changeLayoutForSetPattern();
         } else {
             String pattern = getPatternFromSharedPreferences();
@@ -206,16 +207,19 @@ public class PatternLockScreen extends AppCompatActivity {
                 changeLayoutForSetPattern();
                 mSetPattern = true;
             } else {
+                Log.e(TAG, "interactive check fingerprint");
                 new android.os.Handler().postDelayed(
                         new Runnable() {
                             public void run() {
-                                Log.e("tag", "This'll run 2 seconds later");
+                                Log.e("tag", "fingerprint timeout");
                                 checkForFingerPrint();
                             }
                         },
                         Constants.CHECK_FINGERPRINT_TIMEOUT);
+
+
             }
-        }
+        }*/
         mPatternLockView = findViewById(R.id.pattern_lock_view);
         mPatternLockView.addPatternLockListener(mPatternLockViewListener);
     }
@@ -729,8 +733,10 @@ public class PatternLockScreen extends AppCompatActivity {
             @Override
             public void onError(CharSequence errorString, int errMsgId) {
                 Log.e(TAG, "fingerprint error");
+                Log.e(TAG, errorString.toString());
                 if (errMsgId == FingerprintManager.FINGERPRINT_ERROR_CANCELED) {
                     Log.e(TAG,  errorString.toString());
+                    //helper.startAuth(mFingerprintManager, mCryptoObject);
                 }else {
                     Toast.makeText(PatternLockScreen.this, errorString, Toast.LENGTH_SHORT).show();
                 }
@@ -830,6 +836,30 @@ public class PatternLockScreen extends AppCompatActivity {
         }
     }
 
+    private void checkAuthInput() {
+        if (mSetPattern) {
+            changeLayoutForSetPattern();
+        } else {
+            String pattern = getPatternFromSharedPreferences();
+            if (pattern.equals("")) {
+                changeLayoutForSetPattern();
+                mSetPattern = true;
+            } else {
+                    Log.e(TAG, "interactive check fingerprint");
+                    new android.os.Handler().postDelayed(
+                            new Runnable() {
+                                public void run() {
+                                    Log.e("tag", "fingerprint timeout");
+                                    checkForFingerPrint();
+                                }
+                            },
+                            Constants.CHECK_FINGERPRINT_TIMEOUT);
+
+
+            }
+        }
+    }
+
     /*set vibration when lock screen is shown*/
     @Override
     protected void onResume() {
@@ -841,6 +871,7 @@ public class PatternLockScreen extends AppCompatActivity {
         if(pm.isInteractive()) {
             Log.e(TAG, "isInteractive");
             vibrate();
+            checkAuthInput();
         }
     }
 }

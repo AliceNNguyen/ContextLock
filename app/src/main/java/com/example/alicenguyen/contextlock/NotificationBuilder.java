@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 public class NotificationBuilder {
     private static final int NOTIFICATION_ID = 1094;
@@ -25,20 +26,24 @@ public class NotificationBuilder {
 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel serviceChannel = new NotificationChannel(
+                Log.e("Notifiaction Builder", "create channel");
+                NotificationChannel notficationChannel = new NotificationChannel(
                         CHANNEL_ID,
                         "LockScreen Service Channel",
-                        NotificationManager.IMPORTANCE_DEFAULT
+                        NotificationManager.IMPORTANCE_LOW
                 );
+                notficationChannel.setSound(null, null);
                 NotificationManager manager = context.getSystemService(NotificationManager.class);
-                manager.createNotificationChannel(serviceChannel);
+                manager.createNotificationChannel(notficationChannel);
             }
 
             notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setContentTitle("Study is running")
                     //.setContentText(input)
+                    .setOngoing(true)
                     .setSmallIcon(R.mipmap.ic_fingerprint_white)
                     .setContentIntent(pendingIntent)
+                    .setSound(null)
                     .build();
         }
 

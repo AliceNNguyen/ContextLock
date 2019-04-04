@@ -59,6 +59,10 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     //onAuthenticationError is called when a fatal error has occurred. It provides the error code and error message as its parameters//
     public void onAuthenticationError(int errMsgId, CharSequence errString) {
         mfingerPrintListener.onError(errString, errMsgId);
+        //cancellationSignal.cancel();
+        Log.e("FingerprintHandler", "canceled");
+
+
     }
 
     @Override

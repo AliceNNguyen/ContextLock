@@ -36,10 +36,16 @@ public class RandomAlarmReceiver extends BroadcastReceiver {
 
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR_OF_DAY, random.nextInt(11-8) + 8); //16
+        //c.set(Calendar.HOUR_OF_DAY, 14); //16
+        //c.set(Calendar.MINUTE, 6);
+
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, i, 0);
 
         Calendar c1 = Calendar.getInstance();
         c1.set(Calendar.HOUR_OF_DAY, random.nextInt(14-11) + 11);
+        //c1.set(Calendar.HOUR_OF_DAY, 14); //16
+        //c1.set(Calendar.MINUTE, 15);
+
         PendingIntent pendingIntent1 = PendingIntent.getBroadcast(context, 2, i, 0); //flags 0
 
 

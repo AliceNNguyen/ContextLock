@@ -146,6 +146,7 @@ public class Lockscreen extends AppCompatActivity {
 
     private FirebaseAnalytics mFirebaseAnalytics;
     private FingerprintHandler helper;
+    private boolean isInteractive;
 
 
     public static Intent getIntent(Context context, boolean setPin) {
@@ -173,7 +174,7 @@ public class Lockscreen extends AppCompatActivity {
             fingerprintToCross = (AnimatedVectorDrawable) getDrawable(R.drawable.fingerprint_to_cross);
         }
 
-        if (mSetPin) {
+        /*if (mSetPin) {
             changeLayoutForSetPin();
         } else {
             String pin = getPinFromSharedPreferences();
@@ -194,7 +195,7 @@ public class Lockscreen extends AppCompatActivity {
                         },
                 Constants.CHECK_FINGERPRINT_TIMEOUT);
             }
-        }
+        }*/
 
         /*handles pin input: handles or check it*/
         final PinLockListener pinLockListener = new PinLockListener() {
@@ -336,33 +337,6 @@ public class Lockscreen extends AppCompatActivity {
         }
     }
 
-
-    private void vibrate() {
-        if(!mSetPin){
-            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            // Vibrate for 500 milliseconds
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                //deprecated in API 26
-                v.vibrate(100);
-            }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter(Constants.BROADCAST_DETECTED_ACTIVITY));
-
-        /*set vibration is lock screen is visible*/
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        if(pm.isInteractive()) {
-            Log.e(TAG, "isInteractive");
-            vibrate();
-        }
-    }
 
 
     /*get current user's position to retrieve weather data*/
@@ -867,6 +841,56 @@ public class Lockscreen extends AppCompatActivity {
         }
     }
 
+    private void vibrate() {
+        if(!mSetPin){
+            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            // Vibrate for 500 milliseconds
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else {
+                //deprecated in API 26
+                v.vibrate(100);
+            }
+        }
+    }
+
+    private void checkAuthInput() {
+        if (mSetPin) {
+            changeLayoutForSetPin();
+        } else {
+            String pin = getPinFromSharedPreferences();
+            if (pin.equals("")) {
+                changeLayoutForSetPin();
+                mSetPin = true;
+            } else {
+                new android.os.Handler().postDelayed(
+                        new Runnable() {
+                            public void run() {
+                                Log.e("tag", "This'll run 2 seconds later");
+                                    checkForFingerPrint();
+                            }
+                        },
+                        Constants.CHECK_FINGERPRINT_TIMEOUT);
+            }
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
+                new IntentFilter(Constants.BROADCAST_DETECTED_ACTIVITY));
+
+        /*set vibration is lock screen is visible*/
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if(pm.isInteractive()) {
+            Log.e(TAG, "isInteractive");
+            vibrate();
+            checkAuthInput();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -882,8 +906,8 @@ public class Lockscreen extends AppCompatActivity {
         super.onPause();
         Log.e(TAG, "onPause");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-        ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        activityManager.moveTaskToFront(getTaskId(), 0);
+        //ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        //activityManager.moveTaskToFront(getTaskId(), 0);
 
         if(helper != null) {
             helper.stopListening();
