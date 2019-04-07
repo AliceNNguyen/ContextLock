@@ -41,6 +41,7 @@ public class NotificationBuilder {
                     .setContentTitle("Study is running")
                     //.setContentText(input)
                     .setOngoing(true)
+                    .setAutoCancel(false)
                     .setSmallIcon(R.mipmap.ic_fingerprint_white)
                     .setContentIntent(pendingIntent)
                     .setSound(null)

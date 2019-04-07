@@ -404,12 +404,20 @@ public class SetupActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, LockscreenService.class);
         ContextCompat.startForegroundService(this, serviceIntent);
         Toast.makeText(this, "tracking started", Toast.LENGTH_LONG).show();
-
     }
+
+    private void stopActivityTracking() {
+        Intent serviceIntent = new Intent(this, BackgroundDetectedActivitiesService.class);
+        stopService(serviceIntent);
+        //Toast.makeText(this, "tracking stopped", Toast.LENGTH_LONG);
+        Log.e(TAG, "stopActivityTracking");
+    }
+
 
     public void stopService() {
         Intent serviceIntent = new Intent(this, LockscreenService.class);
         stopService(serviceIntent);
+        //stopActivityTracking();
         Toast.makeText(this, "tracking stopped", Toast.LENGTH_LONG).show();
     }
 }

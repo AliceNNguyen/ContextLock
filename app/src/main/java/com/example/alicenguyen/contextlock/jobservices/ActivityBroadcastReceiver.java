@@ -1,4 +1,4 @@
-package com.example.alicenguyen.contextlock;
+package com.example.alicenguyen.contextlock.jobservices;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
+import com.example.alicenguyen.contextlock.Constants;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

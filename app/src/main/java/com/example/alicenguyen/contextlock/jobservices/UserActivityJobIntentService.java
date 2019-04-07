@@ -1,4 +1,4 @@
-package com.example.alicenguyen.contextlock;
+package com.example.alicenguyen.contextlock.jobservices;
 
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -9,6 +9,10 @@ import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.example.alicenguyen.contextlock.Constants;
+import com.example.alicenguyen.contextlock.NotificationHelper;
+import com.example.alicenguyen.contextlock.R;
+import com.example.alicenguyen.contextlock.SharedPreferencesStorage;
 import com.example.alicenguyen.contextlock.experience_sampling.ExperienceSamplingActivity;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.ActivityRecognitionResult;

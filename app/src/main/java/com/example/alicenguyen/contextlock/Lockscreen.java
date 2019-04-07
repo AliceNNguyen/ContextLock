@@ -23,6 +23,7 @@ import android.os.Vibrator;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -287,9 +288,17 @@ public class Lockscreen extends AppCompatActivity {
         }
     }
 
+    public void startService() {
+        Intent serviceIntent = new Intent(this, LockscreenService.class);
+        ContextCompat.startForegroundService(this, serviceIntent);
+        Log.e(TAG, "startService");
+        //Toast.makeText(this, "tracking started", Toast.LENGTH_LONG).show();
+    }
+
     private void stopTracking() {
         Intent serviceIntent = new Intent(this, BackgroundDetectedActivitiesService.class);
         stopService(serviceIntent);
+        startService();
         //Toast.makeText(this, "tracking stopped", Toast.LENGTH_LONG);
         Log.e(TAG, "stopTracking");
     }
@@ -897,8 +906,6 @@ public class Lockscreen extends AppCompatActivity {
         Log.e(TAG, "onDestroy");
         locationManager.removeUpdates(locationListener);
         stopTracking(); //TODO check if this work
-
-
     }
 
     @Override

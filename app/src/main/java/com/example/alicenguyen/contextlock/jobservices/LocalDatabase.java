@@ -1,4 +1,4 @@
-package com.example.alicenguyen.contextlock;
+package com.example.alicenguyen.contextlock.jobservices;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,7 +22,7 @@ public class LocalDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_ON_UNLOCK = "on_unlock";
 
 
-    LocalDatabase(Context context) {
+    public LocalDatabase(Context context) {
         super(context, DATABASE_NAME,null, DATABASE_VERSION);
     }
 

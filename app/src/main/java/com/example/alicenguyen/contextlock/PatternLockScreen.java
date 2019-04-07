@@ -22,6 +22,7 @@ import android.os.Vibrator;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -819,11 +820,19 @@ public class PatternLockScreen extends AppCompatActivity {
         }
     }
 
+    public void startService() {
+        Intent serviceIntent = new Intent(this, LockscreenService.class);
+        ContextCompat.startForegroundService(this, serviceIntent);
+        Log.e(TAG, "startService");
+        //Toast.makeText(this, "tracking started", Toast.LENGTH_LONG).show();
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
         locationManager.removeUpdates(locationListener);
         stopTracking(); //TODO check if this work correctly
+        startService();
+        Log.e(TAG, "onDestroy");
     }
 
     @Override

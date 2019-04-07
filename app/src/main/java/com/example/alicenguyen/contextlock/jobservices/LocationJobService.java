@@ -1,4 +1,4 @@
-package com.example.alicenguyen.contextlock;
+package com.example.alicenguyen.contextlock.jobservices;
 
 import android.Manifest;
 import android.app.KeyguardManager;
@@ -23,6 +23,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.alicenguyen.contextlock.Constants;
+import com.example.alicenguyen.contextlock.NotificationHelper;
+import com.example.alicenguyen.contextlock.R;
+import com.example.alicenguyen.contextlock.SharedPreferencesStorage;
 import com.example.alicenguyen.contextlock.experience_sampling.ExperienceSamplingActivity;
 
 import org.json.JSONArray;
@@ -316,8 +320,6 @@ public class LocationJobService extends JobService {
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
                         Log.e(TAG, "api weather error");
-                        //Toast toast = Toast.makeText(MainActivity.this, "no response", Toast.LENGTH_LONG);
-                        //toast.show();
                     }
                 });
         queue.add(jsonObjectRequest);

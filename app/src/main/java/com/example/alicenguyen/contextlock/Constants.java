@@ -4,7 +4,7 @@ package com.example.alicenguyen.contextlock;
 public class Constants {
     /*constants for ActivityRecognitionClient*/
     public static final String BROADCAST_DETECTED_ACTIVITY = "activity_intent";
-    static final long DETECTION_INTERVAL_IN_MILLISECONDS = 60 * 1000 * 60;//30 * 1000;
+    public static final long DETECTION_INTERVAL_IN_MILLISECONDS = 120 * 1000 * 60;//30 * 1000;
     public static final int CONFIDENCE = 70;
 
     /*constants for LocationListener*/
@@ -54,7 +54,7 @@ public class Constants {
     public static final int NOTIFICATION_ID = 1;
     public static final String UNLOCK_METHOD_KEY = "unlock_method_key";
 
-    public static final int CHECK_FINGERPRINT_TIMEOUT = 3000;
+    public static final int CHECK_FINGERPRINT_TIMEOUT = 1500;
     public static final String PASSWORD_USED_KEY = "password_used_key";
 
 

@@ -31,15 +31,6 @@
         android:roundIcon="@mipmap/fingerprint_ic"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
         <activity
             android:name=".experience_sampling.ExperienceSamplingActivity"
             android:exported="true"
@@ -55,15 +46,15 @@
             android:exported="false" />
         <service android:name=".BackgroundDetectedActivitiesService" />
         <service
-            android:name=".LocationJobService"
+            android:name=".jobservices.LocationJobService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
-            android:name=".UserActivityJobIntentService"
+            android:name=".jobservices.UserActivityJobIntentService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service android:name=".LockscreenService"/>
 
-        <receiver android:name=".ActivityBroadcastReceiver" />
+        <receiver android:name=".jobservices.ActivityBroadcastReceiver" />
 
         <receiver android:name=".DeviceRebootReceiver"
             android:directBootAware="true"
@@ -82,11 +73,6 @@
         <receiver android:name=".LockscreenHelper">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".AlarmReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
         <receiver android:name=".ExportDBHelper" />
