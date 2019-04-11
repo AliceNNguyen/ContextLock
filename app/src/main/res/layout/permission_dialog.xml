@@ -80,7 +80,7 @@
         android:textSize="17sp"
         android:textColor="@color/dark_grey"
         android:layout_marginTop="10dp"
-        android:text="@string/anonymity"/>
+        android:text="@string/agreement"/>
 
     <CheckBox
         android:id="@+id/checkbox_permission_agree"

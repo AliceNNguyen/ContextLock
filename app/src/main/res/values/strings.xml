@@ -97,8 +97,7 @@
     <string name="permission_lockscreen_data"> &#8226; lock screen data </string>
 
 
-    <string name="anonymity">The collected data are recorded anonymised and cannot be assigned to my person. Therefor inspection or
-    deletion of those data are not possible</string>
+    <string name="agreement">By agreeing the terms, I accept the terms and privacy policy stated in the \'Getting Started\' document.</string>
 
     <string name="agree_permission">I agree to terms</string>
     <string name="agree_permission_request">Please agree the terms to use the App.</string>
