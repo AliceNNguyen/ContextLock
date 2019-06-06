@@ -35,8 +35,6 @@
     <string name="do_not_remember">I don\'t remember</string>
 
     <string name="lockswitch_text">I switched to my PIN/pattern</string>
-
-
     <string name="give_feedback">Feedback geben</string>
     <string name="annoyance">I was annoyed in this situation</string>
     <string name="activity_unknown">activity unknown</string>
@@ -119,10 +117,11 @@
     <string name="female">female</string>
     <string name="male">male</string>
 
-    <string name="admin_explanation">Unlock events are logged anonymously for study analytics</string>
+    <string name="admin_explanation">Unlock events are logged for study analytics</string>
     <string name="lockout_scenario">How often do you experience lockout* scenarios? </string>
     <string name="lockout_explanation">*Lockout means you failed to unlock your phone too often, therefor you need to wait to try again</string>
     <string name="fingererror_scenario">How often do you have problems with your fingerprint authentication?* </string>
     <string name="fingererror_explanation">*This means your fingerprint could not be recognized immediately</string>
+    <string name="content_description_icon">icon</string>
 
 </resources>

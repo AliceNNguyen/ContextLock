@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:230133060779:android:e5296ddb98100706",
         "android_client_info": {
-          "package_name": "com.example.alicenguyen.contextlock"
+          "package_name": "com.lmu.alicenguyen.contextlock"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "230133060779-654a7f28j304a6l4dpgeas4r5df010i5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.alicenguyen.contextlock",
+            "package_name": "com.lmu.alicenguyen.contextlock",
             "certificate_hash": "04dae5e3073d17e652f2929f07022ab9889e24fb"
           }
         },

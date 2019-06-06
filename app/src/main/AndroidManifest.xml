@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.alicenguyen.contextlock">
+    package="com.lmu.alicenguyen.contextlock">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
@@ -24,7 +24,7 @@
         android:required="true"/>
     -->
     <application
-        android:name=".FirebaseHandler"
+        android:name="com.lmu.alicenguyen.contextlock.FirebaseHandler"
         android:allowBackup="true"
         android:icon="@mipmap/fingerprint_ic"
         android:label="@string/app_name"
@@ -32,31 +32,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".experience_sampling.ExperienceSamplingActivity"
+            android:name="com.lmu.alicenguyen.contextlock.experience_sampling.ExperienceSamplingActivity"
             android:exported="true"
             android:label="@string/feedback_survey"
             android:theme="@style/LightTheme" />
         <activity
-            android:name=".experience_sampling.ExperienceSamplingActivity2"
+            android:name="com.lmu.alicenguyen.contextlock.experience_sampling.ExperienceSamplingActivity2"
             android:label="@string/feedback_survey"
             android:theme="@style/LightTheme" />
 
         <service
-            android:name=".DetectedActivitiesIntentService"
+            android:name="com.lmu.alicenguyen.contextlock.DetectedActivitiesIntentService"
             android:exported="false" />
-        <service android:name=".BackgroundDetectedActivitiesService" />
-        <service
-            android:name=".jobservices.LocationJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".jobservices.UserActivityJobIntentService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name="com.lmu.alicenguyen.contextlock.BackgroundDetectedActivitiesService" />
 
-        <service android:name=".LockscreenService"/>
+        <service android:name="com.lmu.alicenguyen.contextlock.LockScreenService"/>
 
-        <receiver android:name=".jobservices.ActivityBroadcastReceiver" />
-
-        <receiver android:name=".DeviceRebootReceiver"
+        <receiver android:name="com.lmu.alicenguyen.contextlock.DeviceRebootReceiver"
             android:directBootAware="true"
             android:enabled="true"
             android:exported="true">
@@ -65,20 +57,20 @@
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".RandomAlarmReceiver"> <!-- android:directBootAware="true" android:enabled="true" android:exported="true -->
+        <receiver android:name="com.lmu.alicenguyen.contextlock.RandomAlarmReceiver"> <!-- android:directBootAware="true" android:enabled="true" android:exported="true -->
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".LockscreenHelper">
+        <receiver android:name="com.lmu.alicenguyen.contextlock.LockScreenHelper">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".ExportDBHelper" />
-        <receiver android:name=".LockScreenReceiver"></receiver>
+        <receiver android:name="com.lmu.alicenguyen.contextlock.ExportDBHelper" />
+        <receiver android:name="com.lmu.alicenguyen.contextlock.LockScreenReceiver"></receiver>
         <receiver
-            android:name=".AdminReceiver"
+            android:name="com.lmu.alicenguyen.contextlock.AdminReceiver"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
                 android:name="android.app.device_admin"
@@ -86,6 +78,7 @@
 
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.intent.action.PROFILE_PROVISIONING_COMPLETE"/>
                 <action android:name="android.app.action.ACTION_PASSWORD_FAILED" />
                 <action android:name="android.app.action.ACTION_PASSWORD_SUCCEEDED" />
                 <action android:name="android.intent.action.USER_PRESENT" />
@@ -93,17 +86,17 @@
         </receiver>
 
         <activity
-            android:name=".initial_survey.InitialSurvey"
+            android:name="com.lmu.alicenguyen.contextlock.initial_survey.InitialSurvey"
             android:exported="true" />
-        <activity android:name=".initial_survey.InitialSurvey2" />
-        <activity android:name=".initial_survey.InitialSurvey3" />
-        <activity android:name=".initial_survey.InitialSurvey4" />
+        <activity android:name="com.lmu.alicenguyen.contextlock.initial_survey.InitialSurvey2" />
+        <activity android:name="com.lmu.alicenguyen.contextlock.initial_survey.InitialSurvey3" />
+        <activity android:name="com.lmu.alicenguyen.contextlock.initial_survey.InitialSurvey4" />
         <activity
-            android:name=".Lockscreen"
+            android:name="com.lmu.alicenguyen.contextlock.PinLockScreen"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
         <activity
-            android:name=".SetupActivity"
+            android:name="com.lmu.alicenguyen.contextlock.SetupActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -111,7 +104,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PatternLockScreen"
+        <activity android:name="com.lmu.alicenguyen.contextlock.PatternLockScreen"
             android:exported="true"></activity>
     </application>
 

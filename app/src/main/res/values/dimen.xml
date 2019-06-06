@@ -26,8 +26,8 @@
     <dimen name="layout_padding">10dp</dimen>
 
     // title
-    <dimen name="textsize_title">18sp</dimen>
-    <dimen name="title_margintop">125dp</dimen>
+    <dimen name="textsize_title">22sp</dimen>
+    <dimen name="title_margintop">150dp</dimen>
     <dimen name="title_marginstart">10dp</dimen>
     <dimen name="title_marginend">10dp</dimen>
 
@@ -45,8 +45,8 @@
     <dimen name="textsize_fingerprint">14sp</dimen>
 
     //context icon
-    <dimen name="context_icon">40dp</dimen>
-    <dimen name="context_icon_margintop">70dp</dimen>
+    <dimen name="context_icon">50dp</dimen>
+    <dimen name="context_icon_margintop">80dp</dimen>
 
     //survey header
     <dimen name="header_padding">8dp</dimen>
@@ -89,7 +89,7 @@
     //checkbox
     <dimen name="checkbox_text_size">17sp</dimen>
 
-    //seekbar
+    //seekBar
     <dimen name="seekbar_height">4dp</dimen>
 
 </resources>

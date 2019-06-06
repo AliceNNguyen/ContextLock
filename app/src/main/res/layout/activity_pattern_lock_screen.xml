@@ -70,6 +70,7 @@
         android:layout_marginTop="@dimen/title_margintop"
         android:gravity="center"
         android:text="Use Pattern!"
+        android:fontFamily="sans-serif-thin"
         android:textColor="@color/text_title"
         android:textSize="@dimen/textsize_title"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -89,13 +90,13 @@
         android:id="@+id/pattern_lock_view"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:layout_marginBottom="76dp"
+        android:layout_marginBottom="40dp"
         app:layout_constraintBottom_toTopOf="@+id/fingerView"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/attempts"
-        app:layout_constraintVertical_bias="0.1" />
+        app:layout_constraintVertical_bias="0.692" />
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/fingerView"
