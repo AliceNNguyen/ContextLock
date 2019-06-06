@@ -1,8 +1,15 @@
 # ContextLock
 
-To start using the App:
-* enter a ID and hit the "ID bestätigen" - Button
+ContextLock is a research app that analysis the feasibility of context-awareness on lock screens. 
 
-* to start the tracking (background services), click on "Tracking starten"-Button
+Setup the app:
+*the device admin has to be activated 
+*agree to consent form
+*allow GPS permission
+*enter (assigned) user ID 
+*fill in the short questionnaire 
+*set a fallback code
+*make sure that the notification 'Study is running' is visible during the testing
+*your are ready to go! 
 
-* to stop the tracking, click "Tracking stoppen"-Button (all backgroundservices will be stop) 
+
